@@ -1,69 +1,73 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const areas = [
+  {
+    title: "Participants",
+    description:
+      "Register for an event, build a profile, join a team and submit a project.",
+  },
+  {
+    title: "Judges",
+    description:
+      "Review the teams you are assigned, score them against the criteria and leave comments.",
+  },
+  {
+    title: "Organizers",
+    description:
+      "Set up the event, publish the schedule and brief, then publish the final ranking.",
+  },
+];
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
+    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 py-16 sm:py-24">
+      <header className="flex flex-col gap-4">
+        <p className="text-sm font-medium text-muted-foreground">
+          Project skeleton
+        </p>
+        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+          HackHub
+        </h1>
+        <p className="max-w-2xl text-balance text-lg text-muted-foreground">
+          A platform that runs a hackathon from registration to the final
+          ranking. Feature work starts from here.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Button size="lg" disabled>
+            Sign in
+          </Button>
+          <Button size="lg" variant="outline" asChild>
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              href="https://github.com/ollayorbek0833/HackHub"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noreferrer"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Repository
+            </a>
+          </Button>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </header>
+
+      <section className="grid gap-4 sm:grid-cols-3">
+        {areas.map((area) => (
+          <Card key={area.title}>
+            <CardHeader>
+              <CardTitle>{area.title}</CardTitle>
+              <CardDescription>{area.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Not built yet.</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+    </main>
   );
 }
