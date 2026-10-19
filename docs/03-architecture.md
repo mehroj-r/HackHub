@@ -1,8 +1,7 @@
 # 3. Architecture
 
-> **Status:** logical design. The technology stack hasn't been chosen yet. When it is, add it to
-> [Technology stack](#technology-stack) and update anything that changes. Everything else here comes from the
-> requirements and product rules, and doesn't depend on the stack.
+> **Status:** logical design. The technology stack was chosen on 2026-10-19 (see [Technology stack](#technology-stack)).
+> The data model and rules don't depend on the stack.
 
 ## Overview
 
@@ -14,21 +13,27 @@
  └──────────────────────┘                    └──────────────────────┘        └──────────────┘
 ```
 
-- **Web client.** A responsive interface with three role-specific areas: participant, judge and organizer. It only
+- **Web client.** Next.js pages styled with Tailwind and shadcn/ui. A responsive interface with three role-specific areas: participant, judge and organizer. It only
   shows the actions the current role is allowed to use.
-- **Backend API.** Handles authentication, checks permissions on **every** endpoint, and enforces all product rules
+- **Backend API.** Next.js route handlers and server actions in the same app. Handles authentication, checks permissions on **every** endpoint, and enforces all product rules
   (event state, one team per event, weight totals, scoring ranges). It also calculates the ranking and runs judge auto-assignment.
-- **Database.** A relational store for users, events, teams, submissions, criteria and scores. Use a relational
+- **Database.** PostgreSQL, accessed through Prisma. A relational store for users, events, teams, submissions, criteria and scores. Use a relational
   database, because the data is highly relational and the rules need constraints (unique memberships, one submission per team).
 
 ## Technology stack
 
-| Layer | Choice | Decided by |
+| Layer | Choice | Notes |
 |---|---|---|
-| Frontend | _TBD_ | Ollayorbek / Xurliman |
-| Backend | _TBD_ | Ollayorbek |
-| Database | _TBD_ (relational) | Ollayorbek |
-| Hosting | _TBD_ | Abdurauf (deploy card) |
+| Language | **TypeScript** | One language across the whole app |
+| Framework | **Next.js** (App Router) | Frontend and backend in one app. The backend is route handlers and server actions |
+| UI | **Tailwind CSS + shadcn/ui** | Matches custom mockups easily. Responsive (phone + desktop) |
+| ORM | **Prisma** | Schema and migrations in `prisma/schema.prisma` |
+| Database | **PostgreSQL** | Unique constraints enforce the membership and submission rules |
+| Auth | **Auth.js** (credentials provider) + **bcrypt** | Email and password login. The role is stored on the user and checked on every request |
+| Tests | **Vitest** (unit), **Playwright** (end-to-end) | The cases in the [test report](06-test-report.md) map onto these |
+| Hosting | **VPS + Docker** | `docker compose` with the app, Postgres and a Caddy reverse proxy (automatic HTTPS) |
+
+The whole app is a single Next.js project, and one container image is deployed.
 
 ## Data model
 
