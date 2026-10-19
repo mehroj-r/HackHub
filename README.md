@@ -12,3 +12,7 @@ semester and ends with a working, deployed system plus its documentation.
 The build stays inside four people's capacity, and every role has real work: the designer
 owns the interface, QA owns testing and deployment, the developer builds, the PM runs
 the process.
+
+## Documentation
+
+Project documentation is in [`docs/`](docs/README.md): requirements, scope decisions, architecture, setup and deployment, user guide and test report.

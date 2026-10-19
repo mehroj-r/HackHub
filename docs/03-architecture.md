@@ -1,0 +1,122 @@
+# 3. Architecture
+
+> **Status:** logical design. The technology stack hasn't been chosen yet. When it is, add it to
+> [Technology stack](#technology-stack) and update anything that changes. Everything else here comes from the
+> requirements and product rules, and doesn't depend on the stack.
+
+## Overview
+
+```
+ ┌──────────────────────┐     HTTPS/JSON     ┌──────────────────────┐        ┌──────────────┐
+ │  Web client          │ ─────────────────▶ │  Backend API         │ ─────▶ │  Relational  │
+ │  (responsive, phone  │ ◀───────────────── │  auth, permissions,  │ ◀───── │  database    │
+ │   + desktop)         │                    │  business rules      │        │              │
+ └──────────────────────┘                    └──────────────────────┘        └──────────────┘
+```
+
+- **Web client.** A responsive interface with three role-specific areas: participant, judge and organizer. It only
+  shows the actions the current role is allowed to use.
+- **Backend API.** Handles authentication, checks permissions on **every** endpoint, and enforces all product rules
+  (event state, one team per event, weight totals, scoring ranges). It also calculates the ranking and runs judge auto-assignment.
+- **Database.** A relational store for users, events, teams, submissions, criteria and scores. Use a relational
+  database, because the data is highly relational and the rules need constraints (unique memberships, one submission per team).
+
+## Technology stack
+
+| Layer | Choice | Decided by |
+|---|---|---|
+| Frontend | _TBD_ | Ollayorbek / Xurliman |
+| Backend | _TBD_ | Ollayorbek |
+| Database | _TBD_ (relational) | Ollayorbek |
+| Hosting | _TBD_ | Abdurauf (deploy card) |
+
+## Data model
+
+```
+User ──< EventRegistration >── Event ──< Criterion
+ │                               │
+ │                               ├──< Team ──< TeamMember >── User
+ │                               │     │
+ │                               │     └── Submission (one per team)
+ │                               │
+ └──< JudgeAssignment >── Team   └── ScheduleItem / Brief
+         │
+         └──< Score (judge × team × criterion)
+Judge ──< Comment >── Team
+```
+
+| Entity | Key fields | Rules |
+|---|---|---|
+| **User** | id, email (unique), password_hash, role (`participant` \| `judge` \| `organizer`) | Exactly one role. Passwords are stored hashed |
+| **Profile** | user_id, name, faculty, skills[], bio, links | Name and faculty are required |
+| **Event** | id, name, description, start_date, end_date, registration_open, submissions_open, results_published | end_date ≥ start_date |
+| **ScheduleItem** | event_id, time, title | Shown in the user's timezone |
+| **Brief** | event_id, text | Challenge brief published by the organizer |
+| **EventRegistration** | user_id, event_id | Unique per (user, event). Only allowed while registration is open |
+| **Team** | id, event_id, name, created_by | The creator becomes a member |
+| **TeamMember** | team_id, user_id, team_role (optional) | A user is on at most one team per event. team_role is the Could have P7 |
+| **Submission** | team_id, title, description, repo_url | One per team. Only allowed while submissions are open. repo_url must be a valid URL |
+| **Criterion** | event_id, name, weight_percent, max_score | The weights for an event total 100. Locked once scoring starts |
+| **JudgeAssignment** | judge_id, team_id | Unique per (judge, team) |
+| **Score** | judge_id, team_id, criterion_id, value | 0 ≤ value ≤ max_score. Only for assigned teams. Editable until results are published |
+| **Comment** | judge_id, team_id, text | Judges only. Visible to the team and organizers |
+
+## Permission matrix
+
+| Action | Participant | Judge | Organizer |
+|---|:-:|:-:|:-:|
+| Register / log in / edit own profile | ✅ | ✅ | ✅ |
+| Browse events, see schedule and brief | ✅ | ✅ | ✅ |
+| Register for an event | ✅ | | |
+| Create, join or leave a team | ✅ | | |
+| Submit a project for own team | ✅ | | |
+| See assigned teams and their submissions | | ✅ | |
+| Score assigned teams | | ✅ | |
+| Comment on assigned teams | | ✅ | |
+| Read comments on own team | ✅ | | ✅ |
+| Create or edit events, schedule and brief | | | ✅ |
+| Set criteria and weights | | | ✅ |
+| Open or close registration and submissions | | | ✅ |
+| See all participants, teams and submissions | | | ✅ |
+| Assign the Judge role | | | ✅ |
+| Run judge auto-assignment | | | ✅ |
+| See the ranking before publishing / publish it | | | ✅ |
+| See the published ranking | ✅ | ✅ | ✅ |
+
+Every cell is enforced by the backend. The client hiding a button is only a convenience.
+
+## Event lifecycle
+
+```
+Draft ──▶ Registration open ──▶ Registration closed ──▶ Submissions open ──▶ Submissions closed
+                                                                                   │
+                     Results published ◀── Manual score review ◀── Judging ◀──────┘
+```
+
+Registration and submissions are independent switches (requirement O4). The diagram shows the usual order,
+but the organizer can open or close either one at any time.
+
+## Ranking calculation
+
+For each team *t*:
+
+1. For each criterion *c*, take the average of all judges' scores for *t* on *c*, and divide by `max_score(c)`. This gives
+   a normalized value from 0 to 1.
+2. Weighted total(*t*) = Σ over criteria of `weight_percent(c) × normalized(t, c)`. The result is from 0 to 100.
+3. Sort the teams by weighted total, highest first.
+4. **Tie-break.** For teams with equal totals, compare normalized scores on the criterion with the highest weight, then the next highest, and so on.
+   If teams are still tied after all criteria, they share the rank.
+
+Averaging and normalizing (step 1) keep the ranking fair when teams have different numbers of judges, or when
+criteria have different score ranges.
+
+## Judge auto-assignment
+
+Goal: each judge gets a **fair** set of teams. That means a balanced count, the same team never assigned twice to one
+judge, and every team scored by the same number of judges.
+
+1. Inputs: the event's judges *J* and teams *T*, and *k* judges per team (configurable, at most |J|).
+2. Shuffle *T*. Then, for each team, assign the *k* judges who currently have the fewest teams, skipping judges already assigned to that team.
+3. This keeps every judge's load within one team of every other judge.
+4. Running it again (after teams or judges change) replaces the existing assignments. Scores already given by a judge
+   who is still assigned to the same team are kept.
