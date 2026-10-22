@@ -35,8 +35,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Build-time placeholders so next build doesn't fail on missing vars.
-          # Real values live in deployment secrets, never here.
+          # dummy vals, real ones in deploy secrets
           DATABASE_URL: postgresql://user:pass@localhost:5432/hackhub
           AUTH_SECRET: ci-placeholder-secret
           AUTH_URL: http://localhost:3000
