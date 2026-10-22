@@ -1,0 +1,30 @@
+// Prisma schema for HackHub. See docs/03-architecture.md for the full data model;
+// this file only holds what the skeleton needs. Run `npx prisma migrate dev --name <change>`
+// after editing it.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A user has exactly one role, and it is checked on every request.
+enum Role {
+  PARTICIPANT
+  JUDGE
+  ORGANIZER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(PARTICIPANT)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}

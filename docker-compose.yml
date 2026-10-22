@@ -1,0 +1,28 @@
+# Local development database. Production runs from docker-compose.prod.yml
+# (see docs/04-setup-and-deployment.md).
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: hackhub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hackhub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hackhub}
+      POSTGRES_DB: ${POSTGRES_DB:-hackhub}
+    ports:
+      - "5432:5432"
+    volumes:
+      # Postgres 18 images keep the cluster in a subdirectory of this path.
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-hackhub} -d ${POSTGRES_DB:-hackhub}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:
