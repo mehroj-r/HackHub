@@ -1,0 +1,48 @@
+# Production stack (docs/07 > Deployment architecture, docs/04 > Production).
+# The host's nginx terminates HTTPS and proxies to the app on 127.0.0.1.
+# Deploy: git pull && docker compose -f docker-compose.prod.yml up -d --build
+name: hackhub
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      # Postgres 18 images keep the cluster in a subdirectory of this path.
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      target: migrate
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: runner
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      # Reachable only through the host's nginx. APP_PORT in .env picks the
+      # host port (3120 on the dev server, which shares it with other apps).
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+
+volumes:
+  db-data:
