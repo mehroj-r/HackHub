@@ -1,8 +1,8 @@
 # 8. UI specification
 
-> **Status:** for design, 26 Oct 2026. It covers every screen in the Oct 30 release. The product rules marked
-> **Decision** come from the release plan. Mehroj confirms or changes them by Tue 27 Oct, and this
-> spec gets updated in the same pass.
+> **Status:** for design, 26 Oct 2026. It covers every screen in the Oct 28 release. The product rules marked
+> **Decision** come from the release plan and were confirmed on 26 Oct
+> ([Scope decisions](02-scope-decisions.md#product-rules)).
 
 ## How to use this spec
 
@@ -37,7 +37,7 @@ Add ` · 390` to phone frames, and a state name for extra states, for example
 other states can be a note on the main frame.
 
 **Handoff.** Developers don't wait for the designs. They build each screen from this spec with **shadcn/ui
-defaults** (style `radix-nova`, base colour `neutral`, icons from `lucide`), and on Fri 30 Oct the style guide is
+defaults** (style `radix-nova`, base colour `neutral`, icons from `lucide`), and on Wed 28 Oct the style guide is
 applied through the theme variables. So:
 
 - Use shadcn component types (Button, Card, Table, Dialog, Badge and so on). A custom component that has no shadcn
@@ -51,12 +51,12 @@ applied through the theme variables. So:
 | Order | Trello card | Screens | Due (23:30 GMT+5) |
 |---|---|---|---|
 | 1 | #46 Design: style guide and app shell | Style guide, navigation for each audience, user menu, phone menu, shared components | Tue 27 Oct |
-| 2 | #45 Design: auth and participant screens | `/`, `/login`, `/register`, `/events`, `/events/[eventId]`, `/my-events`, `/profile`, `/profile/[userId]`, `/events/[eventId]/team`, `/events/[eventId]/team/submit` | Tue 27 Oct |
-| 3 | #44 Design: organizer screens | `/organizer`, `/organizer/events/new`, `/organizer/events/[eventId]`, `.../edit`, `.../criteria`, `.../participants`, `.../ranking`, `/organizer/users` | Wed 28 Oct |
-| 4 | #43 Design: judge screens | `/judge`, `/judge/teams/[teamId]` | Wed 28 Oct |
+| 2 | #45 Design: auth and participant screens | `/`, `/login`, `/register`, `/events`, `/events/[eventId]`, `/my-events`, `/profile`, `/profile/[userId]`, `/events/[eventId]/team`, `/events/[eventId]/team/submit` | Backlog |
+| 3 | #44 Design: organizer screens | `/organizer`, `/organizer/events/new`, `/organizer/events/[eventId]`, `.../edit`, `.../criteria`, `.../participants`, `.../ranking`, `/organizer/users` | Backlog |
+| 4 | #43 Design: judge screens | `/judge`, `/judge/teams/[teamId]` | Backlog |
 
-Inside #45, do `/login`, `/register` and `/profile` first: #3 is built on Tue 27 and #4 on Wed 28. Events and teams
-(#5, #6) are built on Thu 29.
+With the deadline moved to Wed 28 Oct, the screen wireframes (#45, #44, #43) moved to the Backlog: developers build every
+screen from this spec and the style guide (#46), and the designer does one style pass over the built screens (#26).
 
 ## Style guide and app shell (#46)
 
@@ -201,8 +201,8 @@ show under the field. Errors that aren't about one field show above the form.
 | Field | Rule | Error text |
 |---|---|---|
 | Name | Required, up to 80 characters | "Enter your name." / "Keep the name under 80 characters." |
-| Faculty | Required, free text, up to 80 characters | "Enter your faculty." |
-| Skills | Optional. Up to 10 short tags, each up to 30 characters, added one at a time and removable | "Add up to 10 skills." |
+| Faculty | Required, free text, up to 80 characters | "Enter your faculty." / "Keep the faculty under 80 characters." |
+| Skills | Optional. Up to 10 short tags, each up to 30 characters, added one at a time and removable | "Add up to 10 skills." / "Keep each skill under 30 characters." |
 | Bio | Optional, up to 500 characters. A character count is visible while typing | "Keep the bio under 500 characters." |
 | Links | Optional, up to 3, each a full URL | "Enter a full link starting with https://." |
 
@@ -253,7 +253,7 @@ show under the field. Errors that aren't about one field show above the form.
 
 | Field | Rule | Error text |
 |---|---|---|
-| Project title | Required, up to 100 characters | "Enter a project title." |
+| Project title | Required, up to 100 characters | "Enter a project title." / "Keep the title under 100 characters." |
 | Description | Required, up to 2000 characters, character count visible | "Add a description." / "Keep the description under 2000 characters." |
 | Repository link | Required, a valid `http(s)` URL | "Enter a valid link, like https://github.com/team/project." |
 
@@ -350,7 +350,7 @@ show under the field. Errors that aren't about one field show above the form.
 #### `/organizer/events/[eventId]/ranking` Ranking preview (O5, #16)
 
 - **Purpose.** See the ranking before publishing it, as part of the manual review.
-- **Data.** The same table as the published ranking: rank, team, members, total (0–100). Teams without a submission
+- **Data.** The same table as the published ranking: rank, team, members, total (0–100), plus a "Judges" column with how many judges scored each team, for the manual review. Teams without a submission
   aren't ranked; they're listed under the table as "Not ranked (no submission): {team names}" (**Decision 10**).
 - **Notes shown on the page.** "A criterion nobody scored counts as 0 for that team." and "Ties are broken by the highest-weight criterion, then the next."
 - **Actions.** "Publish results" (same rules and dialog as the overview). After publishing: the page says "Published on {date}." and links to the public event page.
@@ -474,7 +474,7 @@ installed today; developers add the rest with `npx shadcn add <name>`.
 
 ## Out of scope for this release
 
-Don't design these now. They stay in the Backlog, labelled for after the Oct 30 release:
+Don't design these now. They stay in the Backlog, labelled for after the Oct 28 release:
 
 | Card | Item | Note |
 |---|---|---|

@@ -2,7 +2,7 @@
 
 ## Purpose and status
 
-[Architecture](03-architecture.md) names the stack and the logical data model. This document says how the code is built for the Oct 30 release: where
+[Architecture](03-architecture.md) names the stack and the logical data model. This document says how the code is built for the Oct 28 release: where
 each kind of code goes, how a request travels from a page to the database, the Prisma schema with its constraints, how pages and forms are put
 together, and how the app is tested and deployed. Screen contents and copy are in the [UI specification](08-ui-spec.md). Everything marked
 **Decision** was confirmed by the PM on **26 Oct** (see [Scope decisions](02-scope-decisions.md#product-rules)). The release deadline moved to **Wed 28 Oct**.
@@ -297,7 +297,7 @@ model TeamMember {
   teamId       String            @map("team_id")
   eventId      String            @map("event_id")
   userId       String            @map("user_id")
-  teamRole     String?           @map("team_role") /// P7, Could have; unused on Oct 30
+  teamRole     String?           @map("team_role") /// P7, Could have; unused in the Oct 28 release
   joinedAt     DateTime          @default(now()) @map("joined_at")
   team         Team              @relation(fields: [teamId, eventId], references: [id, eventId], onDelete: Cascade)
   event        Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -336,7 +336,7 @@ model Criterion {
   @@map("criteria")
 }
 
-/// Kept for auto-assign (#19). Not read or written on Oct 30 (decision 1).
+/// Kept for auto-assign (#19). Not read or written in the Oct 28 release (decision 1).
 model JudgeAssignment {
   id        String   @id @default(cuid())
   judgeId   String   @map("judge_id")
@@ -368,7 +368,7 @@ model Score {
   @@map("scores")
 }
 
-/// #17, out of scope for Oct 30.
+/// #17, out of scope for the Oct 28 release.
 model Comment {
   id        String   @id @default(cuid())
   judgeId   String   @map("judge_id")
@@ -394,7 +394,7 @@ model Comment {
   team" is one `delete`. Rows owned by a user cascade from the user (no delete-user or delete-event feature exists; these paths are for cleanup and
   tests). `Event.createdBy` and `Team.createdBy` are `Restrict`.
 - **Out of scope tables.** `ScheduleItem`, `Brief` (#14), `JudgeAssignment` (#19), `Comment` (#17) and `TeamMember.teamRole` (#31) exist so later
-  cards only add code. Nothing reads or writes them on Oct 30.
+  cards only add code. Nothing reads or writes them in the Oct 28 release.
 
 ### Where each rule is enforced
 
@@ -539,7 +539,7 @@ npx shadcn@latest add input label textarea field select switch badge table tabs 
 - Mobile first: write the phone layout with plain classes, then add `md:` and `lg:`. Phone (390 px) and desktop are both supported. Tables use the UI
   spec's phone fallback below `md`. Nothing scrolls sideways. Touch targets are at least 44 px on phone.
 - Build with shadcn defaults and theme tokens only (`bg-primary`, `text-muted-foreground`, `rounded-lg`), never raw colours. The designer's style
-  guide (#46) arrives as values for the CSS variables in `src/app/globals.css` (`--primary`, `--radius`, …). On Friday it's applied by editing `:root`
+  guide (#46) arrives as values for the CSS variables in `src/app/globals.css` (`--primary`, `--radius`, …). On Wednesday afternoon it's applied by editing `:root`
   there and the font in `app/layout.tsx`.
 
 ---
@@ -594,14 +594,14 @@ organizer actions check the role only. `createdById` is kept for the record (and
   per role and saves the storage state to `e2e/.auth/<role>.json` (gitignored). Each spec creates its own event with a unique name, so specs don't
   depend on each other.
 - Before the QA pass (#27): reset and seed the database, `npx playwright install chromium`, `npm run test:e2e`.
-- Not automated for Oct 30: the out-of-scope sections (#14, #15, #17, #19, #31) and the phone checks TC-107 – TC-110, which are done by hand on
-  Friday.
+- Not automated for the Oct 28 release: the out-of-scope sections (#14, #15, #17, #19, #31) and the phone checks TC-107 – TC-110, which are done by
+  hand during the style pass (#26).
 
 ### CI
 
 - **Now** (`.github/workflows/ci.yml`, on PRs and pushes to `main`): lint, typecheck, unit tests, build with dummy env vars. The build has no
   database, which is one more reason for the `loading.tsx` and `connection()` rules.
-- **After the release** (S-4, out of scope for Oct 30): a second job with a `postgres:18-alpine` service that runs `npx prisma migrate deploy`, a
+- **After the release** (S-4, out of scope for the Oct 28 release): a second job with a `postgres:18-alpine` service that runs `npx prisma migrate deploy`, a
   drift check (`npx prisma migrate diff --exit-code`, migrations against the schema), the seed with demo users,
   `npx playwright install --with-deps chromium` and `npm run test:e2e`, and uploads the Playwright report.
 
@@ -630,7 +630,7 @@ Internet ─443─▶ caddy ─▶ app (Next.js standalone, :3000) ─▶ db (po
 
 ---
 
-## Decisions for the Oct 30 release
+## Decisions for the Oct 28 release
 
 Proposed in the planning session on 26 Oct and confirmed by the PM the same day, unchanged. docs/02 and docs/06 are updated to match.
 

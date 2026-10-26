@@ -31,7 +31,7 @@ end user, Abdurauf for operations staff, and Ollayorbek for the developer. Items
 ## Product rules
 
 These rules are binding for implementation. They include the 12 release decisions from
-[System design](07-system-design.md#decisions-for-the-oct-30-release) and the questions raised while writing the specs,
+[System design](07-system-design.md#decisions-for-the-oct-28-release) and the questions raised while writing the specs,
 all **confirmed on 26 Oct 2026** for the Oct 28 release. Decision numbers are in brackets.
 
 | Area | Rule |
