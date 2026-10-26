@@ -610,20 +610,20 @@ organizer actions check the role only. `createdById` is kept for the record (and
 Everything in this table is **to build in #28**.
 
 ```
-Internet ─443─▶ caddy ─▶ app (Next.js standalone, :3000) ─▶ db (postgres:18-alpine, volume)
-                         app starts after migrate (one-shot: prisma migrate deploy && prisma db seed) exits OK
+Internet ─443─▶ nginx on the host (TLS) ─▶ 127.0.0.1:3000 app (Next.js standalone) ─▶ db (postgres:18-alpine, volume)
+                                           app starts after migrate (one-shot: prisma migrate deploy && prisma db seed) exits OK
 ```
 
 | File | Contents |
 |---|---|
 | `next.config.ts` | add `output: "standalone"` |
 | `Dockerfile` | Multi-stage on `node:22-alpine`. `deps`: copy `package*.json`, `prisma/`, `prisma7.config.ts`; `npm ci` (postinstall generates the client). `build`: copy the source, `npm run build`. Target `migrate`: the build stage with `CMD npx prisma migrate deploy && npx prisma db seed`. Target `runner`: `.next/standalone`, `.next/static` and `public`, non-root user, `HOSTNAME=0.0.0.0`, `PORT=3000`, `CMD ["node", "server.js"]` |
-| `docker-compose.prod.yml` | `db`: volume at `/var/lib/postgresql`, healthcheck, no published port. `migrate`: target `migrate`, `env_file: .env`, after `db` is healthy. `app`: target `runner`, `env_file: .env`, after `migrate` completed successfully. `caddy`: ports 80 and 443, volumes for its data and config |
-| `Caddyfile` | `{$DOMAIN} { reverse_proxy app:3000 }` |
+| `docker-compose.prod.yml` | `db`: volume at `/var/lib/postgresql`, healthcheck, no published port. `migrate`: target `migrate`, `env_file: .env`, after `db` is healthy. `app`: target `runner`, `env_file: .env`, after `migrate` completed successfully, `ports: ["127.0.0.1:3000:3000"]` (reachable only through nginx). No proxy container: the VPS's own nginx terminates HTTPS |
+| nginx site (on the host, not in the repo) | `proxy_pass http://127.0.0.1:3000` with `Host`, `X-Forwarded-For` and `X-Forwarded-Proto` headers; the certificate is managed on the host. The full config is in docs/04 |
 | `src/app/api/health/route.ts` | `SELECT 1` through Prisma; 200 or 503 |
 
-- **Server `.env`:** `DATABASE_URL` (host `db`), `AUTH_SECRET`, `AUTH_URL=https://<domain>`, `AUTH_TRUST_HOST=true` (Auth.js behind Caddy),
-  `POSTGRES_USER`/`POSTGRES_PASSWORD`/`POSTGRES_DB`, `DOMAIN`, `SEED_ORGANIZER_EMAIL`, `SEED_ORGANIZER_PASSWORD`. No demo-user variables.
+- **Server `.env`:** `DATABASE_URL` (host `db`), `AUTH_SECRET`, `AUTH_URL=https://<domain>`, `AUTH_TRUST_HOST=true` (Auth.js behind nginx),
+  `POSTGRES_USER`/`POSTGRES_PASSWORD`/`POSTGRES_DB`, `SEED_ORGANIZER_EMAIL`, `SEED_ORGANIZER_PASSWORD`. No demo-user variables.
 - **Migrate on deploy.** The standalone image has no Prisma CLI, so docs/04's `exec app npx prisma migrate deploy` can't work. The `migrate` service
   runs migrations and the seed before `app` starts, so the whole deploy is `git pull && docker compose -f docker-compose.prod.yml up -d --build`. Take
   docs/04's `pg_dump` backup first when the deploy includes a migration, then run docs/04's smoke test plus `curl https://<domain>/api/health`.
