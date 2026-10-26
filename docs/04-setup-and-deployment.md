@@ -9,7 +9,7 @@
 | Environment | Purpose | URL | Database |
 |---|---|---|---|
 | Local | Development on each team member's machine | `http://localhost:3000` | Postgres in Docker |
-| Production | The deployed system (semester deliverable) | _TBD domain_ (HTTPS via Caddy) | Postgres container on the VPS, with a persistent volume |
+| Production | The deployed system (semester deliverable) | _TBD domain_ (HTTPS via the host's nginx) | Postgres container on the VPS, with a persistent volume |
 
 ## Prerequisites
 
@@ -52,28 +52,57 @@ Configuration is read from environment variables, in `.env` locally and set on t
 
 ## Production deployment (VPS + Docker)
 
-The production stack runs as three containers, defined in `docker-compose.prod.yml`:
+The VPS already runs nginx, which terminates HTTPS. The app stack runs in Docker, defined in `docker-compose.prod.yml`:
 
 ```
-Internet ──443──▶ caddy (reverse proxy, automatic HTTPS) ──▶ app (Next.js, port 3000) ──▶ db (PostgreSQL, volume)
+Internet ──443──▶ nginx on the host (TLS) ──▶ 127.0.0.1:3000 app (Next.js) ──▶ db (PostgreSQL, volume)
+                                                 app starts after migrate (one-shot) exits OK
 ```
 
-- **app** is built from the repo's `Dockerfile`, using Next.js `output: "standalone"` to keep the image small.
-- **db** keeps its data in a named volume, so it survives restarts and redeploys.
-- **caddy** gets and renews the TLS certificate for the domain automatically.
+- **app** is built from the repo's `Dockerfile`, using Next.js `output: "standalone"` to keep the image small. Its port is published on
+  `127.0.0.1:3000` only, so it's reachable through nginx and not directly from the internet.
+- **migrate** is a one-shot container that runs `prisma migrate deploy` and the seed before the app starts.
+- **db** keeps its data in a named volume, so it survives restarts and redeploys. It publishes no port.
+- **nginx** (on the host, not in Docker) holds the TLS certificate and proxies to the app.
 
 ### First-time server setup
 
 1. Get a VPS (_TBD provider_) and point the domain's DNS A record at it.
-2. Install Docker and the Compose plugin. Open ports 80 and 443 only.
+2. Install Docker and the Compose plugin. Ports 80 and 443 stay with nginx; nothing else is opened.
 3. Clone the repo on the server and create the production `.env` there. Don't commit it.
+4. Add the site to nginx and get a certificate (for example `sudo certbot --nginx -d <domain>`), then `sudo nginx -t && sudo systemctl reload nginx`:
+
+```nginx
+# /etc/nginx/sites-available/hackhub  (TLS certificate managed on the host, e.g. certbot)
+server {
+    listen 443 ssl http2;
+    server_name <domain>;
+    ssl_certificate     /etc/letsencrypt/live/<domain>/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<domain>/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+server {
+    listen 80;
+    server_name <domain>;
+    return 301 https://$host$request_uri;
+}
+```
 
 ### Deploy
 
 ```bash
 git pull
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml exec app npx prisma migrate deploy
+docker compose -f docker-compose.prod.yml up -d --build   # migrate runs first, then the app starts
+curl -fsS https://<domain>/api/health
 ```
 
 _TBD:_ automate these steps with a GitHub Actions workflow that SSHes into the VPS and runs them on every push to `main`.
