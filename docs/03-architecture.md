@@ -31,7 +31,7 @@
 | Database | **PostgreSQL** | Unique constraints enforce the membership and submission rules |
 | Auth | **Auth.js** (credentials provider) + **bcrypt** | Email and password login. The role is stored on the user and checked on every request |
 | Tests | **Vitest** (unit), **Playwright** (end-to-end) | The cases in the [test report](06-test-report.md) map onto these |
-| Hosting | **VPS + Docker** | `docker compose` with the app, Postgres and a Caddy reverse proxy (automatic HTTPS) |
+| Hosting | **VPS + Docker** | `docker compose` with the app and Postgres, behind the VPS's own nginx, which terminates HTTPS |
 
 The whole app is a single Next.js project, and one container image is deployed.
 
