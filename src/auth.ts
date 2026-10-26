@@ -36,13 +36,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    // The role travels in the JWT so every request can check it without
-    // another database round trip.
+    // The JWT role is only used for the redirect after login. Authorization
+    // re-reads the role from the database by user id (lib/auth/dal.ts), so a
+    // role change works without logging in again.
     jwt({ token, user }) {
       if (user) token.role = user.role;
       return token;
     },
     session({ session, token }) {
+      if (token.sub) session.user.id = token.sub;
       if (token.role) session.user.role = token.role;
       return session;
     },

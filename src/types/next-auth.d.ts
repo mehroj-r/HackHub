@@ -8,7 +8,8 @@ declare module "next-auth" {
   }
 
   interface Session {
-    user: { role: Role } & DefaultSession["user"];
+    // id is token.sub, copied over in the session callback in src/auth.ts.
+    user: { id: string; role: Role } & DefaultSession["user"];
   }
 }
 
