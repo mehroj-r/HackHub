@@ -5,7 +5,7 @@
 [Architecture](03-architecture.md) names the stack and the logical data model. This document says how the code is built for the Oct 30 release: where
 each kind of code goes, how a request travels from a page to the database, the Prisma schema with its constraints, how pages and forms are put
 together, and how the app is tested and deployed. Screen contents and copy are in the [UI specification](08-ui-spec.md). Everything marked
-**Decision (proposed)** waits for the PM's confirmation by **Tue 27 Oct**; if one changes, the sections citing it change too.
+**Decision** was confirmed by the PM on **26 Oct** (see [Scope decisions](02-scope-decisions.md#product-rules)). The release deadline moved to **Wed 28 Oct**.
 
 ---
 
@@ -61,7 +61,7 @@ export async function requireRole(...roles: Role[]) {
 }
 ```
 
-- **Decision (proposed) 8.** The role is re-read on every request, so a role change works without logging in again. The JWT role is only used for the
+- **Decision 8.** The role is re-read on every request, so a role change works without logging in again. The JWT role is only used for the
   landing redirect after login. `src/auth.ts` needs one change for this: the `session` callback also copies `token.sub` to `session.user.id`.
 - A wrong role lands on the role home, which shows the UI spec's "You don't have access to that page." toast for `?notice=no-access`. React `cache()`
   dedupes within one render only; in actions it does nothing, which is fine.
@@ -632,23 +632,22 @@ Internet ─443─▶ caddy ─▶ app (Next.js standalone, :3000) ─▶ db (po
 
 ## Decisions for the Oct 30 release
 
-Proposed in the planning session on 26 Oct. The PM confirms or changes each by Tue 27 Oct, then updates the listed docs, the card checklists and the
-test cases.
+Proposed in the planning session on 26 Oct and confirmed by the PM the same day, unchanged. docs/02 and docs/06 are updated to match.
 
-| # | Decision (proposed) | Resolves | Docs it changes | Status |
+| # | Decision | Resolves | Docs it changes | Status |
 |---|---|---|---|---|
-| 1 | Every user with role JUDGE judges every team of every event. No per-event judge pool, no assignment step. `JudgeAssignment` stays in the schema for #19 | D-1, D-2 | 01 (J1, J2), 02 (Scoring), 03 (matrix rows "assigned", Score), 05 (Judge), 06 (TC-03, TC-08, TC-94, TC-96) | proposed |
-| 2 | Judges score once an event's submissions are closed and can edit until results are published | D-3 (what the scoring lock hangs on) | 02 (Scoring), 03 (lifecycle), 05 (Judge), 06 (TC-04) | proposed |
-| 3 | Ranking (#16) is Must. "Publish results" (sets `resultsPublished`, locks scores, shows the ranking) is part of #12 | D-3 | 01 (O5), 02 (Publishing), 06 (ranking section, TC-103) | proposed |
-| 4 | Join a team with its 6-character invite code. `maxTeamSize` per event, default 4 | D-4 | 02 (Teams), 03 (Team, Event), 05 (Form a team), 06 (TC-15) | proposed |
-| 5 | `endDate` not before `startDate`. No Draft state: a new event has registration closed and is listed once registration opens | D-5 | 03 (Event, lifecycle), 05 (Join an event), 06 (TC-24, TC-27) | proposed |
-| 6 | Organizer sets `maxScore` per criterion (integer ≥ 1, default 10). Weights are whole percents totalling 100, checked in the action. Criteria lock once any score exists | D-6 | 02 (Open questions), 05 (Set up an event), 06 (new TC for max score) | proposed |
-| 7 | `prisma/seed.ts` creates the first organizer from `SEED_ORGANIZER_EMAIL` / `SEED_ORGANIZER_PASSWORD` | D-7 | 04 (setup, configuration), `.env.example` | proposed |
-| 8 | Password ≥ 8 characters. Emails stored lowercased. Authorization re-reads the role from the DB on every request; the JWT role is only for redirects | D-8, S-3 | 02 (Permissions), 06 (TC-45, new TC for a role change without re-login) | proposed |
-| 9 | Leaving a team is allowed until the team submits. When the last member leaves, the team is deleted | D-8 | 02 (Teams), 05 (Form a team), 06 (TC-18) | proposed |
-| 10 | Teams without a submission aren't ranked. A criterion nobody scored counts as 0. The published ranking shows rank, team, members and total (0–100), not individual judges' scores | D-8 | 03 (Ranking calculation), 06 (TC-101 – TC-106) | proposed |
-| 11 | Organizers can make a user a judge (or back) only if the user isn't on a team in any event | D-8 | 02 (Judge role), 05 (Run the event), 06 (TC-76) | proposed |
-| 12 | Any signed-in user can view any profile (read-only). Participants see their own team's submission | D-8 | 03 (permission matrix), 06 (TC-12) | proposed |
+| 1 | Every user with role JUDGE judges every team of every event. No per-event judge pool, no assignment step. `JudgeAssignment` stays in the schema for #19 | D-1, D-2 | 01 (J1, J2), 02 (Scoring), 03 (matrix rows "assigned", Score), 05 (Judge), 06 (TC-03, TC-08, TC-94, TC-96) | confirmed |
+| 2 | Judges score once an event's submissions are closed and can edit until results are published | D-3 (what the scoring lock hangs on) | 02 (Scoring), 03 (lifecycle), 05 (Judge), 06 (TC-04) | confirmed |
+| 3 | Ranking (#16) is Must. "Publish results" (sets `resultsPublished`, locks scores, shows the ranking) is part of #12 | D-3 | 01 (O5), 02 (Publishing), 06 (ranking section, TC-103) | confirmed |
+| 4 | Join a team with its 6-character invite code. `maxTeamSize` per event, default 4 | D-4 | 02 (Teams), 03 (Team, Event), 05 (Form a team), 06 (TC-15) | confirmed |
+| 5 | `endDate` not before `startDate`. No Draft state: a new event has registration closed and is listed once registration opens | D-5 | 03 (Event, lifecycle), 05 (Join an event), 06 (TC-24, TC-27) | confirmed |
+| 6 | Organizer sets `maxScore` per criterion (integer ≥ 1, default 10). Weights are whole percents totalling 100, checked in the action. Criteria lock once any score exists | D-6 | 02 (Open questions), 05 (Set up an event), 06 (new TC for max score) | confirmed |
+| 7 | `prisma/seed.ts` creates the first organizer from `SEED_ORGANIZER_EMAIL` / `SEED_ORGANIZER_PASSWORD` | D-7 | 04 (setup, configuration), `.env.example` | confirmed |
+| 8 | Password ≥ 8 characters. Emails stored lowercased. Authorization re-reads the role from the DB on every request; the JWT role is only for redirects | D-8, S-3 | 02 (Permissions), 06 (TC-45, new TC for a role change without re-login) | confirmed |
+| 9 | Leaving a team is allowed until the team submits. When the last member leaves, the team is deleted | D-8 | 02 (Teams), 05 (Form a team), 06 (TC-18) | confirmed |
+| 10 | Teams without a submission aren't ranked. A criterion nobody scored counts as 0. The published ranking shows rank, team, members and total (0–100), not individual judges' scores | D-8 | 03 (Ranking calculation), 06 (TC-101 – TC-106) | confirmed |
+| 11 | Organizers can make a user a judge (or back) only if the user isn't on a team in any event | D-8 | 02 (Judge role), 05 (Run the event), 06 (TC-76) | confirmed |
+| 12 | Any signed-in user can view any profile (read-only). Participants see their own team's submission | D-8 | 03 (permission matrix), 06 (TC-12) | confirmed |
 
 ### Conflicts found while writing this document
 
