@@ -14,7 +14,7 @@ It is a semester deliverable, together with the deployed system.
 | 4 | [Setup and deployment](04-setup-and-deployment.md) | Local setup, environments, deploy steps | Planned commands. Check them once the app is scaffolded |
 | 5 | [User guide](05-user-guide.md) | How participants, judges and organizers use the platform | Complete for the planned features |
 | 6 | [Test report](06-test-report.md) | Test approach, test cases from each card's tasks, results | Template. Results are added as features are tested |
-| 7 | [System design](07-system-design.md) | Code layout, request flow, Prisma schema v1, frontend patterns, testing and deployment design | Proposed — confirm by 27 Oct |
+| 7 | [System design](07-system-design.md) | Code layout, request flow, Prisma schema v1, frontend patterns, testing and deployment design | Decisions confirmed 26 Oct |
 | 8 | [UI specification](08-ui-spec.md) | UI specification for the designer: screens, contents, states | For design — 26 Oct |
 
 ## Team
