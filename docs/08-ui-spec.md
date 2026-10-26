@@ -1,8 +1,8 @@
 # 8. UI specification
 
-> **Status:** for design, 26 Oct 2026. It covers every screen in the Oct 30 release. The product rules marked
-> **Decision (proposed)** come from the release plan. Mehroj confirms or changes them by Tue 27 Oct, and this
-> spec gets updated in the same pass.
+> **Status:** for design, 26 Oct 2026. It covers every screen in the Oct 28 release. The product rules marked
+> **Decision** come from the release plan and were confirmed on 26 Oct
+> ([Scope decisions](02-scope-decisions.md#product-rules)).
 
 ## How to use this spec
 
@@ -37,7 +37,7 @@ Add ` · 390` to phone frames, and a state name for extra states, for example
 other states can be a note on the main frame.
 
 **Handoff.** Developers don't wait for the designs. They build each screen from this spec with **shadcn/ui
-defaults** (style `radix-nova`, base colour `neutral`, icons from `lucide`), and on Fri 30 Oct the style guide is
+defaults** (style `radix-nova`, base colour `neutral`, icons from `lucide`), and on Wed 28 Oct the style guide is
 applied through the theme variables. So:
 
 - Use shadcn component types (Button, Card, Table, Dialog, Badge and so on). A custom component that has no shadcn
@@ -51,12 +51,12 @@ applied through the theme variables. So:
 | Order | Trello card | Screens | Due (23:30 GMT+5) |
 |---|---|---|---|
 | 1 | #46 Design: style guide and app shell | Style guide, navigation for each audience, user menu, phone menu, shared components | Tue 27 Oct |
-| 2 | #45 Design: auth and participant screens | `/`, `/login`, `/register`, `/events`, `/events/[eventId]`, `/my-events`, `/profile`, `/profile/[userId]`, `/events/[eventId]/team`, `/events/[eventId]/team/submit` | Tue 27 Oct |
-| 3 | #44 Design: organizer screens | `/organizer`, `/organizer/events/new`, `/organizer/events/[eventId]`, `.../edit`, `.../criteria`, `.../participants`, `.../ranking`, `/organizer/users` | Wed 28 Oct |
-| 4 | #43 Design: judge screens | `/judge`, `/judge/teams/[teamId]` | Wed 28 Oct |
+| 2 | #45 Design: auth and participant screens | `/`, `/login`, `/register`, `/events`, `/events/[eventId]`, `/my-events`, `/profile`, `/profile/[userId]`, `/events/[eventId]/team`, `/events/[eventId]/team/submit` | Backlog |
+| 3 | #44 Design: organizer screens | `/organizer`, `/organizer/events/new`, `/organizer/events/[eventId]`, `.../edit`, `.../criteria`, `.../participants`, `.../ranking`, `/organizer/users` | Backlog |
+| 4 | #43 Design: judge screens | `/judge`, `/judge/teams/[teamId]` | Backlog |
 
-Inside #45, do `/login`, `/register` and `/profile` first: #3 is built on Tue 27 and #4 on Wed 28. Events and teams
-(#5, #6) are built on Thu 29.
+With the deadline moved to Wed 28 Oct, the screen wireframes (#45, #44, #43) moved to the Backlog: developers build every
+screen from this spec and the style guide (#46), and the designer does one style pass over the built screens (#26).
 
 ## Style guide and app shell (#46)
 
@@ -131,7 +131,7 @@ show under the field. Errors that aren't about one field show above the form.
 | Field | Rule | Error text |
 |---|---|---|
 | Email | Required, valid format. Stored lowercased | "Enter your email." / "Enter a valid email address, like name@example.com." |
-| Password | Required, at least 8 characters (**Decision (proposed) 8**) | "Enter a password." / "Use at least 8 characters." |
+| Password | Required, at least 8 characters (**Decision 8**) | "Enter a password." / "Use at least 8 characters." |
 | Confirm password | Must match | "The passwords don't match." |
 
 - **Server errors.** Email already registered: "An account with this email already exists. Log in instead." with a link to `/login` (TC-46, TC-50).
@@ -152,7 +152,7 @@ show under the field. Errors that aren't about one field show above the form.
 
 - **Purpose.** Browse events that are open for registration.
 - **Who.** Everyone.
-- **Data.** Events with registration open (**Decision (proposed) 5**: a new event appears here only once the
+- **Data.** Events with registration open (**Decision 5**: a new event appears here only once the
   organizer opens registration), soonest start date first. Each item: name, start and end dates, the first ~160
   characters of the description, max team size, and for a signed-in participant a "Registered" badge if they are.
 - **Actions.** Open an event (`/events/[eventId]`). The whole item is the link.
@@ -173,12 +173,12 @@ show under the field. Errors that aren't about one field show above the form.
 | Participant, profile incomplete, registration open | No register button. Instead: "Complete your profile before registering." with a link to `/profile` |
 | Participant, registered | **(frame)** "You're registered" (success status), plus "Create or join a team" or "Go to my team" → `/events/[eventId]/team` |
 | Not registered, registration closed | **(frame)** Disabled "Registration closed" and the line "Registration for this event is closed." (TC-38, TC-43) |
-| Judge | No register button. Judges can't be on teams (**Decision (proposed) 11**) |
+| Judge | No register button. Judges can't be on teams (**Decision 11**) |
 | Organizer | "Manage event" → `/organizer/events/[eventId]` |
 
 - **After "Register".** Stays on the page, the button becomes the registered state, toast "You're registered for {event name}." If the server says it's a duplicate (TC-39): "You're already registered for this event." If it closed in the meantime: "Registration for this event is closed."
 - **Ranking section.** Only when results are published (**(frame)**). Columns: rank, team name, members, total (0–100).
-  Nothing else: no per-criterion or per-judge scores (**Decision (proposed) 10**). Teams tied on every criterion share
+  Nothing else: no per-criterion or per-judge scores (**Decision 10**). Teams tied on every criterion share
   a rank. Member names link to `/profile/[userId]` for signed-in users and are plain text for visitors. If the viewer's
   team is in the table, their row is marked, and not by colour alone. Before publishing the section isn't shown.
 - **Tests.** TC-34, TC-37, TC-38, TC-41, TC-43, TC-101, TC-104, TC-106.
@@ -201,8 +201,8 @@ show under the field. Errors that aren't about one field show above the form.
 | Field | Rule | Error text |
 |---|---|---|
 | Name | Required, up to 80 characters | "Enter your name." / "Keep the name under 80 characters." |
-| Faculty | Required, free text, up to 80 characters | "Enter your faculty." |
-| Skills | Optional. Up to 10 short tags, each up to 30 characters, added one at a time and removable | "Add up to 10 skills." |
+| Faculty | Required, free text, up to 80 characters | "Enter your faculty." / "Keep the faculty under 80 characters." |
+| Skills | Optional. Up to 10 short tags, each up to 30 characters, added one at a time and removable | "Add up to 10 skills." / "Keep each skill under 30 characters." |
 | Bio | Optional, up to 500 characters. A character count is visible while typing | "Keep the bio under 500 characters." |
 | Links | Optional, up to 3, each a full URL | "Enter a full link starting with https://." |
 
@@ -214,7 +214,7 @@ show under the field. Errors that aren't about one field show above the form.
 #### `/profile/[userId]` Profile (P2, #4)
 
 - **Purpose.** Read-only view of another user, reached from team member lists and the ranking.
-- **Who.** Any signed-in user (**Decision (proposed) 12**).
+- **Who.** Any signed-in user (**Decision 12**).
 - **Data.** Name, faculty, role, skills, bio, links (open in a new tab). The email isn't shown.
 - **States.** Profile not filled in yet: "This person hasn't filled in their profile yet." Viewing your own: a link "Edit my profile" → `/profile`.
 - **Tests.** TC-12.
@@ -225,7 +225,7 @@ show under the field. Errors that aren't about one field show above the form.
 - **Who.** Participant registered for the event. Not registered → **(frame)** "Register for this event before joining a team." with a link to the event (TC-16).
 - **State: no team (frame).** Two actions, equally visible:
   - **Create a team.** Field: team name, required, 2–40 characters, unique in the event. Errors: "Enter a team name." / "A team with this name already exists in this event." The creator becomes the first member (TC-14).
-  - **Join with a code.** Field: invite code, 6 characters, not case-sensitive (**Decision (proposed) 4**). Errors:
+  - **Join with a code.** Field: invite code, 6 characters, not case-sensitive (**Decision 4**). Errors:
 
 | Case | Error text |
 |---|---|
@@ -240,7 +240,7 @@ show under the field. Errors that aren't about one field show above the form.
   member count as "{n} of {maxTeamSize}"; submission status and its action ("Submit project" while submissions are
   open and nothing is submitted, "Edit submission" or "View submission" once it is).
 - **Team full.** The code stays visible with "Your team is full." The designer decides how prominent this is.
-- **Leave team.** Secondary, destructive. Confirm dialog: "Leave {team name}? You can join or create another team in this event." If the user is the last member: "You're the last member, so leaving deletes {team name}." (**Decision (proposed) 9**). After leaving: stay on the page in the no-team state, toast "You left {team name}."
+- **Leave team.** Secondary, destructive. Confirm dialog: "Leave {team name}? You can join or create another team in this event." If the user is the last member: "You're the last member, so leaving deletes {team name}." (**Decision 9**). After leaving: stay on the page in the no-team state, toast "You left {team name}."
 - **Submitted (frame).** "Leave team" is disabled with "You can't leave after your team has submitted." No new members can join.
 - **After create/join.** Stay on the page in the on-a-team state, toast "Team created." or "You joined {team name}."
 - **Tests.** TC-14, TC-15, TC-16, TC-17, TC-18, TC-19, TC-20, TC-21, TC-22.
@@ -253,7 +253,7 @@ show under the field. Errors that aren't about one field show above the form.
 
 | Field | Rule | Error text |
 |---|---|---|
-| Project title | Required, up to 100 characters | "Enter a project title." |
+| Project title | Required, up to 100 characters | "Enter a project title." / "Keep the title under 100 characters." |
 | Description | Required, up to 2000 characters, character count visible | "Add a description." / "Keep the description under 2000 characters." |
 | Repository link | Required, a valid `http(s)` URL | "Enter a valid link, like https://github.com/team/project." |
 
@@ -285,7 +285,7 @@ show under the field. Errors that aren't about one field show above the form.
 | Name | Required, up to 100 characters | "Enter the event name." |
 | Description | Required, up to 2000 characters | "Add a description." |
 | Start date | Required, a date (no time) | "Choose a start date." |
-| End date | Required, not before the start date; the same day is fine (**Decision (proposed) 5**) | "Choose an end date." / "The end date can't be before the start date." |
+| End date | Required, not before the start date; the same day is fine (**Decision 5**) | "Choose an end date." / "The end date can't be before the start date." |
 | Max team size | Whole number 1–10, default 4 | "Team size must be a whole number from 1 to 10." |
 
 - **Edit only.** Max team size can't go below the largest current team: "{team name} already has {n} members, so the max can't be lower than {n}."
@@ -304,7 +304,7 @@ show under the field. Errors that aren't about one field show above the form.
 |---|---|---|
 | Registration open/closed | A switch. Opening it lists the event on `/events` | None |
 | Submissions open/closed | A switch | Closing: "Close submissions? Teams can't submit or edit, and judges can start scoring." |
-| Publish results | A button. Sets `resultsPublished`, locks every score, shows the ranking on the event page (**Decision (proposed) 3**) | "Publish results for {event}? Everyone will see the ranking, and judges can't change scores any more. This can't be undone." |
+| Publish results | A button. Sets `resultsPublished`, locks every score, shows the ranking on the event page (**Decision 3**) | "Publish results for {event}? Everyone will see the ranking, and judges can't change scores any more. This can't be undone." |
 
 - **Rules for the controls.**
   - Publish is available only when submissions are closed and the criteria are set. Otherwise it's disabled with the reason: "Close submissions first." / "Set the judging criteria first."
@@ -323,7 +323,7 @@ show under the field. Errors that aren't about one field show above the form.
 |---|---|---|
 | Name | Required, up to 60 characters, unique in the event | "Enter a criterion name." / "Each criterion needs a different name." |
 | Weight | Whole number 1–100 | "Weight must be a whole number from 1 to 100." |
-| Max score | Whole number, at least 1, default 10 (**Decision (proposed) 6**) | "Max score must be a whole number of at least 1." |
+| Max score | Whole number, at least 1, default 10 (**Decision 6**) | "Max score must be a whole number of at least 1." |
 
 - **Running total.** The total of the weights must be visible at all times while editing, including on phone with
   the keyboard open, and must update as the user types. It must say clearly whether it's exactly 100%, and what's
@@ -350,8 +350,8 @@ show under the field. Errors that aren't about one field show above the form.
 #### `/organizer/events/[eventId]/ranking` Ranking preview (O5, #16)
 
 - **Purpose.** See the ranking before publishing it, as part of the manual review.
-- **Data.** The same table as the published ranking: rank, team, members, total (0–100). Teams without a submission
-  aren't ranked; they're listed under the table as "Not ranked (no submission): {team names}" (**Decision (proposed) 10**).
+- **Data.** The same table as the published ranking: rank, team, members, total (0–100), plus a "Judges" column with how many judges scored each team, for the manual review. Teams without a submission
+  aren't ranked; they're listed under the table as "Not ranked (no submission): {team names}" (**Decision 10**).
 - **Notes shown on the page.** "A criterion nobody scored counts as 0 for that team." and "Ties are broken by the highest-weight criterion, then the next."
 - **Actions.** "Publish results" (same rules and dialog as the overview). After publishing: the page says "Published on {date}." and links to the public event page.
 - **States.** **Not ready (frame):** before submissions close or before criteria exist: "The ranking appears once submissions are closed and criteria are set." **No scores yet:** the table with every total 0 and the line "No scores yet."
@@ -362,7 +362,7 @@ show under the field. Errors that aren't about one field show above the form.
 - **Purpose.** Make a user a judge, or a judge a participant again.
 - **Data.** Every user: name (or "No name yet"), email, role, and whether they're on a team (event names). A search by name or email, and a filter by role.
 - **Actions, per row.** "Make judge" on a participant, "Make participant" on a judge. Organizers have no action, and nobody can change their own role.
-- **Rule.** A participant who's on a team in any event can't become a judge (**Decision (proposed) 11**). The action is disabled with the reason: "{name} is on a team in {event}, so they can't become a judge."
+- **Rule.** A participant who's on a team in any event can't become a judge (**Decision 11**). The action is disabled with the reason: "{name} is on a team in {event}, so they can't become a judge."
 - **After a change.** The row updates, toast "{name} is now a judge." / "{name} is now a participant." No confirm dialog: the change can be undone right away.
 - **States.** **Empty search:** "No users match '{query}'."
 - **Tests.** TC-73, TC-74, TC-75, TC-76, TC-77.
@@ -372,7 +372,7 @@ show under the field. Errors that aren't about one field show above the form.
 #### `/judge` Judging (J1, #8)
 
 - **Purpose.** The judge's home: which events are being judged, which teams to score, and how far along they are.
-- **Who.** Judge. Every judge judges every team in every event (**Decision (proposed) 1**), so there's no assignment step.
+- **Who.** Judge. Every judge judges every team in every event (**Decision 1**), so there's no assignment step.
 - **Data.** Events in judging: submissions closed, results not published, at least one submission. For each event:
   name, criteria count, and progress "{n} of {m} teams scored" (by this judge). Under it, every team that submitted:
   team name, project title, and this judge's status for it: "Not started", "In progress" (some criteria scored) or
@@ -393,7 +393,7 @@ show under the field. Errors that aren't about one field show above the form.
 | Score is a whole number from 0 to the criterion's `maxScore` | "Enter a whole number from 0 to {maxScore}." (TC-02, TC-07) |
 
 - **Saving.** A judge can save with some criteria left empty; the team then shows "In progress" on `/judge`. Primary action: "Save scores", toast "Scores saved." Secondary: "Save and go to next team", which opens the next team in this event that this judge hasn't fully scored. When none are left, it goes to `/judge` with the toast "You've scored every team in {event}."
-- **Editing.** Scores stay editable until results are published (**Decision (proposed) 2**, TC-04). The form shows "Last saved {date, time}".
+- **Editing.** Scores stay editable until results are published (**Decision 2**, TC-04). The form shows "Last saved {date, time}".
 - **States.**
   - **Submissions still open:** read-only project, no form: "Scoring starts when the organizer closes submissions."
   - **Criteria not set:** "The organizer hasn't set the criteria yet."
@@ -474,7 +474,7 @@ installed today; developers add the rest with `npx shadcn add <name>`.
 
 ## Out of scope for this release
 
-Don't design these now. They stay in the Backlog, labelled for after the Oct 30 release:
+Don't design these now. They stay in the Backlog, labelled for after the Oct 28 release:
 
 | Card | Item | Note |
 |---|---|---|
