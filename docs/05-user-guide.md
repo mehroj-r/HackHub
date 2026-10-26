@@ -1,79 +1,287 @@
 # 5. User guide
 
-This guide describes how each role uses HackHub. It follows the agreed requirements and product rules.
-Screenshots get added once the interface is built.
+This guide describes how each role uses HackHub, following the confirmed product rules in
+[Scope decisions](02-scope-decisions.md#product-rules) and the screens in the [UI specification](08-ui-spec.md).
+HackHub works in phone and desktop browsers. All times are shown in Tashkent time (GMT+5).
 
-## Getting started (everyone)
+> **How this guide is filled in.** Each section has an owner comment (`<!-- owner: … -->`). The person who builds a
+> screen replaces that section's placeholder with real steps and screenshots **in the same PR as the screen**, and
+> touches only their own sections. Unfinished parts are marked `TODO(user-guide)`; the final docs review searches for
+> that token, and none may be left at release.
 
-1. **Register** with your email and a password. You'll get an error if the email is already registered.
-2. **Log in** with the same email and password. If you get it wrong, HackHub only tells you that the login failed, not which part was wrong.
-3. **Complete your profile.** Name and faculty are required. Add your skills, and optionally a bio and contact links.
-4. Everyone starts as a **participant**. Organizers give the **judge** role to judges.
+---
 
-HackHub works on both phone and desktop browsers.
+## Everyone
+
+### Create an account
+<!-- owner: Ollayorbek · card #3 · fill in your PR -->
+
+**What you can do:** create an account with your email and a password, then finish your profile.
+
+**Good to know:**
+- Your password needs at least 8 characters.
+- An email can have only one account, whatever the letter case.
+- After creating an account you're signed in and taken to your profile.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Log in and log out
+<!-- owner: Ollayorbek · card #3 · fill in your PR -->
+
+**What you can do:** log in with your email and password, and log out from the user menu.
+
+**Good to know:**
+- If the email or password is wrong, HackHub says so without telling you which one.
+- After logging in you go back to the page you were on, or to your home page: My events for participants, Judging
+  for judges, Events I run for organizers.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Find your way around
+<!-- owner: Xurliman · card #46 · fill in your PR -->
+
+**What you can do:** use the navigation at the top of every page to reach the areas your role can use, and open your
+user menu for your profile and logging out.
+
+**Good to know:**
+- Participants see Events and My events. Judges see Judging and Events. Organizers see Events I run, Users and
+  Public events.
+- On a phone, the navigation is behind the menu button.
+- If you open a page your role can't use, you're taken to your home page with the message "You don't have access to
+  that page."
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Your profile
+<!-- owner: Mehroj · card #4 · fill in your PR -->
+
+**What you can do:** add your name, faculty, skills, a short bio and links, and view other people's profiles.
+
+**Good to know:**
+- Name and faculty are required. You need them before you can register for an event.
+- You can add up to 10 skills, a bio of up to 500 characters and up to 3 links starting with https://.
+- Any signed-in user can see your profile, but not your email.
+- Everyone starts as a participant. Organizers give the judge role.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
 
 ---
 
 ## Participant
 
-### Join an event
-1. Open **Events** to see the events that are open for registration, with their dates and description.
-2. Open an event and press **Register**. You can register for each event only once.
-   If registration is closed, the button is disabled.
-3. Your registered events appear under **My events**.
+### Find an event and register
+<!-- owner: Xurliman · card #5 · fill in your PR -->
+
+**What you can do:** browse the events that are open for registration and register for one.
+
+**Good to know:**
+- Events appear in the list only while their registration is open.
+- You can register for each event once. If registration is closed, you can't register.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### My events
+<!-- owner: Xurliman · card #5 · fill in your PR -->
+
+**What you can do:** see every event you registered for, your team and submission status in each, and the results
+once they're published.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
 
 ### Form a team
-Teams form on their own. Agree on your team with your teammates first, then:
-1. One person creates the team inside the event and becomes its first member.
-2. The others **join** that team.
-3. You can be on only **one team per event**. You can leave a team, for example to join a different one.
-4. The team page shows all of its members (and their team roles, if they're used).
+<!-- owner: Xurliman · card #6 · fill in your PR -->
 
-### Follow the schedule
-The event page shows the **schedule** and the **challenge brief** published by the organizer, with times in your timezone.
+**What you can do:** create a team in an event you registered for, or join one with its invite code, and leave
+before your team submits.
+
+**Good to know:**
+- Agree on your team with your teammates first. One person creates the team and shares its 6-character invite code;
+  the others join with it.
+- You can be on only one team per event, and a team has a maximum size set by the organizer (4 by default).
+- You can leave until your team submits. If the last member leaves, the team is deleted.
+- Once a team has submitted, nobody can join or leave it.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
 
 ### Submit your project
-1. While submissions are open, open your team page and choose **Submit project**.
-2. Fill in the **title**, the **description** and the **repository link**. All three are required, and the link must be a valid URL.
-3. Each team submits **once**. Check the details before you submit.
+<!-- owner: Mehroj · card #7 · fill in your PR -->
 
-### See feedback and results
-- Judges' comments on your team appear on your team page.
-- The **final ranking** appears once the organizer publishes it.
+**What you can do:** submit your team's project with a title, a description and a repository link while submissions
+are open, and update it until they close.
 
----
+**Good to know:**
+- Any member of the team can submit. Each team has one submission.
+- The repository link must be a full link starting with http:// or https://.
+- Submitting locks your team: nobody can join or leave after this.
+- A team that didn't submit isn't ranked.
 
-## Judge
+**Steps:**
 
-### Your assigned teams
-After you log in, your dashboard lists **only the teams assigned to you**. Open a team to see its submitted project.
+TODO(user-guide) _To be completed with screenshots when the screen is built._
 
-### Score a team
-1. Open the team and choose **Score**.
-2. Enter a score for **each published criterion**, within its allowed range.
-3. Save. You can change your scores until the results are published.
+### See the results
+<!-- owner: Mehroj · card #16 · fill in your PR -->
 
-### Leave a comment
-Write a short comment for each team. Only the team and the organizers can see it. You can edit or delete your own comments.
+**What you can do:** see the final ranking on the event page once the organizer publishes it.
+
+**Good to know:**
+- The ranking shows each team's rank, members and total score (0–100), not individual judges' scores.
+- Teams tied on every criterion share a rank.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
 
 ---
 
 ## Organizer
 
-### Set up an event
-1. **Create the event**: name, start and end dates (the end can't be before the start), and description.
-2. **Add the schedule and challenge brief.** They're shown on the event page.
-3. **Set the judging criteria.** Give each criterion a name and a weight. The weights must total **exactly 100%**,
-   or you can't save them. Once scoring starts, the criteria are locked.
+### Create and edit an event
+<!-- owner: Abdurauf · card #9 · fill in your PR -->
 
-### Run the event
-1. **Open registration** when participants should start signing up, and close it when you're done.
-2. **See all participants and teams**, including which teams have submitted a project.
-3. **Give the judge role** to your judges, then run **Auto-assign judges**. Each judge gets a balanced set of teams,
-   and you can see every assignment. If teams or judges change, run it again.
-4. **Open submissions** for the build phase, and close them at the deadline.
+**What you can do:** create an event with a name, dates, a description and a maximum team size, and edit it later.
 
-### Publish the results
-1. Open the **Ranking**. Teams are ranked by weighted total score. Ties are broken by the highest-weight criterion.
-2. **Before publishing, check that every team has been scored by its judges.** HackHub has no automatic tracker for this.
-3. **Publish.** The ranking becomes visible to everyone, and scores can no longer be changed.
+**Good to know:**
+- The end date can't be before the start date. An event can start and end on the same day.
+- A new event has registration closed, so participants don't see it until you open registration.
+- Any organizer can manage any event.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Set the judging criteria
+<!-- owner: Ollayorbek · card #10 · fill in your PR -->
+
+**What you can do:** add the criteria judges score, each with a weight and a maximum score.
+
+**Good to know:**
+- Weights are whole percentages and must add up to exactly 100%, or you can't save.
+- Each criterion has a maximum score of at least 1 (10 by default).
+- Once any judge has scored, the criteria are locked.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Make users judges
+<!-- owner: Ollayorbek · card #13 · fill in your PR -->
+
+**What you can do:** make a participant a judge, or a judge a participant again.
+
+**Good to know:**
+- Someone who is on a team in any event can't become a judge.
+- Nobody can change their own role, and organizers' roles can't be changed here.
+- The change applies right away, without the user logging in again.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Open and close registration and submissions
+<!-- owner: Abdurauf · card #12 · fill in your PR -->
+
+**What you can do:** open and close registration and submissions for an event from its overview, and publish the
+results.
+
+**Good to know:**
+- Judges can score once submissions are closed.
+- Submissions can't reopen once any judge has scored.
+- Publishing needs submissions closed and criteria set. It can't be undone, and afterwards scores are locked.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### See participants and teams
+<!-- owner: Abdurauf · card #11 · fill in your PR -->
+
+**What you can do:** see everyone registered for an event, every team with its members, and which teams have
+submitted.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Review and publish the ranking
+<!-- owner: Mehroj · card #16 · fill in your PR -->
+
+**What you can do:** preview the ranking, check that the judges have finished, and publish it.
+
+**Good to know:**
+- Teams are ranked by weighted total score (0–100). A criterion nobody scored counts as 0 for that team.
+- Ties are broken by the highest-weight criterion, then the next.
+- Teams without a submission aren't ranked; they're listed under the table.
+- HackHub doesn't track which teams are still unscored. Use the number of judges per team in the preview and ask the
+  judges before you publish.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+---
+
+## Judge
+
+### Your judging list
+<!-- owner: Ollayorbek · card #8 · fill in your PR -->
+
+**What you can do:** see the events being judged and every team that submitted, with your progress on each.
+
+**Good to know:**
+- Every judge scores every team that submitted. There's no assignment step.
+- An event shows up here once the organizer closes its submissions.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+### Score a team
+<!-- owner: Ollayorbek · card #8 · fill in your PR -->
+
+**What you can do:** read a team's project and give a whole-number score for each criterion.
+
+**Good to know:**
+- Each score goes from 0 to the criterion's maximum.
+- You can save with some criteria empty and come back later.
+- You can change your scores until the organizer publishes the results.
+
+**Steps:**
+
+TODO(user-guide) _To be completed with screenshots when the screen is built._
+
+---
+
+## For administrators
+
+### Running HackHub
+<!-- owner: Abdurauf · card #28 · fill in your PR -->
+
+**What you can do:** deploy HackHub and create the first organizer account. The full commands are in
+[Setup and deployment](04-setup-and-deployment.md).
+
+**Steps:**
+
+TODO(user-guide) _To be completed when the deploy is in place._
+
+---
+
+## Not in this release
+
+These are planned for after the release, so they don't appear in HackHub yet: the event schedule and challenge
+brief, judge comments, auto-assigning judges to teams, team member roles, password reset and email verification,
+deleting events, and unpublishing results.
