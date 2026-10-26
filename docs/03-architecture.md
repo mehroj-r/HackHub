@@ -35,6 +35,8 @@
 
 The whole app is a single Next.js project, and one container image is deployed.
 
+Implementation-level design (code layout, schema, request flow): see [07-system-design.md](07-system-design.md).
+
 ## Data model
 
 ```
