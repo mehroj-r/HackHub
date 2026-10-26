@@ -9,7 +9,7 @@
 | Environment | Purpose | URL | Database |
 |---|---|---|---|
 | Local | Development on each team member's machine | `http://localhost:3000` | Postgres in Docker |
-| Production | The deployed system (semester deliverable) | _TBD domain_ (HTTPS via the host's nginx) | Postgres container on the VPS, with a persistent volume |
+| Production | The deployed system (semester deliverable) | https://hackhub.mekhroj.uz (HTTPS via the host's nginx, behind Cloudflare) | Postgres container on the VPS, with a persistent volume |
 
 ## Prerequisites
 
@@ -55,19 +55,26 @@ Configuration is read from environment variables, in `.env` locally and set on t
 The VPS already runs nginx, which terminates HTTPS. The app stack runs in Docker, defined in `docker-compose.prod.yml`:
 
 ```
-Internet ──443──▶ nginx on the host (TLS) ──▶ 127.0.0.1:3000 app (Next.js) ──▶ db (PostgreSQL, volume)
+Internet ──▶ Cloudflare ──443──▶ nginx on the host (TLS) ──▶ 127.0.0.1:${APP_PORT} app (Next.js) ──▶ db (PostgreSQL, volume)
                                                  app starts after migrate (one-shot) exits OK
 ```
 
 - **app** is built from the repo's `Dockerfile`, using Next.js `output: "standalone"` to keep the image small. Its port is published on
-  `127.0.0.1:3000` only, so it's reachable through nginx and not directly from the internet.
+  `127.0.0.1:${APP_PORT}` only (3120 on the dev server, which hosts other apps), so it's reachable through nginx and not directly
+  from the internet.
 - **migrate** is a one-shot container that runs `prisma migrate deploy` and the seed before the app starts.
 - **db** keeps its data in a named volume, so it survives restarts and redeploys. It publishes no port.
 - **nginx** (on the host, not in Docker) holds the TLS certificate and proxies to the app.
 
 ### First-time server setup
 
-1. Get a VPS (_TBD provider_) and point the domain's DNS A record at it.
+The release runs on the team's dev server (`ssh ideal-dev-server`), checkout `/root/hackhub`. `hackhub.mekhroj.uz` is proxied through
+Cloudflare, and nginx uses the Cloudflare origin certificate for `*.mekhroj.uz` that is already on the server, so certbot isn't needed there.
+The site config is versioned in [`deploy/nginx/hackhub.mekhroj.uz.conf`](../deploy/nginx/hackhub.mekhroj.uz.conf).
+
+For a new server:
+
+1. Point the domain's DNS at the VPS.
 2. Install Docker and the Compose plugin. Ports 80 and 443 stay with nginx; nothing else is opened.
 3. Clone the repo on the server and create the production `.env` there. Don't commit it.
 4. Add the site to nginx and get a certificate (for example `sudo certbot --nginx -d <domain>`), then `sudo nginx -t && sudo systemctl reload nginx`:
