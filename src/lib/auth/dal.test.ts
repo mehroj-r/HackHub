@@ -11,18 +11,32 @@ const auth = vi.fn();
 vi.mock("@/auth", () => ({ auth: () => auth() }));
 
 const findUnique = vi.fn();
+const findEvent = vi.fn();
+const findMembership = vi.fn();
 vi.mock("@/lib/prisma", () => ({
-  prisma: { user: { findUnique: (args: unknown) => findUnique(args) } },
+  prisma: {
+    user: { findUnique: (args: unknown) => findUnique(args) },
+    event: { findUnique: (args: unknown) => findEvent(args) },
+    teamMember: { findUnique: (args: unknown) => findMembership(args) },
+  },
 }));
 
 vi.mock("next/navigation", () => ({
   redirect: (url: string) => {
     throw new Error(`NEXT_REDIRECT ${url}`);
   },
+  notFound: () => {
+    throw new Error("NEXT_NOT_FOUND");
+  },
 }));
 
-const { getCurrentUser, requireRole, requireUser } =
-  await import("@/lib/auth/dal");
+const {
+  getCurrentUser,
+  requireEvent,
+  requireRole,
+  requireTeamMember,
+  requireUser,
+} = await import("@/lib/auth/dal");
 
 function signIn(jwtRole: Role, dbRole: Role | null) {
   auth.mockResolvedValue({ user: { id: "user-1", role: jwtRole } });
@@ -34,6 +48,8 @@ function signIn(jwtRole: Role, dbRole: Role | null) {
 beforeEach(() => {
   auth.mockReset();
   findUnique.mockReset();
+  findEvent.mockReset();
+  findMembership.mockReset();
 });
 
 describe("getCurrentUser", () => {
@@ -114,5 +130,62 @@ describe("requireRole", () => {
     await expect(requireRole("JUDGE")).rejects.toThrow(
       "NEXT_REDIRECT /organizer?notice=no-access",
     );
+  });
+});
+
+describe("requireEvent", () => {
+  it("returns the event", async () => {
+    findEvent.mockResolvedValue({ id: "event-1", name: "Demo Hack" });
+
+    await expect(requireEvent("event-1")).resolves.toMatchObject({
+      id: "event-1",
+    });
+    expect(findEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: "event-1" } }),
+    );
+  });
+
+  it("shows the not-found page for an unknown id", async () => {
+    findEvent.mockResolvedValue(null);
+
+    await expect(requireEvent("missing")).rejects.toThrow("NEXT_NOT_FOUND");
+  });
+});
+
+describe("requireTeamMember", () => {
+  it("returns the user's team in the event", async () => {
+    signIn("PARTICIPANT", "PARTICIPANT");
+    const team = {
+      id: "team-1",
+      eventId: "event-1",
+      name: "Byte",
+      inviteCode: "ABC234",
+    };
+    findMembership.mockResolvedValue({ team });
+
+    await expect(requireTeamMember("event-1")).resolves.toEqual(team);
+    expect(findMembership).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { eventId_userId: { eventId: "event-1", userId: "user-1" } },
+      }),
+    );
+  });
+
+  it("sends a user without a team to the event's team page", async () => {
+    signIn("PARTICIPANT", "PARTICIPANT");
+    findMembership.mockResolvedValue(null);
+
+    await expect(requireTeamMember("event-1")).rejects.toThrow(
+      "NEXT_REDIRECT /events/event-1/team",
+    );
+  });
+
+  it("sends a signed-out visitor to /login", async () => {
+    auth.mockResolvedValue(null);
+
+    await expect(requireTeamMember("event-1")).rejects.toThrow(
+      "NEXT_REDIRECT /login",
+    );
+    expect(findMembership).not.toHaveBeenCalled();
   });
 });
