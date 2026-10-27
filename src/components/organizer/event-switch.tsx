@@ -3,7 +3,6 @@
 import {
   startTransition,
   useActionState,
-  useEffect,
   useId,
   useOptimistic,
   useState,
@@ -25,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import type { ActionState } from "@/lib/action-state";
 
+import { useActionResult } from "@/lib/forms/use-action-result";
 // A switch with its state written next to it (docs/08 > Shared components >
 // Switch with status). It flips at once and shows "Saving…" until the server
 // confirms; on a refusal it goes back and the reason stays under it.
@@ -56,9 +56,9 @@ export function EventSwitch({
   const [shown, setShown] = useOptimistic(checked);
   const [confirming, setConfirming] = useState(false);
 
-  useEffect(() => {
-    if (state?.ok && state.message) toast.success(state.message);
-  }, [state]);
+  useActionResult(state, (result) => {
+    if (result.ok && result.message) toast.success(result.message);
+  });
 
   function send(open: boolean) {
     const formData = new FormData();

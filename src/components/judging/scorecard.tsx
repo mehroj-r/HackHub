@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { ActionState } from "@/lib/action-state";
+import { useActionResult } from "@/lib/forms/use-action-result";
 import { cn } from "@/lib/utils";
 
 import { canExtend, DIGIT_WINDOW_MS, typeDigit } from "./score-keys";
@@ -73,9 +74,9 @@ export function Scorecard({ action, criteria, lastSaved }: Props) {
     }
   }
 
-  useEffect(() => {
-    if (state?.ok) toast.success("Scores saved.");
-  }, [state]);
+  useActionResult(state, (result) => {
+    if (result.ok) toast.success("Scores saved.");
+  });
 
   // "Leave without saving your scores?": on closing the tab, and on links
   // inside the app (the queue, the header) while there are unsaved scores.

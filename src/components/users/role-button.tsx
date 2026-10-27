@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useEffect, useId } from "react";
+import { useActionState, useId } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import type { ActionState } from "@/lib/action-state";
+import { useActionResult } from "@/lib/forms/use-action-result";
 
 type Props = {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
@@ -20,9 +21,9 @@ export function RoleButton({ action, to, disabledReason, compact }: Props) {
   const [state, formAction, pending] = useActionState(action, null);
   const reasonId = useId();
 
-  useEffect(() => {
-    if (state?.ok && state.message) toast.success(state.message);
-  }, [state]);
+  useActionResult(state, (result) => {
+    if (result.ok && result.message) toast.success(result.message);
+  });
 
   return (
     <form action={formAction} className="flex flex-col items-start gap-1">

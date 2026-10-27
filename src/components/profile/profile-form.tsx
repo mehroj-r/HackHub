@@ -2,7 +2,7 @@
 
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { toast } from "sonner";
 
 import { SavedTick } from "@/components/feedback/saved-tick";
@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { ActionState } from "@/lib/action-state";
+import { useActionResult } from "@/lib/forms/use-action-result";
 import { useFieldValidation } from "@/lib/forms/use-field-validation";
 import { profileFormSchema } from "@/lib/validation/profile";
 
@@ -54,8 +55,9 @@ export function ProfileForm({
 }) {
   const router = useRouter();
   // Read once: after the save the page re-renders with the profile in place,
-  // and the prop turns false in the same update as the result.
-  const [isFirstSave] = useState(goToEventsAfterSave);
+  // and the prop turns false in the same update as the result. The kept-alive
+  // form doesn't remount, so the first save clears it too.
+  const [isFirstSave, setIsFirstSave] = useState(goToEventsAfterSave);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
     async (prev, formData) => {
@@ -79,11 +81,13 @@ export function ProfileForm({
     initial.links.length > 0 ? initial.links : [""],
   );
 
-  useEffect(() => {
-    if (!state?.ok) return;
-    toast.success(state.message ?? "Profile saved.");
-    if (isFirstSave) router.push("/events");
-  }, [state, isFirstSave, router]);
+  useActionResult(state, (result) => {
+    if (!result.ok) return;
+    toast.success(result.message ?? "Profile saved.");
+    if (!isFirstSave) return;
+    setIsFirstSave(false);
+    router.push("/events");
+  });
 
   /** The hook's props, with our own onChange keeping the controlled value. */
   function wire<E extends HTMLInputElement | HTMLTextAreaElement>(

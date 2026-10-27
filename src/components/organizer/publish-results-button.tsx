@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { startTransition, useActionState, useEffect, useId } from "react";
+import { startTransition, useActionState, useId } from "react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { ActionState } from "@/lib/action-state";
+import { useActionResult } from "@/lib/forms/use-action-result";
 
 // "Publish results" with its confirm dialog (docs/08 > Event overview,
 // Decision 3). Publishing can't be undone, so the dialog also reminds the
@@ -47,9 +48,9 @@ export function PublishResultsButton({
   const id = useId();
   const [state, dispatch, pending] = useActionState(action, null);
 
-  useEffect(() => {
-    if (state?.ok) toast.success(state.message ?? "Results published.");
-  }, [state]);
+  useActionResult(state, (result) => {
+    if (result.ok) toast.success(result.message ?? "Results published.");
+  });
 
   // After a refusal the page refreshes, and the reason usually becomes the
   // note under the control; don't say it twice.
