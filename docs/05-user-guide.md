@@ -236,9 +236,24 @@ results.
 **What you can do:** see everyone registered for an event, every team with its members, and which teams have
 submitted.
 
+**Good to know:**
+- Only organizers can open this page.
+- People who haven't filled in their profile yet are shown by their email.
+- On a phone, each person and each team is shown as a card instead of a table row.
+
 **Steps:**
 
-TODO(user-guide) _To be completed with screenshots when the screen is built._
+1. Open the event from **Events I run** and select **Participants** in the menu under its name.
+2. The **Participants** tab lists everyone registered, sorted by name: their email, faculty, team (or "No team") and
+   the day they registered. Select a name to open their profile.
+3. To find someone, type part of their name or email under **Search by name or email** and select **Search**.
+   **Clear search** shows everyone again.
+4. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted.
+   A submitted team shows "Submitted" with the date, the project title and a **Repository** link that opens in a new
+   tab. Select **Show description** to read the project description.
+
+The number next to each tab is how many people registered and how many teams formed. Before anyone registers, the
+page says "Nobody has registered yet."; before any team forms, "No teams yet."
 
 ### Review and publish the ranking
 <!-- owner: Mehroj · card #16 · fill in your PR -->
