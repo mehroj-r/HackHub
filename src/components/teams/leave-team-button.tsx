@@ -19,9 +19,10 @@ import { Button } from "@/components/ui/button";
 import { useToastAction, type FormAction } from "./use-toast-action";
 
 /**
- * "Leave team" with the docs/08 confirm dialog. Secondary and destructive.
- * After submitting, it's disabled with the reason shown: the server refuses
- * a leave anyway (Decision 9).
+ * "Leave team" with the docs/08 confirm dialog: a quiet text link (redesign >
+ * Team page); the confirm button inside the dialog carries the destructive
+ * style. After submitting, only the reason is shown: the server refuses a
+ * leave anyway (Decision 9).
  */
 export function LeaveTeamButton({
   action,
@@ -44,26 +45,14 @@ export function LeaveTeamButton({
 
   if (submitted) {
     return (
-      <div className="flex flex-col gap-2 sm:items-start">
-        <Button
-          variant="destructive"
-          size="lg"
-          disabled
-          aria-describedby="leave-disabled-reason"
-          className="h-11 w-full text-foreground sm:w-auto [&_svg]:text-destructive"
-        >
-          <LogOutIcon aria-hidden />
-          Leave team
-        </Button>
-        <p id="leave-disabled-reason" className="text-sm text-muted-foreground">
-          You can&apos;t leave after your team has submitted.
-        </p>
-      </div>
+      <p className="flex min-h-11 items-center text-sm text-muted-foreground">
+        You can&apos;t leave after your team has submitted.
+      </p>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2 sm:items-start">
+    <div className="flex flex-col items-start gap-2">
       {state?.ok === false && state.formError && (
         <Alert variant="destructive">
           <AlertDescription>{state.formError}</AlertDescription>
@@ -71,10 +60,10 @@ export function LeaveTeamButton({
       )}
       <AlertDialog open={open} onOpenChange={(next) => !pending && setOpen(next)}>
         <AlertDialogTrigger asChild>
+          {/* Quiet on purpose: a text link, not a button, behind a confirm. */}
           <Button
-            variant="destructive"
-            size="lg"
-            className="h-11 w-full text-foreground hover:text-foreground sm:w-auto [&_svg]:text-destructive"
+            variant="link"
+            className="h-11 px-0 text-muted-foreground hover:text-foreground"
           >
             <LogOutIcon aria-hidden />
             Leave team

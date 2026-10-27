@@ -1,42 +1,45 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeftIcon,
-  CalendarDaysIcon,
-  CircleCheckIcon,
-  InfoIcon,
-  LockIcon,
-  UsersIcon,
-} from "lucide-react";
+import { CheckIcon, InfoIcon, LockIcon } from "lucide-react";
 import { Suspense, type ReactNode } from "react";
 
 import { EventAvatar } from "@/components/events/event-avatar";
 import { EventBanner } from "@/components/events/event-banner";
+import { EventContext } from "@/components/events/event-context";
 import { formatEventDates, plural } from "@/components/events/event-format";
 import { RegisterForm } from "@/components/events/register-form";
+import { PhaseLabel } from "@/components/events/phase-dot";
 import { EventStatusBadges } from "@/components/events/status-badge";
-import { PageHeader } from "@/components/layout/page-header";
+import { ActionDock } from "@/components/layout/action-dock";
 import { PublishedRanking } from "@/components/ranking/published-ranking";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Role } from "@/generated/prisma/enums";
 import { getCurrentUser } from "@/lib/auth/dal";
-import {
-  isProfileComplete,
-  REGISTRATION_CLOSED,
-} from "@/lib/domain/registration";
+import { eventPhase } from "@/lib/domain/event-phase";
+import { REGISTRATION_CLOSED } from "@/lib/domain/registration";
 import { prisma } from "@/lib/prisma";
+import {
+  getParticipantState,
+  type ParticipantState,
+} from "@/lib/queries/participant-progress";
 import { eventImageUrl } from "@/lib/uploads/url";
+import { cn } from "@/lib/utils";
 
 import { registerForEvent } from "./actions";
 
-// docs/08 > /events/[eventId]. Everyone can open it by link; the primary
-// action depends on who is looking (the table of situations in docs/08).
-// Params and the session are read inside Suspense (Cache Components).
+// docs/08 > /events/[eventId], as the redesign's "long page + side rail": one
+// scrolling page (banner, about, details, how judging works, teams, results)
+// and, from lg up, a sticky rail on the right with the event's phase, the
+// viewer's status and the page's single primary action. On phones the rail
+// sits under the title and its primary action docks to the bottom of the
+// screen (ActionDock). Everyone can open it by link; the primary action
+// depends on who is looking (docs/08's table of situations). Params and the
+// session are read inside Suspense (Cache Components).
 
 export default function EventPage({ params }: PageProps<"/events/[eventId]">) {
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8 md:py-10">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 md:py-10">
       <Suspense fallback={<EventSkeleton />}>
         <EventDetails params={params} />
       </Suspense>
@@ -63,60 +66,52 @@ async function EventDetails({
         resultsPublished: true,
         logoPath: true,
         bannerPath: true,
-        _count: { select: { registrations: true } },
+        criteria: {
+          select: { id: true, name: true, weightPercent: true, maxScore: true },
+          orderBy: [{ weightPercent: "desc" }, { createdAt: "asc" }],
+        },
+        _count: { select: { registrations: true, teams: true } },
       },
     }),
     getCurrentUser(),
   ]);
   if (!event) notFound();
 
-  // What the participant needs for the primary action and the ranking row.
-  let participant: {
-    registered: boolean;
-    profileComplete: boolean;
-    teamId: string | null;
-  } | null = null;
-  if (user?.role === "PARTICIPANT") {
-    const [registration, profile] = await Promise.all([
-      prisma.eventRegistration.findUnique({
-        where: { eventId_userId: { eventId: event.id, userId: user.id } },
-        select: { membership: { select: { teamId: true } } },
-      }),
-      prisma.profile.findUnique({
-        where: { userId: user.id },
-        select: { name: true, faculty: true },
-      }),
-    ]);
-    participant = {
-      registered: registration !== null,
-      profileComplete: isProfileComplete(profile),
-      teamId: registration?.membership?.teamId ?? null,
-    };
-  }
+  const [participant, anySubmission] = await Promise.all([
+    user?.role === "PARTICIPANT"
+      ? getParticipantState(event.id, user.id)
+      : Promise.resolve(null),
+    prisma.submission.findFirst({
+      where: { team: { eventId: event.id } },
+      select: { id: true },
+    }),
+  ]);
 
-  const action = primaryAction({
-    event,
-    role: user?.role ?? null,
-    participant,
-  });
+  const phase = eventPhase({ ...event, hasSubmissions: anySubmission !== null });
+  const dates = formatEventDates(event.startDate, event.endDate);
+  const criteriaTotal = event.criteria.reduce((n, c) => n + c.weightPercent, 0);
+  const action = (
+    <PrimaryAction
+      event={event}
+      role={user?.role ?? null}
+      participant={participant}
+    />
+  );
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Hero: banner, the logo overlapping its bottom edge, then the title,
-          dates and the primary action in the usual PageHeader place. */}
       <div className="flex flex-col">
-        <Link
-          href="/events"
-          className="inline-flex min-h-11 w-fit items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          <ArrowLeftIcon className="size-4" aria-hidden />
-          All events
-        </Link>
+        <EventContext
+          event={event}
+          phase={phase}
+          crumbs={[]}
+          participant={participant}
+        />
         <EventBanner
           name={event.name}
           bannerUrl={eventImageUrl(event.bannerPath)}
           priority
-          className="mt-2 rounded-2xl border"
+          className="mt-4 rounded-2xl border lg:aspect-auto lg:h-72"
         />
         <div className="relative z-10 -mt-10 px-4 md:-mt-14 md:px-8">
           <EventAvatar
@@ -125,94 +120,262 @@ async function EventDetails({
             size="lg"
           />
         </div>
-        <PageHeader
-          className="mt-4"
-          title={event.name}
-          description={formatEventDates(event.startDate, event.endDate)}
-          action={action}
-        >
-          <EventStatusBadges event={event} className="mt-1" />
-        </PageHeader>
+        <header className="mt-4 flex flex-col gap-2">
+          <h1 className="text-page-title text-balance break-words">
+            {event.name}
+          </h1>
+          <p className="text-muted-foreground">{dates}</p>
+        </header>
       </div>
 
-      <dl className="grid gap-3 rounded-xl border bg-card p-5 text-card-foreground sm:grid-cols-3">
-        <Fact icon={<CalendarDaysIcon aria-hidden />} label="Dates">
-          {formatEventDates(event.startDate, event.endDate)}
-        </Fact>
-        <Fact icon={<UsersIcon aria-hidden />} label="Team size">
-          Up to {plural(event.maxTeamSize, "member")}
-        </Fact>
-        <Fact icon={<CircleCheckIcon aria-hidden />} label="Registered">
-          {plural(event._count.registrations, "participant")}
-        </Fact>
-      </dl>
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <aside
+          aria-label="Event status"
+          className="flex flex-col gap-5 rounded-2xl border bg-card p-5 text-card-foreground lg:sticky lg:top-24 lg:order-last lg:p-6"
+        >
+          <div className="flex flex-col gap-3">
+            <p className="text-section-title">
+              <PhaseLabel phase={phase} />
+            </p>
+            <EventStatusBadges event={event} />
+          </div>
+          {participant && (
+            <YourStatus participant={participant} eventId={event.id} />
+          )}
+          {/* From md up the action sits in the rail; on phones it docks. */}
+          <div className="hidden md:block">{action}</div>
+        </aside>
 
-      <section aria-labelledby="about-heading" className="flex flex-col gap-3">
-        <h2 id="about-heading" className="text-xl font-semibold">
-          About this event
-        </h2>
-        <p className="whitespace-pre-line text-pretty break-words">
-          {event.description}
-        </p>
-      </section>
+        <div className="flex min-w-0 flex-col gap-12">
+          <Section id="about" title="About this event">
+            <p className="max-w-[68ch] text-pretty whitespace-pre-line break-words">
+              {event.description}
+            </p>
+          </Section>
 
-      {/* Ranking section: only once results are published (Decision 10). */}
-      {event.resultsPublished && (
-        <div id="ranking" className="scroll-mt-20">
-          <PublishedRanking
-            eventId={event.id}
-            signedIn={user !== null}
-            viewerTeamId={participant?.teamId ?? undefined}
-          />
+          <Section id="details" title="Dates and teams">
+            <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-3">
+              <Fact label="Dates">{dates}</Fact>
+              <Fact label="Team size">
+                Up to {plural(event.maxTeamSize, "member")}
+              </Fact>
+              <Fact label="Registered">
+                <span className="tabular-nums">
+                  {plural(event._count.registrations, "participant")}
+                </span>
+              </Fact>
+            </dl>
+          </Section>
+
+          <Section id="judging" title="How judging works">
+            {event.criteria.length === 0 ? (
+              <p className="text-muted-foreground">
+                The organizer hasn&apos;t set the judging criteria yet.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                <p className="max-w-[68ch] text-muted-foreground">
+                  Every judge scores every submitted team on each criterion.
+                  Scores are averaged, weighted and added up to a total out of
+                  100. Ties are broken by the highest-weight criterion.
+                </p>
+                <ul className="flex flex-col divide-y rounded-xl border">
+                  {event.criteria.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex items-baseline justify-between gap-4 px-4 py-3"
+                    >
+                      <span className="font-medium break-words">{c.name}</span>
+                      <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                        <span className="font-mono text-base font-semibold text-foreground">
+                          {c.weightPercent}%
+                        </span>{" "}
+                        · scored 0–{c.maxScore}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {criteriaTotal !== 100 && (
+                  <p className="text-sm text-muted-foreground">
+                    The weights aren&apos;t final yet.
+                  </p>
+                )}
+              </div>
+            )}
+          </Section>
+
+          <Section id="teams" title="Teams">
+            <TeamsSection
+              eventId={event.id}
+              maxTeamSize={event.maxTeamSize}
+              teamCount={event._count.teams}
+              participant={participant}
+            />
+          </Section>
+
+          {/* Only once results are published (Decision 10). */}
+          {event.resultsPublished && (
+            <div id="results" className="scroll-mt-24">
+              <PublishedRanking
+                eventId={event.id}
+                signedIn={user !== null}
+                viewerTeamId={participant?.team?.id}
+              />
+            </div>
+          )}
         </div>
+      </div>
+
+      <ActionDock className="md:hidden">{action}</ActionDock>
+    </div>
+  );
+}
+
+function Section({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section
+      id={id}
+      aria-labelledby={`${id}-heading`}
+      className="flex scroll-mt-24 flex-col gap-4"
+    >
+      <h2 id={`${id}-heading`} className="text-section-title">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function Fact({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="font-medium">{children}</dd>
+    </div>
+  );
+}
+
+/** The viewer's own standing: registered, team, submitted. Words first. */
+function YourStatus({
+  participant,
+  eventId,
+}: {
+  participant: ParticipantState;
+  eventId: string;
+}) {
+  const rows: { label: string; value: ReactNode; done: boolean }[] = [
+    {
+      label: "Registration",
+      value: participant.registered ? "Registered" : "Not registered",
+      done: participant.registered,
+    },
+    {
+      label: "Team",
+      value: participant.team ? (
+        <Link
+          href={`/events/${eventId}/team`}
+          className="rounded-sm underline outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          {participant.team.name}
+        </Link>
+      ) : (
+        "No team yet"
+      ),
+      done: participant.onTeam,
+    },
+    {
+      label: "Project",
+      value: participant.submitted ? "Submitted" : "Not submitted",
+      done: participant.submitted,
+    },
+  ];
+  return (
+    <div className="flex flex-col gap-2 border-t pt-5">
+      <h2 className="text-sm font-medium text-muted-foreground">Your status</h2>
+      <dl className="flex flex-col gap-2 text-sm">
+        {rows.map((r) => (
+          <div key={r.label} className="flex items-center justify-between gap-3">
+            <dt className="text-muted-foreground">{r.label}</dt>
+            <dd
+              className={cn(
+                "flex min-w-0 items-center gap-1.5 text-right font-medium break-words",
+                r.done && "text-success",
+              )}
+            >
+              {r.done && <CheckIcon className="size-4 shrink-0" aria-hidden />}
+              {r.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function TeamsSection({
+  eventId,
+  maxTeamSize,
+  teamCount,
+  participant,
+}: {
+  eventId: string;
+  maxTeamSize: number;
+  teamCount: number;
+  participant: ParticipantState | null;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="max-w-[68ch]">
+        Teams have up to {plural(maxTeamSize, "member")}. Agree on your team
+        first: one of you creates it and shares its 6-character invite code,
+        the others join with it. {plural(teamCount, "team")} so far.
+      </p>
+      {participant?.team && (
+        <p>
+          You&apos;re on{" "}
+          <Link
+            href={`/events/${eventId}/team`}
+            className="rounded-sm font-medium underline outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            {participant.team.name}
+          </Link>{" "}
+          with {plural(participant.team.memberCount - 1, "other member")}.
+        </p>
       )}
     </div>
   );
 }
 
-function Fact({
-  icon,
-  label,
-  children,
-}: {
-  icon: ReactNode;
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <span className="mt-0.5 text-muted-foreground [&_svg]:size-5">
-        {icon}
-      </span>
-      <div>
-        <dt className="text-sm text-muted-foreground">{label}</dt>
-        <dd className="font-medium">{children}</dd>
-      </div>
-    </div>
-  );
-}
+const BIG = "h-11 w-full px-6 text-base";
 
-const BIG_BUTTON = "h-11 w-full px-6 text-base md:w-auto";
-
-/** The primary action for each situation in docs/08's table. */
-function primaryAction({
+/** The page's single primary action, for each situation in docs/08's table. */
+function PrimaryAction({
   event,
   role,
   participant,
 }: {
-  event: { id: string; registrationOpen: boolean };
-  role: "PARTICIPANT" | "JUDGE" | "ORGANIZER" | null;
-  participant: {
-    registered: boolean;
-    profileComplete: boolean;
-    teamId: string | null;
-  } | null;
+  event: {
+    id: string;
+    registrationOpen: boolean;
+    submissionsOpen: boolean;
+    resultsPublished: boolean;
+  };
+  role: Role | null;
+  participant: ParticipantState | null;
 }): ReactNode {
   const teamHref = `/events/${event.id}/team`;
 
   if (role === "ORGANIZER") {
     return (
-      <Button asChild size="lg" className={BIG_BUTTON}>
+      <Button asChild size="lg" className={BIG}>
         <Link href={`/organizer/events/${event.id}`}>Manage event</Link>
       </Button>
     );
@@ -221,60 +384,58 @@ function primaryAction({
   // Judges can't be on teams (Decision 11), so they get no register button.
   if (role === "JUDGE") {
     return (
-      <p className="flex items-center gap-2 text-sm text-muted-foreground md:max-w-xs md:text-right">
-        <InfoIcon className="size-4 shrink-0" aria-hidden />
+      <p className="flex items-start gap-2 text-sm text-muted-foreground">
+        <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
         Judges score teams, so they don&apos;t register for events.
       </p>
     );
   }
 
   if (participant?.registered) {
-    return (
-      <>
-        <p
-          role="status"
-          className="flex items-center gap-2 font-medium text-success"
-        >
-          <CircleCheckIcon className="size-5" aria-hidden />
-          You&apos;re registered
-        </p>
-        <Button asChild size="lg" className={BIG_BUTTON}>
-          <Link href={teamHref}>
-            {participant.teamId ? "Go to my team" : "Create or join a team"}
-          </Link>
+    if (event.resultsPublished) {
+      return (
+        <Button asChild size="lg" variant="outline" className={BIG}>
+          <a href="#results">See the results</a>
         </Button>
-      </>
+      );
+    }
+    // The next thing to do: submit while submissions are open, else the team.
+    if (participant.onTeam && event.submissionsOpen && !participant.submitted) {
+      return (
+        <Button asChild size="lg" className={BIG}>
+          <Link href={`${teamHref}/submit`}>Submit project</Link>
+        </Button>
+      );
+    }
+    return (
+      <Button asChild size="lg" className={BIG}>
+        <Link href={teamHref}>
+          {participant.onTeam ? "Go to my team" : "Create or join a team"}
+        </Link>
+      </Button>
     );
   }
 
   if (!event.registrationOpen) {
     return (
-      <>
-        <Button variant="outline" size="lg" disabled className={BIG_BUTTON}>
+      <div className="flex flex-col gap-2">
+        <Button variant="outline" size="lg" disabled className={BIG}>
           <LockIcon aria-hidden />
           Registration closed
         </Button>
         <p className="text-sm text-muted-foreground">{REGISTRATION_CLOSED}</p>
-      </>
+      </div>
     );
   }
 
   if (participant && !participant.profileComplete) {
     return (
-      <Alert className="md:max-w-xs">
-        <InfoIcon aria-hidden />
-        <AlertDescription>
-          <p>
-            Complete your profile before registering.{" "}
-            <Link
-              href="/profile"
-              className="font-medium text-foreground underline underline-offset-4"
-            >
-              Go to my profile
-            </Link>
-          </p>
-        </AlertDescription>
-      </Alert>
+      <div className="flex flex-col gap-3">
+        <p className="text-sm">Complete your profile before registering.</p>
+        <Button asChild size="lg" className={BIG}>
+          <Link href="/profile">Go to my profile</Link>
+        </Button>
+      </div>
     );
   }
 
@@ -284,7 +445,7 @@ function primaryAction({
 
   // Visitor: log in, then come back here.
   return (
-    <Button asChild size="lg" className={BIG_BUTTON}>
+    <Button asChild size="lg" className={BIG}>
       <Link
         href={`/login?callbackUrl=${encodeURIComponent(`/events/${event.id}`)}`}
       >
@@ -301,14 +462,16 @@ function EventSkeleton() {
         <Skeleton className="h-5 w-24" />
         <Skeleton className="aspect-[2/1] w-full rounded-2xl md:aspect-[8/3]" />
         <Skeleton className="h-9 w-2/3" />
-        <Skeleton className="h-5 w-64" />
+        <Skeleton className="h-5 w-48" />
       </div>
-      <Skeleton className="h-24 rounded-xl" />
-      <div className="flex flex-col gap-2">
-        <Skeleton className="h-6 w-40" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+        <Skeleton className="h-64 rounded-2xl lg:order-last" />
       </div>
     </div>
   );
