@@ -258,6 +258,25 @@ Last full run: _not yet run_
 | TC-115 | Test: assign | Not run |
 | TC-116 | Test: change and view roles | Not run |
 
+## Automated checks
+
+Unit tests (Vitest, `npm run test`) run in CI on every pull request. They back the cases below, but they don't replace
+them: a case is `Pass` only once its tester has checked it by hand in the browser. Each test's name carries the TC
+number. Keep this table in step when a PR adds tests.
+
+| Cases | Test file | Where |
+|---|---|---|
+| TC-73 | `src/lib/auth/permissions.test.ts` (permission matrix row by row) | `main` |
+| TC-118 | `src/lib/auth/dal.test.ts` (the role is re-read from the database, not the JWT) | `main` |
+| TC-09, TC-11 | `src/lib/validation/profile.test.ts` | `main` |
+| TC-10, TC-11, TC-13 | `src/app/(app)/profile/actions.test.ts` (saves the session user's profile, refuses a missing name or faculty) | PR #21 |
+| TC-64, TC-65, TC-70 | `src/lib/validation/submission.test.ts` | `main` |
+| TC-64…TC-67, TC-69…TC-71, TC-121 | `src/app/(app)/events/[eventId]/team/submit/actions.test.ts`, `src/lib/domain/submission.test.ts` | PR #24 |
+| TC-05, TC-101, TC-102, TC-105, TC-124 | `src/lib/domain/ranking.test.ts`, `src/lib/queries/ranking.test.ts` | `main` |
+
+End-to-end tests (Playwright, `npm run test:e2e`) are run locally before a release. They cover the home page today.
+Every other release case is checked by hand by its tester.
+
 ## Bug log
 
 | # | Found in | Description | Severity | Found by | Status |
