@@ -93,3 +93,69 @@ without them get generated art from `src/components/events/event-art.ts`:
 - The fallbacks are decorative (`aria-hidden`): the event name is always written next to them.
 - `event-art.test.ts` checks that the choice is deterministic, that it spreads over the presets, and that only
   these tokens are used.
+
+## Redesign foundations (28 Oct)
+
+The redesign plan (Mehroj's picks) changes structure, flow and feel, not the brand. These are the shared pieces every
+screen is built from; agree before renaming any of them.
+
+### Shell
+
+- **Top bar:** the logo, the role's navigation and the account menu (desktop). Pages put a **breadcrumb trail**
+  (`components/layout/breadcrumbs`) at the top; inside an event, the **current-event chip**
+  (`components/layout/event-chip`) sits next to it: logo, name, phase dot, and a menu to switch to another of your
+  events.
+- **Phone tab bar** (`components/layout/tab-bar`): below md, fixed to the bottom, per role. Participant: Events, My
+  events, Team, Profile. Organizer: Events, Users, Profile. Judge: Score, Results, Profile. The current tab has an
+  amber bar, bold text and `aria-current`. It reserves `--tab-bar-h`.
+- **Action dock** (`components/layout/action-dock`): the page's one primary action, sticky above the tab bar and
+  the safe area on phones, inline on desktop.
+- **Progress rail** (`components/layout/progress-rail`): Profile · Registered · Team · Submitted inside an event.
+  Done is amber with a check, current is outlined amber, every step links to where you complete it; "All set" once
+  all are done.
+- **Phase** (`lib/domain/event-phase`): upcoming, registration, building, judging, results. The live red dot only
+  for registration and building.
+
+### Type scale (keep it quiet)
+
+| Utility | Size | Weight | Use |
+|---|---|---|---|
+| `text-page-title` | 28 → 32 px | 700 | The page's one h1 |
+| `text-section-title` | 20 px | 600 | Section headings |
+| `text-body` | 15 → 16 px | 400 | Body |
+| `text-small` | 13 px | 400 | Meta, breadcrumbs, helper text |
+
+Unbounded stays in the wordmark. Tables, `time` and badges use tabular numerals.
+
+### Density by role
+
+One system, two spacing scales. Participant pages are roomy (the default). The organizer and judge layouts set
+`data-density="compact"`, which sets `--density-card` (card padding 20 → 16 px), `--density-cell-y` (table cells,
+rows about 40 px) and `--density-gap`. The shadcn card and table pick these up through their `data-slot`s.
+
+### Motion
+
+Only meaningful motion, and only under `prefers-reduced-motion: no-preference`; with reduced motion every
+transition and animation is off and final values show at once.
+
+- Tokens: `--duration-fast` 150 ms, `--duration-base` 250 ms, `--duration-slow` 400 ms, `--ease-out-expo`
+  (`cubic-bezier(0.16, 1, 0.3, 1)`).
+- Utilities: `animate-rise-in`, `animate-fade-in`, `stagger-item` (with `style={{ "--i": n }}`, 45 ms steps),
+  `animate-saved-flash` (the SavedTick).
+- Feedback: buttons scale to 0.97 on press. Toasts slide in (sonner). Skeletons while loading.
+- `CountUp` (`components/feedback/count-up`) counts a number up once when it scrolls into view; the server renders
+  the final value and screen readers only ever get the final value.
+- Nothing loops; nothing is decorative.
+
+### Empty states and forms
+
+- `EmptyState` (`components/feedback/empty-state`): a muted Podium H, one sentence saying what will appear, and the
+  one action that fills it.
+- Validate as you go (`lib/forms/use-field-validation`): fields check on blur with the server's zod schema (the whole
+  form is parsed, so cross-field rules match); errors sit under the field, the value stays, server errors still map
+  to fields until edited, and it never blocks a submit. `SavedTick` gives a short "Saved" tick after a save.
+
+### Browser surfaces
+
+Selection is amber at 35%, the caret and native controls (`accent-color`) are amber, scrollbars are warm cream at
+22%, underlines sit at 0.2em.
