@@ -47,7 +47,7 @@ export async function setRegistrationOpen(
       });
     });
   } catch (e) {
-    return failed(e);
+    return failed(e, eventId);
   }
 
   revalidateEvent(eventId);
@@ -83,7 +83,7 @@ export async function setSubmissionsOpen(
       });
     });
   } catch (e) {
-    return failed(e);
+    return failed(e, eventId);
   }
 
   revalidateEvent(eventId);
@@ -118,7 +118,7 @@ export async function publishResults(eventId: string): Promise<ActionState> {
       });
     });
   } catch (e) {
-    return failed(e);
+    return failed(e, eventId);
   }
 
   revalidateEvent(eventId);
@@ -138,9 +138,16 @@ async function lockEvent(tx: Prisma.TransactionClient, eventId: string) {
   });
 }
 
-/** A rule's refusal is shown as is; anything else is logged and shown as the UI spec's retry message. */
-function failed(e: unknown): ActionState {
-  if (e instanceof RuleError) return { ok: false, formError: e.message };
+/**
+ * A rule's refusal is shown as is, and the page refreshes: it was showing a
+ * state the server no longer has. Anything else is logged and shown as the UI
+ * spec's retry message.
+ */
+function failed(e: unknown, eventId: string): ActionState {
+  if (e instanceof RuleError) {
+    revalidateEvent(eventId);
+    return { ok: false, formError: e.message };
+  }
   console.error(e);
   return { ok: false, formError: UPDATE_FAILED };
 }

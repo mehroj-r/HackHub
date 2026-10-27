@@ -69,7 +69,12 @@ export function EventSwitch({
     });
   }
 
-  const error = state?.ok === false ? state.formError : null;
+  // After a refusal the page refreshes, and the reason usually becomes the
+  // note under the control; don't say it twice.
+  const error =
+    state?.ok === false && state.formError !== disabledReason
+      ? state.formError
+      : null;
   const note = disabledReason ?? help;
 
   return (

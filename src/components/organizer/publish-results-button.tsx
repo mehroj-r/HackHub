@@ -48,7 +48,12 @@ export function PublishResultsButton({
     if (state?.ok) toast.success(state.message ?? "Results published.");
   }, [state]);
 
-  const error = state?.ok === false ? state.formError : null;
+  // After a refusal the page refreshes, and the reason usually becomes the
+  // note under the control; don't say it twice.
+  const error =
+    state?.ok === false && state.formError !== disabledReason
+      ? state.formError
+      : null;
 
   return (
     <div className="flex flex-col gap-2">
@@ -65,22 +70,26 @@ export function PublishResultsButton({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Publish results for {eventName}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Everyone will see the ranking, and judges can&apos;t change scores
-              any more. This can&apos;t be undone.
+            <AlertDialogDescription asChild>
+              <div className="flex flex-col gap-2">
+                <p>
+                  Everyone will see the ranking, and judges can&apos;t change
+                  scores any more. This can&apos;t be undone.
+                </p>
+                <p>
+                  HackHub doesn&apos;t track whether every team has been
+                  scored. Ask your judges, and check the{" "}
+                  <Link
+                    href={rankingHref}
+                    className="text-foreground underline underline-offset-4"
+                  >
+                    ranking preview
+                  </Link>{" "}
+                  first.
+                </p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <p className="text-sm text-muted-foreground">
-            HackHub doesn&apos;t track whether every team has been scored. Ask
-            your judges, and check the{" "}
-            <Link
-              href={rankingHref}
-              className="text-foreground underline underline-offset-4"
-            >
-              ranking preview
-            </Link>{" "}
-            first.
-          </p>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
