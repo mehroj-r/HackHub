@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 
 // The trail at the top of a page (redesign plan > App shell), e.g.
 // Events › HackHub Demo Day › Team. The last item is the current page and is
-// not a link. On phones the middle collapses to "…" so the trail stays on
-// one line: first › … › parent › current.
+// not a link. On phones the middle collapses to "…" and the current item is
+// left to the page's h1 (it stays for screen readers): first › … › parent.
 
 export type BreadcrumbItem = { label: string; href?: string };
 
@@ -46,6 +46,7 @@ export function Breadcrumbs({
                 className={cn(
                   "flex min-w-0 items-center gap-1",
                   middle && "hidden sm:flex",
+                  current && last > 0 && "sr-only sm:not-sr-only sm:flex",
                 )}
               >
                 {i > 0 && <Separator />}

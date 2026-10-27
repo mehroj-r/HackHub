@@ -25,7 +25,7 @@ export type ChipEvent = {
 };
 
 const CHIP =
-  "inline-flex h-11 max-w-full min-w-0 items-center gap-2 rounded-full border bg-card py-1 pr-3 pl-1 text-sm outline-none md:h-9";
+  "inline-flex h-11 max-w-full min-w-0 shrink-0 items-center gap-2 rounded-full border bg-card py-1 pr-3 pl-1 text-sm outline-none sm:shrink md:h-9";
 
 function ChipFace({ event }: { event: ChipEvent }) {
   return (
@@ -37,7 +37,10 @@ function ChipFace({ event }: { event: ChipEvent }) {
         decorative
         className="size-7 rounded-full text-[0.625rem] ring-0 md:size-7"
       />
-      <span className="min-w-0 truncate font-medium">{event.name}</span>
+      {/* Phones: the h1 already names the event; the chip shows its logo. */}
+      <span className="hidden min-w-0 truncate font-medium sm:inline">
+        {event.name}
+      </span>
       <PhaseDot phase={event.phase} />
       <span className="sr-only">{PHASE_LABEL[event.phase]}</span>
     </>

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-// docs/08 > "/ Landing": what HackHub is, one line per role, the steps of a
-// hackathon, and the two actions.
+// docs/08 > "/ Landing" (redesign: the demo-day big screen): the example
+// scoreboard, the two ways in, one line per role and the steps of a hackathon.
 test("the home page loads and names the three role areas", async ({ page }) => {
   await page.goto("/");
 
@@ -11,10 +11,11 @@ test("the home page loads and names the three role areas", async ({ page }) => {
   for (const role of ["Participants", "Judges", "Organizers"]) {
     await expect(page.getByRole("heading", { name: role })).toBeVisible();
   }
+  await expect(page.getByRole("table", { name: /Example ranking/ })).toBeVisible();
   await expect(
-    page.getByRole("main").getByRole("link", { name: "Browse events" }),
-  ).toBeVisible();
+    page.getByRole("main").getByRole("link", { name: "Run a hackathon" }),
+  ).toHaveAttribute("href", "/register");
   await expect(
-    page.getByRole("main").getByRole("link", { name: "Create an account" }),
-  ).toBeVisible();
+    page.getByRole("main").getByRole("link", { name: "Join one" }),
+  ).toHaveAttribute("href", "/events");
 });
