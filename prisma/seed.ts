@@ -12,18 +12,11 @@ import { PrismaClient } from "../src/generated/prisma/client";
 import type { Role } from "../src/generated/prisma/enums";
 import { hashPassword } from "../src/lib/password";
 import { emailSchema, passwordSchema } from "../src/lib/validation/auth";
+import { DEMO_USERS } from "./demo-users";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
-
-/** One judge and three participants, for e2e and manual testing. */
-const DEMO_USERS: { email: string; role: Role }[] = [
-  { email: "judge@hackhub.test", role: "JUDGE" },
-  { email: "participant1@hackhub.test", role: "PARTICIPANT" },
-  { email: "participant2@hackhub.test", role: "PARTICIPANT" },
-  { email: "participant3@hackhub.test", role: "PARTICIPANT" },
-];
 
 function readVariable(name: string, schema: z.ZodType<string>): string {
   const value = process.env[name];
