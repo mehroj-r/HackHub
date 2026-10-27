@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { EventImageField } from "@/components/organizer/event-image-field";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -45,9 +46,17 @@ type Props = {
   submitLabel: string;
   /** Where Cancel goes when there's no page to go back to. */
   cancelHref: string;
+  /** The event's current images (edit only); each can then be removed. */
+  images?: { logoUrl: string | null; bannerUrl: string | null };
 };
 
-export function EventForm({ action, initial, submitLabel, cancelHref }: Props) {
+export function EventForm({
+  action,
+  initial,
+  submitLabel,
+  cancelHref,
+  images,
+}: Props) {
   const [state, formAction, pending] = useActionState(action, null);
   const [dirty, setDirty] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -55,7 +64,7 @@ export function EventForm({ action, initial, submitLabel, cancelHref }: Props) {
 
   const failed = state?.ok === false ? state : null;
   const values = { ...initial, ...failed?.values };
-  const errorsFor = (field: keyof EventFormValues) =>
+  const errorsFor = (field: keyof EventFormValues | "logo" | "banner") =>
     failed?.fieldErrors?.[field]?.map((message) => ({ message }));
 
   function leave() {
@@ -148,6 +157,23 @@ export function EventForm({ action, initial, submitLabel, cancelHref }: Props) {
           errors={errorsFor("maxTeamSize")}
           description="From 1 to 10 people."
           required
+        />
+
+        <EventImageField
+          name="logo"
+          label="Logo (optional)"
+          hint="A square image, at least 512 × 512 px. PNG, JPEG or WebP, up to 5 MB."
+          shape="square"
+          currentUrl={images?.logoUrl ?? null}
+          errors={errorsFor("logo")}
+        />
+        <EventImageField
+          name="banner"
+          label="Header image (optional)"
+          hint="A wide image, at least 1600 × 600 px. PNG, JPEG or WebP, up to 5 MB. It's cropped to fit."
+          shape="wide"
+          currentUrl={images?.bannerUrl ?? null}
+          errors={errorsFor("banner")}
         />
       </FieldGroup>
 

@@ -73,6 +73,7 @@ Configuration is read from environment variables, in `.env` locally and set on t
 | `AUTH_URL` | Public URL of the app | `http://localhost:3000` locally, `https://<domain>` in production |
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Credentials for the Postgres container | set per environment |
 | `SEED_ORGANIZER_EMAIL` / `SEED_ORGANIZER_PASSWORD` | The first organizer, created by `npx prisma db seed` | set per environment |
+| `UPLOAD_DIR` | Where event logos and header images are stored. Optional | `./uploads` (the default) locally; `/app/uploads` in the production image |
 | `SEED_DEMO_USERS` / `SEED_DEMO_PASSWORD` | Local and CI only, never production: create the demo accounts below, all with this password | `true` / at least 8 characters |
 
 ### Demo data (local only)
@@ -112,6 +113,11 @@ Internet ──▶ Cloudflare ──443──▶ nginx on the host (TLS) ──�
   from the internet.
 - **migrate** is a one-shot container that runs `prisma migrate deploy` and the seed before the app starts.
 - **db** keeps its data in a named volume, so it survives restarts and redeploys. It publishes no port.
+- **uploads** is a named volume mounted at `/app/uploads` in the app (`UPLOAD_DIR`). It holds the event images, so they
+  survive redeploys. Back it up with the database:
+  `docker run --rm -v hackhub_uploads:/u -v "$PWD":/b alpine tar czf /b/uploads-$(date +%F).tgz -C /u .`
+- nginx allows request bodies up to 12 MB (`client_max_body_size 12m;`) for the image uploads. After changing the repo's
+  nginx conf, copy it to the host and run `nginx -t && systemctl reload nginx`.
 - **nginx** (on the host, not in Docker) holds the TLS certificate and proxies to the app.
 
 > **In progress, see #28.** This stack has served https://hackhub.mekhroj.uz since 26 Oct. Abdurauf owns the final

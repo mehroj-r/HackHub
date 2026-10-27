@@ -35,6 +35,11 @@ services:
       context: .
       target: runner
     env_file: .env
+    environment:
+      # Event logos and header images (src/lib/uploads), kept across deploys.
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
     restart: unless-stopped
     depends_on:
       migrate:
@@ -46,3 +51,4 @@ services:
 
 volumes:
   db-data:
+  uploads:

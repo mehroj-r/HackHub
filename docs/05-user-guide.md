@@ -236,6 +236,25 @@ are open, and update it until they close.
 
 The menu under an event's name has the event's pages: Overview, Edit, Criteria, Participants and Ranking.
 
+### Add a logo and a header image
+
+**What you can do:** give an event a logo (a square picture, shown like a profile picture) and a header image (a wide
+banner across the top of the event). Both are optional.
+
+**Good to know:**
+- Use a PNG, JPEG or WebP file of up to 5 MB. HackHub crops it to fit: the logo becomes 512 × 512 pixels and the header
+  image 1600 × 600, so start from at least that size and keep the important part in the middle.
+- Any other kind of file, or a bigger one, is refused with a message under the field, and nothing else on the form is
+  lost.
+
+**Steps:**
+
+1. On **New event**, or on the event's **Edit** page, find **Logo** and **Header image** at the bottom of the form.
+2. Select **Choose file** (the wording depends on your browser) and pick an image. A preview appears next to the field.
+3. Select **Create event** or **Save changes**. The images are saved with the rest of the event.
+4. To replace an image, pick a new file on the Edit page and save. To take one away, tick **Remove the current logo**
+   (or **header image**) and save.
+
 ### Set the judging criteria
 <!-- owner: Ollayorbek · card #10 · fill in your PR -->
 
