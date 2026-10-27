@@ -24,7 +24,7 @@ ground (`#0C0A08`), and every token below is defined once in `src/app/globals.cs
 | On amber | `#1A0E00` | `oklch(0.176 0.037 75.5)` | `--primary-foreground` | Text on amber: 9.6:1 |
 | **Accent: live red** | `#FF3D2E` | `oklch(0.656 0.231 29.3)` | `--live`, `--chart-2` | "Live" moments only: the open-state dot, toast icons, the leader's trophy. 5.6:1 on the ground |
 | Accent (low strength) | `#3A1A12` | `oklch(0.262 0.053 35.1)` | `--accent`, `--sidebar-accent` | Hover and menu highlights; text on it is 14.4:1 |
-| Destructive: crimson | `#E8475A` | `oklch(0.632 0.197 18.3)` | `--destructive` | Errors and destructive actions. Pinker and darker than the live red, so an error never reads as "live". 4.7:1 on the surface, 5.2:1 on the ground |
+| Destructive: crimson rose | `#EC5B72` | `oklch(0.665 0.179 13.9)` | `--destructive` | Errors and destructive actions. A pinker, less saturated hue than the live red (14 vs 29), so an error never reads as "live". 5.5:1 on the surface, 4.6:1 at the alerts' 90% |
 | Success | `#8BD45E` | `oklch(0.797 0.169 135.1)` | `--success` (on `--success-foreground` = ground) | Only "Registered", "Submitted" and "Scored". 11:1 |
 | Ember | `#FF6A1F` | `oklch(0.702 0.198 42.5)` | `--chart-3` | Generated event art |
 | Warm gold | `#E8B44A` | `oklch(0.798 0.135 82.2)` | `--chart-4` | Generated event art |
@@ -36,6 +36,10 @@ The focus ring is `ring-ring/50` (amber at 50%): 3.2:1 on both the ground and th
 
 - **Amber is for the primary action and the ranking leader.** One amber button per view; secondary actions use
   outline or secondary styles.
+- **Amber means "do this".** A disabled or informational state (for example "Registration closed") is never an
+  amber button; it uses the outline style.
+- **Destructive buttons** keep shadcn's crimson tint but set the label in the text colour (13:1), with the icon in
+  crimson; crimson text on its own 20% tint would be only 4.2:1.
 - **Never amber as a large surface.** Amber fills buttons, small tiles (the app icon) and tints of 10–18%; it is
   never a page, section or card background.
 - **Red means live.** The live red marks what is happening now: the dot on open states, toast icons and the

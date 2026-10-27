@@ -75,9 +75,10 @@
     /* accent = the live red at low strength: hover and menu highlights. */
     --accent: oklch(0.262 0.053 35.1);              /* #3A1A12 */
     --accent-foreground: oklch(0.970 0.029 82.6);   /* 14.4:1 */
-    /* destructive = crimson: pinker and darker than the live red, so an error
-       never looks like a live state. 4.7:1 on the surface, 5.2:1 on the ground. */
-    --destructive: oklch(0.632 0.197 18.3);         /* #E8475A */
+    /* destructive = crimson rose: a clearly pinker, less saturated hue than the
+       live red (hue 14 vs 29), so an error never looks like a live state.
+       5.5:1 on the surface, 4.6:1 at the alerts' 90%. */
+    --destructive: oklch(0.665 0.179 13.9);         /* #EC5B72 */
     --border: oklch(0.970 0.029 82.6 / 12%);
     --input: oklch(0.375 0.029 75.3);               /* #4A3F30 */
     --ring: oklch(0.791 0.167 68.9);                /* amber; at /50 it is 3.2:1 on ground and cards */
