@@ -29,7 +29,13 @@ describe("eventArt", () => {
   });
 
   it("always picks a preset that exists", () => {
-    for (const name of ["A", "Open Hack · live", "Ёлка", "🚀", "x".repeat(200)]) {
+    for (const name of [
+      "A",
+      "Open Hack · live",
+      "Ёлка",
+      "🚀",
+      "x".repeat(200),
+    ]) {
       const art = eventArt(name);
       expect(EVENT_GRADIENTS).toContain(art.gradient);
       expect(EVENT_PATTERNS).toContain(art.pattern);
@@ -37,8 +43,15 @@ describe("eventArt", () => {
   });
 
   it("tells the demo events apart", () => {
-    const names = ["Open Hack · live", "Spring Code Sprint", "AI for Good Jam", "Demo Hack · judging"];
-    const arts = names.map((n) => `${eventArt(n).gradient}|${eventArt(n).pattern}`);
+    const names = [
+      "Open Hack · live",
+      "Spring Code Sprint",
+      "AI for Good Jam",
+      "Demo Hack · judging",
+    ];
+    const arts = names.map(
+      (n) => `${eventArt(n).gradient}|${eventArt(n).pattern}`,
+    );
     expect(new Set(arts).size).toBe(names.length);
   });
 
@@ -50,7 +63,9 @@ describe("eventArt", () => {
 
   it("uses theme tokens only, never raw colours", () => {
     for (const g of EVENT_GRADIENTS) {
-      expect(g).not.toMatch(/#|rgb|oklch|\b(red|blue|green|purple|violet|lime|gray|slate)-\d/);
+      expect(g).not.toMatch(
+        /#|rgb|oklch|\b(red|blue|green|purple|violet|lime|gray|slate)-\d/,
+      );
     }
   });
 });

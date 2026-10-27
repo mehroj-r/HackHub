@@ -5,7 +5,10 @@ import { Suspense } from "react";
 
 import { EventCardMedia } from "@/components/events/event-card-media";
 import { excerpt, formatEventDates } from "@/components/events/event-format";
-import { EventStatusBadges, StatusBadge } from "@/components/events/status-badge";
+import {
+  EventStatusBadges,
+  StatusBadge,
+} from "@/components/events/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -100,30 +103,30 @@ async function EventList() {
               bannerUrl={eventImageUrl(event.bannerPath)}
             />
             <div className="flex flex-1 flex-col gap-3 p-5 pt-3">
-            <div className="flex items-start justify-between gap-3">
-              <h2 className="text-lg font-semibold break-words group-hover:underline group-hover:underline-offset-4">
-                {event.name}
-              </h2>
-              {registered.has(event.id) && (
-                <StatusBadge on className="mt-1">
-                  Registered
-                </StatusBadge>
-              )}
-            </div>
-            <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <CalendarDaysIcon className="size-4" aria-hidden />
-                {formatEventDates(event.startDate, event.endDate)}
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <UsersIcon className="size-4" aria-hidden />
-                Teams of up to {event.maxTeamSize}
-              </span>
-            </p>
-            <EventStatusBadges event={event} />
-            <p className="text-sm text-pretty break-words">
-              {excerpt(event.description)}
-            </p>
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="text-lg font-semibold break-words group-hover:underline group-hover:underline-offset-4">
+                  {event.name}
+                </h2>
+                {registered.has(event.id) && (
+                  <StatusBadge on className="mt-1">
+                    Registered
+                  </StatusBadge>
+                )}
+              </div>
+              <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <CalendarDaysIcon className="size-4" aria-hidden />
+                  {formatEventDates(event.startDate, event.endDate)}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <UsersIcon className="size-4" aria-hidden />
+                  Teams of up to {event.maxTeamSize}
+                </span>
+              </p>
+              <EventStatusBadges event={event} />
+              <p className="text-sm text-pretty break-words">
+                {excerpt(event.description)}
+              </p>
             </div>
           </Link>
         </li>
@@ -134,7 +137,10 @@ async function EventList() {
 
 function EventListSkeleton() {
   return (
-    <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+    <div
+      className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      aria-busy="true"
+    >
       <Skeleton className="h-80 rounded-xl" />
       <Skeleton className="h-80 rounded-xl" />
       <Skeleton className="h-80 rounded-xl" />

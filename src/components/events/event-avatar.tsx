@@ -19,12 +19,18 @@ export function EventAvatar({
   name,
   logoUrl,
   size = "md",
+  decorative = false,
   className,
 }: {
   name: string;
   /** From eventImageUrl(event.logoPath); null shows the generated fallback. */
   logoUrl: string | null;
   size?: EventAvatarSize;
+  /**
+   * Inside a link or label that already says the event name: the logo gets
+   * an empty alt, so screen readers don't hear the name twice.
+   */
+  decorative?: boolean;
   className?: string;
 }) {
   const box = cn(
@@ -40,7 +46,7 @@ export function EventAvatar({
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={logoUrl}
-        alt={`${name} logo`}
+        alt={decorative ? "" : `${name} logo`}
         width={512}
         height={512}
         loading="lazy"

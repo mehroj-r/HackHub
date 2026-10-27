@@ -66,12 +66,23 @@ function Pattern({ kind }: { kind: EventPattern }) {
     >
       <defs>
         <pattern id={id} width="24" height="24" patternUnits="userSpaceOnUse">
-          {kind === "dots" && <circle cx="3" cy="3" r="1.6" fill="currentColor" />}
+          {kind === "dots" && (
+            <circle cx="3" cy="3" r="1.6" fill="currentColor" />
+          )}
           {kind === "grid" && (
-            <path d="M24 0H0V24" fill="none" stroke="currentColor" strokeWidth="1" />
+            <path
+              d="M24 0H0V24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+            />
           )}
           {kind === "diagonal" && (
-            <path d="M-6 30L30 -6M-6 6L6 -6M18 30L30 18" stroke="currentColor" strokeWidth="1.5" />
+            <path
+              d="M-6 30L30 -6M-6 6L6 -6M18 30L30 18"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
           )}
           {kind === "waves" && (
             <path

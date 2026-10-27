@@ -27,7 +27,12 @@ export function EventCardMedia({
         className="aspect-[5/2] md:aspect-[8/3]"
       />
       <div className="relative z-10 -mt-8 px-5">
-        <EventAvatar name={name} logoUrl={logoUrl} size="md" className="ring-card" />
+        <EventAvatar
+          name={name}
+          logoUrl={logoUrl}
+          size="md"
+          className="ring-card"
+        />
       </div>
     </div>
   );
