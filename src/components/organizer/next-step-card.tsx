@@ -119,6 +119,7 @@ function RunStep({
         <AlertDialogTrigger asChild>
           <Button
             size="lg"
+            variant={step.blocker ? "outline" : "default"}
             className="h-11 self-start px-4 motion-safe:transition-transform motion-safe:active:scale-[0.97]"
             disabled={pending || Boolean(step.blocker)}
             aria-describedby={step.blocker ? reasonId : undefined}

@@ -83,30 +83,49 @@ describe("submissionsBlocker", () => {
 });
 
 describe("publishBlocker", () => {
-  it("allows publishing with submissions closed and criteria set", () => {
-    expect(publishBlocker(event(false, false), demoCriteria)).toBeNull();
+  const NO_SUBMISSIONS =
+    "You can publish once at least one team has submitted and submissions are closed.";
+
+  it("allows publishing once submissions closed after teams submitted, with criteria set", () => {
+    expect(publishBlocker(event(false, false), demoCriteria, true)).toBeNull();
   });
 
-  it("refuses while submissions are open", () => {
-    expect(publishBlocker(event(true, false), demoCriteria)).toBe(
+  it("refuses an event whose submissions never opened (closed, nobody submitted)", () => {
+    expect(publishBlocker(event(false, false), demoCriteria, false)).toBe(
+      NO_SUBMISSIONS,
+    );
+  });
+
+  it("refuses while submissions are open, submitted or not", () => {
+    expect(publishBlocker(event(true, false), demoCriteria, true)).toBe(
+      "Close submissions first.",
+    );
+    expect(publishBlocker(event(true, false), demoCriteria, false)).toBe(
       "Close submissions first.",
     );
   });
 
   it("refuses without criteria", () => {
-    expect(publishBlocker(event(false, false), [])).toBe(
+    expect(publishBlocker(event(false, false), [], true)).toBe(
       "Set the judging criteria first.",
     );
   });
 
-  it("asks to close submissions before asking for criteria", () => {
-    expect(publishBlocker(event(true, false), [])).toBe(
+  it("asks to close submissions before anything else", () => {
+    expect(publishBlocker(event(true, false), [], false)).toBe(
       "Close submissions first.",
     );
   });
 
+  it("asks for a submission before asking for criteria", () => {
+    expect(publishBlocker(event(false, false), [], false)).toBe(NO_SUBMISSIONS);
+  });
+
   it("can't be undone or repeated", () => {
-    expect(publishBlocker(event(false, true), demoCriteria)).toBe(
+    expect(publishBlocker(event(false, true), demoCriteria, true)).toBe(
+      SWITCH_MESSAGES.published,
+    );
+    expect(publishBlocker(event(false, true), demoCriteria, false)).toBe(
       SWITCH_MESSAGES.published,
     );
   });

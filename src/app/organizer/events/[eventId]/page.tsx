@@ -288,7 +288,9 @@ async function CommandCentre({
                   rankingHref={`${base}/ranking`}
                   disabled={published}
                   disabledReason={
-                    published ? null : publishBlocker(event, criteria)
+                    published
+                      ? null
+                      : publishBlocker(event, criteria, submissions > 0)
                   }
                   action={publishResults.bind(null, eventId)}
                 />

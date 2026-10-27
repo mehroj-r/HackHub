@@ -63,7 +63,8 @@ export function PublishResultsButton({
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
-            variant={variant}
+            // Amber means "do this": a publish that isn't allowed is outline.
+            variant={disabled || disabledReason ? "outline" : variant}
             className="min-h-11 self-start"
             disabled={pending || disabled || Boolean(disabledReason)}
             aria-describedby={disabledReason ? `${id}-reason` : undefined}
@@ -73,7 +74,9 @@ export function PublishResultsButton({
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Publish results for {eventName}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Publish results for {eventName}?
+            </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="flex flex-col gap-2">
                 <p>
@@ -81,8 +84,8 @@ export function PublishResultsButton({
                   scores any more. This can&apos;t be undone.
                 </p>
                 <p>
-                  HackHub doesn&apos;t track whether every team has been
-                  scored. Ask your judges, and check the{" "}
+                  HackHub doesn&apos;t track whether every team has been scored.
+                  Ask your judges, and check the{" "}
                   <Link
                     href={rankingHref}
                     className="text-foreground underline underline-offset-4"
@@ -97,9 +100,7 @@ export function PublishResultsButton({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() =>
-                startTransition(() => dispatch(new FormData()))
-              }
+              onClick={() => startTransition(() => dispatch(new FormData()))}
             >
               Publish results
             </AlertDialogAction>
