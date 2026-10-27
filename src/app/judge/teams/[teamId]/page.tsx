@@ -159,7 +159,10 @@ export default async function ScoreTeamPage({ params }: PageProps<"/judge/teams/
           <section
             id="scorecard"
             aria-labelledby="scorecard-heading"
-            className="mt-8 scroll-mt-24 border-t pt-6"
+            // The target of "Skip to the scorecard": focus lands here, so the
+            // next Tab goes into the first criterion.
+            tabIndex={-1}
+            className="mt-8 scroll-mt-24 border-t pt-6 outline-none"
           >
             <h2 id="scorecard-heading" className="text-section-title">
               Your scores

@@ -19,8 +19,9 @@ async function openNullPointers(page: Page) {
 }
 
 const innovation = (page: Page) => page.getByRole("radiogroup", { name: /Innovation/ });
+// The criterion's posted value: the hidden input next to its radiogroup.
 const hiddenInnovation = (page: Page) =>
-  page.locator('input[type="hidden"][name^="score:"]').first();
+  innovation(page).locator("xpath=../..").locator('input[type="hidden"][name^="score:"]');
 
 test("one 0–max scale per criterion; scores save and update (TC-01, TC-04)", async ({
   page,
@@ -43,6 +44,14 @@ test("one 0–max scale per criterion; scores save and update (TC-01, TC-04)", a
   );
 });
 
+test("Skip to the scorecard moves focus there", async ({ page }) => {
+  await openNullPointers(page);
+  await page.getByRole("link", { name: "Skip to the scorecard" }).click();
+  await expect(page.locator("#scorecard")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(innovation(page).getByRole("radio").and(page.locator(":focus"))).toHaveCount(1);
+});
+
 test("keys 0–9 score the focused criterion; Backspace clears", async ({ page }) => {
   await openNullPointers(page);
   await innovation(page).getByRole("radio", { name: "10" }).focus();
@@ -61,6 +70,15 @@ test("keys 0–9 score the focused criterion; Backspace clears", async ({ page }
   await expect(hiddenInnovation(page)).toHaveValue("");
   await page.keyboard.press("ArrowRight");
   await expect(hiddenInnovation(page)).toHaveValue("0");
+
+  // A digit then an immediate Tab and digit lands in the next criterion.
+  await page.keyboard.press("6");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("4");
+  await expect(hiddenInnovation(page)).toHaveValue("6");
+  await expect(
+    page.getByRole("radiogroup", { name: /Execution/ }).getByRole("radio", { name: "4" }),
+  ).toHaveAttribute("aria-checked", "true");
 });
 
 test("junk and out-of-range posts are refused and keep the saved score (TC-02, TC-07)", async ({
@@ -70,6 +88,8 @@ test("junk and out-of-range posts are refused and keep the saved score (TC-02, T
   await innovation(page).getByRole("radio", { name: "10" }).click();
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByText("Scores saved.")).toBeVisible();
+
+  await expect(page.getByText("Scores saved.")).toHaveCount(0, { timeout: 10_000 });
 
   // The buttons can only post valid values, so post junk the way a crafted
   // request would: the server still has to refuse it.
@@ -82,6 +102,7 @@ test("junk and out-of-range posts are refused and keep the saved score (TC-02, T
       (form as HTMLFormElement).requestSubmit(save);
     });
     await expect(page.getByText("Enter a whole number from 0 to 10.")).toBeVisible();
+    await expect(page.getByText("Scores saved.")).toHaveCount(0);
   }
 
   await page.reload();

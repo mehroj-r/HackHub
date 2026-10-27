@@ -85,6 +85,8 @@ export function Scorecard({ action, criteria, lastSaved }: Props) {
     const onClick = (e: MouseEvent) => {
       const link = (e.target as Element | null)?.closest?.("a[href]");
       if (!link || link.getAttribute("target") === "_blank" || e.defaultPrevented) return;
+      // In-page links (e.g. "Skip to the scorecard") don't leave the page.
+      if (link.getAttribute("href")?.startsWith("#")) return;
       if (!window.confirm(LEAVE_WARNING)) {
         e.preventDefault();
         e.stopPropagation();
@@ -224,7 +226,9 @@ function CriterionScore({
 
   const select = (v: number | null) => {
     onChange(v === null ? "" : String(v));
-    if (v !== null) requestAnimationFrame(() => focusValue(v));
+    // Focus moves now, not after the re-render, so a key pressed straight
+    // after (Tab, another digit) acts from the chosen score.
+    if (v !== null) focusValue(v);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
