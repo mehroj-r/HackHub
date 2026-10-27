@@ -61,7 +61,8 @@ export function CountUp({
   return (
     <span ref={ref} className={cn("tabular-nums", className)}>
       <span aria-hidden>{shown.toFixed(decimals)}</span>
-      <span className="sr-only">{final}</span>
+      {/* Not selectable, so copying the table gives the number once. */}
+      <span className="sr-only select-none">{final}</span>
     </span>
   );
 }
