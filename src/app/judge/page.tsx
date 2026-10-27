@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRightIcon, GavelIcon, TrophyIcon } from "lucide-react";
 
+import { EventAvatar } from "@/components/events/event-avatar";
 import { OnceToast } from "@/components/judging/once-toast";
 import { ScoringStatusBadge } from "@/components/judging/scoring-status-badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -17,6 +18,7 @@ import { requireRole } from "@/lib/auth/dal";
 import { SCORING_MESSAGES } from "@/lib/domain/scoring";
 import { prisma } from "@/lib/prisma";
 import { judgeTeamsInEvent } from "@/lib/queries/judging";
+import { eventImageUrl } from "@/lib/uploads/url";
 
 export const metadata: Metadata = { title: "Judging · HackHub" };
 
@@ -36,7 +38,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
         teams: { some: { submission: { isNot: null } } },
       },
       orderBy: [{ startDate: "asc" }, { name: "asc" }],
-      select: { id: true, name: true, _count: { select: { criteria: true } } },
+      select: { id: true, name: true, logoPath: true, _count: { select: { criteria: true } } },
     }),
     // Events this judge scored whose results are out.
     prisma.event.findMany({
@@ -45,7 +47,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
         teams: { some: { scores: { some: { judgeId: judge.id } } } },
       },
       orderBy: { startDate: "desc" },
-      select: { id: true, name: true },
+      select: { id: true, name: true, logoPath: true },
     }),
   ]);
 
@@ -94,7 +96,14 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
                 className="rounded-2xl border bg-card p-4 text-card-foreground sm:p-6"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
+                  <div className="flex min-w-0 items-start gap-3">
+                    <EventAvatar
+                      name={event.name}
+                      logoUrl={eventImageUrl(event.logoPath)}
+                      size="sm"
+                      className="ring-card"
+                    />
+                    <div className="min-w-0">
                     <h2 id={`event-${event.id}`} className="text-xl font-semibold break-words">
                       {event.name}
                     </h2>
@@ -105,6 +114,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
                         {scored} of {event.teams.length} teams scored
                       </span>
                     </p>
+                    </div>
                   </div>
                   {next && event.criteriaCount > 0 && (
                     <Button asChild className="h-11 self-start md:h-9">
@@ -162,6 +172,12 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
                   className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <TrophyIcon className="size-4" aria-hidden />
+                  <EventAvatar
+                    name={event.name}
+                    logoUrl={eventImageUrl(event.logoPath)}
+                    size="sm"
+                    className="size-7 rounded-md text-xs ring-0"
+                  />
                   {event.name}: see the ranking
                 </Link>
               </li>

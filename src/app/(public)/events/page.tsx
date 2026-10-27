@@ -3,8 +3,9 @@ import { connection } from "next/server";
 import { CalendarDaysIcon, CalendarXIcon, UsersIcon } from "lucide-react";
 import { Suspense } from "react";
 
+import { EventCardMedia } from "@/components/events/event-card-media";
 import { excerpt, formatEventDates } from "@/components/events/event-format";
-import { StatusBadge } from "@/components/events/status-badge";
+import { EventStatusBadges, StatusBadge } from "@/components/events/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/empty";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
+import { eventImageUrl } from "@/lib/uploads/url";
 
 // docs/08 > /events. Everyone can browse; only events with registration open
 // are listed (Decision 5), soonest start date first.
@@ -48,6 +50,11 @@ async function EventList() {
         startDate: true,
         endDate: true,
         maxTeamSize: true,
+        registrationOpen: true,
+        submissionsOpen: true,
+        resultsPublished: true,
+        logoPath: true,
+        bannerPath: true,
       },
     }),
     getCurrentUser(),
@@ -85,8 +92,14 @@ async function EventList() {
           {/* The whole card is the link (docs/08). */}
           <Link
             href={`/events/${event.id}`}
-            className="group flex w-full flex-col gap-3 rounded-xl border bg-card p-5 text-card-foreground outline-none transition-colors hover:border-ring/60 hover:bg-accent/40 focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="group flex w-full flex-col overflow-hidden rounded-xl border bg-card text-card-foreground outline-none transition-colors hover:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/50"
           >
+            <EventCardMedia
+              name={event.name}
+              logoUrl={eventImageUrl(event.logoPath)}
+              bannerUrl={eventImageUrl(event.bannerPath)}
+            />
+            <div className="flex flex-1 flex-col gap-3 p-5 pt-3">
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-lg font-semibold break-words group-hover:underline group-hover:underline-offset-4">
                 {event.name}
@@ -107,9 +120,11 @@ async function EventList() {
                 Teams of up to {event.maxTeamSize}
               </span>
             </p>
+            <EventStatusBadges event={event} />
             <p className="text-sm text-pretty break-words">
               {excerpt(event.description)}
             </p>
+            </div>
           </Link>
         </li>
       ))}
@@ -120,9 +135,9 @@ async function EventList() {
 function EventListSkeleton() {
   return (
     <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-busy="true">
-      <Skeleton className="h-44 rounded-xl" />
-      <Skeleton className="h-44 rounded-xl" />
-      <Skeleton className="h-44 rounded-xl" />
+      <Skeleton className="h-80 rounded-xl" />
+      <Skeleton className="h-80 rounded-xl" />
+      <Skeleton className="h-80 rounded-xl" />
     </div>
   );
 }

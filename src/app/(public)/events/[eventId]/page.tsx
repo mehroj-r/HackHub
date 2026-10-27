@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  ArrowLeftIcon,
   CalendarDaysIcon,
   CircleCheckIcon,
   InfoIcon,
@@ -9,6 +10,8 @@ import {
 } from "lucide-react";
 import { Suspense, type ReactNode } from "react";
 
+import { EventAvatar } from "@/components/events/event-avatar";
+import { EventBanner } from "@/components/events/event-banner";
 import { formatEventDates, plural } from "@/components/events/event-format";
 import { RegisterForm } from "@/components/events/register-form";
 import { EventStatusBadges } from "@/components/events/status-badge";
@@ -20,6 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { isProfileComplete, REGISTRATION_CLOSED } from "@/lib/domain/registration";
 import { prisma } from "@/lib/prisma";
+import { eventImageUrl } from "@/lib/uploads/url";
 
 import { registerForEvent } from "./actions";
 
@@ -54,6 +58,8 @@ async function EventDetails({
         registrationOpen: true,
         submissionsOpen: true,
         resultsPublished: true,
+        logoPath: true,
+        bannerPath: true,
         _count: { select: { registrations: true } },
       },
     }),
@@ -89,13 +95,38 @@ async function EventDetails({
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        back={{ href: "/events", label: "All events" }}
-        title={event.name}
-        action={action}
-      >
-        <EventStatusBadges event={event} className="mt-1" />
-      </PageHeader>
+      {/* Hero: banner, the logo overlapping its bottom edge, then the title,
+          dates and the primary action in the usual PageHeader place. */}
+      <div className="flex flex-col">
+        <Link
+          href="/events"
+          className="inline-flex min-h-11 w-fit items-center gap-1.5 rounded-md text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <ArrowLeftIcon className="size-4" aria-hidden />
+          All events
+        </Link>
+        <EventBanner
+          name={event.name}
+          bannerUrl={eventImageUrl(event.bannerPath)}
+          priority
+          className="mt-2 rounded-2xl border"
+        />
+        <div className="relative z-10 -mt-10 px-4 md:-mt-14 md:px-8">
+          <EventAvatar
+            name={event.name}
+            logoUrl={eventImageUrl(event.logoPath)}
+            size="lg"
+          />
+        </div>
+        <PageHeader
+          className="mt-4"
+          title={event.name}
+          description={formatEventDates(event.startDate, event.endDate)}
+          action={action}
+        >
+          <EventStatusBadges event={event} className="mt-1" />
+        </PageHeader>
+      </div>
 
       <dl className="grid gap-3 rounded-xl border bg-card p-5 text-card-foreground sm:grid-cols-3">
         <Fact icon={<CalendarDaysIcon aria-hidden />} label="Dates">
@@ -259,6 +290,7 @@ function EventSkeleton() {
     <div className="flex flex-col gap-8" aria-busy="true">
       <div className="flex flex-col gap-3">
         <Skeleton className="h-5 w-24" />
+        <Skeleton className="aspect-[2/1] w-full rounded-2xl md:aspect-[8/3]" />
         <Skeleton className="h-9 w-2/3" />
         <Skeleton className="h-5 w-64" />
       </div>
