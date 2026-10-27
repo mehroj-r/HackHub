@@ -126,10 +126,15 @@ show under the field. Errors that aren't about one field show above the form.
 
 - **Purpose.** Tell a visitor what HackHub is and get them to the events list or to register.
 - **Who.** Everyone. A signed-in user is redirected to their role home.
-- **Content.** One-sentence description of HackHub; what each role does (participant, judge, organizer) in one line
-  each; the steps of a hackathon on HackHub (register, form a team, submit, get judged, see the ranking).
-- **Actions.** Primary: "Browse events" (`/events`). Secondary: "Create an account" (`/register`).
-- **States.** None beyond the defaults. It has no data.
+- **Content (redesign, 28 Oct: the demo-day big screen).** The headline and a one-sentence description of HackHub;
+  the published ranking of a sample event as the hero, clearly labelled "Example" (rank, team and project, judges,
+  total; the leader lit per DESIGN.md); the real open events (the soonest three, with "See all {n} open events");
+  what each role does in one line each; the steps of a hackathon on HackHub (register, form a team, submit, get
+  judged, see the ranking).
+- **Actions.** Under the scoreboard. Primary: "Run a hackathon" (`/register`). Secondary: "Join one" (`/events`).
+- **Motion.** The scoreboard rows rise in once and the totals count up once, only when reduced motion is off.
+- **States.** No open events: "No events are open right now. Open events show up here as soon as an organizer opens
+  registration."
 
 #### `/register` Create an account (P1, #3)
 

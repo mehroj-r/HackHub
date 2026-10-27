@@ -50,7 +50,15 @@ function signInAs(role: Role | null) {
 const user = (id: string, email: string, name?: string, faculty?: string) => ({
   id,
   email,
-  profile: name ? { name, faculty: faculty ?? "Computer Science" } : null,
+  profile: name
+    ? {
+        name,
+        faculty: faculty ?? "Computer Science",
+        skills: ["Go"],
+        bio: null,
+        links: [],
+      }
+    : null,
 });
 
 beforeEach(() => {
@@ -123,6 +131,9 @@ describe("loadParticipants (TC-52, TC-56)", () => {
         faculty: "Computer Science",
         teamName: "Byte Me",
         registeredAt: new Date("2026-10-27T09:00:00Z"),
+        skills: ["Go"],
+        bio: null,
+        links: [],
       },
       // No profile yet: sorted and shown by email.
       {
@@ -132,6 +143,9 @@ describe("loadParticipants (TC-52, TC-56)", () => {
         faculty: null,
         teamName: null,
         registeredAt: new Date("2026-10-27T11:00:00Z"),
+        skills: [],
+        bio: null,
+        links: [],
       },
       {
         userId: "u-zara",
@@ -140,6 +154,9 @@ describe("loadParticipants (TC-52, TC-56)", () => {
         faculty: "Physics",
         teamName: null,
         registeredAt: new Date("2026-10-27T10:00:00Z"),
+        skills: ["Go"],
+        bio: null,
+        links: [],
       },
     ]);
   });
@@ -156,7 +173,15 @@ describe("loadParticipants (TC-52, TC-56)", () => {
         select: {
           id: true,
           email: true,
-          profile: { select: { name: true, faculty: true } },
+          profile: {
+            select: {
+              name: true,
+              faculty: true,
+              skills: true,
+              bio: true,
+              links: true,
+            },
+          },
         },
       },
       membership: { select: { team: { select: { name: true } } } },

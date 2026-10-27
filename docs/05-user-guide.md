@@ -226,7 +226,8 @@ are open, and update it until they close.
 
 1. Open **Events I run**. It lists every event with its dates, its status (registration and submissions open or
    closed) and how many people registered, how many teams formed and how many submitted.
-2. Select **New event**. Enter the name, a description, the start and end dates, and the maximum team size.
+2. Select **New event**. Enter the name, a description, the start and end dates, and the maximum team size. Each
+   field is checked as soon as you leave it, and a message under it says what to fix; it goes away as you correct it.
 3. Select **Create event**. You land on the event's overview with the message "Event created. It's hidden from
    participants until you open registration."
 4. To change it later, open the event and select **Edit** in the menu under its name. Change what you need and select
@@ -289,13 +290,15 @@ banner across the top of the event). Both are optional.
 
 **Steps:**
 
-1. Select **Users** in the navigation.
-2. Find the person: type part of their name or email in **Search by name or email**, pick a **Role** if you like,
-   and select **Search**.
-3. Select **Make judge** on a participant, or **Make participant** on a judge. You see "{name} is now a judge." (or
-   "a participant") and the row updates. To undo, select the other button.
-4. If the button is greyed out, the line under it says why, for example "Ana is on a team in Demo Hack, so they
-   can't become a judge."
+1. Select **Users** in the navigation. Everyone is listed, organizers first.
+2. Find the person: type part of their name or email in **Search by name or email**, or select a role chip
+   (**Participants**, **Judges**, **Organizers**). Each chip shows how many people it has. Select a column heading to
+   sort by it.
+3. Select **Make judge** on a participant, or **Make participant** on a judge. You can also select the person's name
+   to open their details on the side (full screen on a phone) and change the role there. You see "{name} is now a
+   judge." (or "a participant") and the row updates. To undo, select the other button.
+4. If the button is greyed out, the details panel says why, for example "Ana is on a team in Demo Hack, so they can't
+   become a judge."
 
 ### Open and close registration and submissions
 <!-- owner: Abdurauf · card #12 · fill in your PR -->
@@ -310,8 +313,8 @@ results.
 
 **Steps:**
 
-1. Open the event from **Events I run**. The **Overview** shows the event's phase (Setting up, Registration,
-   Building, Judging or Results published), how many people registered, how many teams formed, how many submitted and
+1. Open the event from **Events I run**. The **Overview** shows the event's phase (Not open yet, Registration open,
+   Submissions open, Judging or Results published), how many people registered, how many teams formed, how many submitted and
    how many submitted teams a judge has fully scored.
 2. **Readiness** lists what has to be true before the results can go out: criteria that total 100%, participants,
    teams, submissions, every submitted team scored, results published. Each open item links to the page that fixes it.
@@ -335,18 +338,20 @@ submitted.
 **Good to know:**
 - Only organizers can open this page.
 - People who haven't filled in their profile yet are shown by their email.
-- On a phone, each person and each team is shown as a card instead of a table row.
+- On a phone, each person and each team is a large row you can tap instead of a table row.
 
 **Steps:**
 
 1. Open the event from **Events I run** and select **Participants** in the menu under its name.
-2. The **Participants** tab lists everyone registered, sorted by name: their email, faculty, team (or "No team") and
-   the day they registered. Select a name to open their profile.
-3. To find someone, type part of their name or email under **Search by name or email** and select **Search**.
-   **Clear search** shows everyone again.
-4. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted.
-   A submitted team shows "Submitted" with the date, the project title and a **Repository** link that opens in a new
-   tab. Select **Show description** to read the project description.
+2. The **Participants** tab lists everyone registered: name, email, faculty, team (or "No team") and the day they
+   registered. Select a column heading to sort by it.
+3. To find someone, type part of their name, email, faculty or team in the search box. The **In a team** and **No
+   team** chips narrow the list; each shows how many people it has.
+4. Select a person to open their details on the side (full screen on a phone): faculty, team, skills, bio and links,
+   and a link to their full profile. Press Escape or select **Close** to go back to the list.
+5. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted. The
+   **Submitted** and **Not submitted** chips filter the list. Select a team to see its members and its submission:
+   the project title, description and repository link.
 
 The number next to each tab is how many people registered and how many teams formed. Before anyone registers, the
 page says "Nobody has registered yet."; before any team forms, "No teams yet."
@@ -390,10 +395,11 @@ page says "Nobody has registered yet."; before any team forms, "No teams yet."
 **Steps:**
 
 1. Log in, or select **Judging** in the navigation.
-2. Each event being judged shows its number of criteria and your progress, for example "1 of 2 teams scored".
-3. Under it, every team that submitted shows its project title and your status: **Not started**, **In progress**
-   (some criteria scored) or **Scored**.
-4. Select **Score next team** to open the next team you haven't finished, or select any team.
+2. Each event being judged shows your progress, for example "1 of 2 scored", and its number of criteria.
+3. Next to it is the queue: every team that submitted, in order, with its project title and your status:
+   **To score**, **In progress** (some criteria scored) or **Scored**.
+4. Select **Start scoring** (or **Continue scoring**) to open the first team you haven't finished, or select any
+   team in the queue.
 5. Events whose results are out are listed under **Results published**, with a link to the ranking.
 
 ### Score a team
@@ -408,15 +414,20 @@ page says "Nobody has registered yet."; before any team forms, "No teams yet."
 
 **Steps:**
 
-1. Open a team from **Judging**. Read the project title and description, and select **Open the repository** to see
-   the code in a new tab.
-2. Under **Your scores**, enter a whole number for each criterion. The range is shown next to each box, for example
-   "0–10".
-3. Select **Save scores** to stay on the team ("Scores saved."), or **Save and go to next team** to move on. After
-   the last team you return to Judging with "You've scored every team in {event}."
-4. To change a score, open the team again, edit it and save. Clearing a box removes that score.
-5. If you see "Scoring starts when the organizer closes submissions." or "Results are published, so scores can't be
-   changed.", the form is read-only.
+1. Open a team from **Judging**. On a computer the queue stays on the left, so you can see where you are; on a phone
+   the top of the page says "Team 2 of 7" and **Queue** takes you back to the list.
+2. Read the project title and description, and select **Open the repository** to see the code in a new tab.
+3. Under **Your scores**, each criterion has a row of numbers from 0 to its maximum. Select the score you give.
+   The **×** next to a row clears it.
+4. With a keyboard: Tab moves from criterion to criterion, keys **0**–**9** give the score (type **1** then **0**
+   quickly for 10), the arrow keys step up and down, Backspace clears, and Enter saves and opens the next team.
+5. Select **Save** to stay on the team ("Scores saved."), or **Save and next** to move on. On a phone both buttons
+   stay at the bottom of the screen. After the last team you return to Judging with "You've scored every team in
+   {event}."
+6. To change a score, open the team again, pick another number and save. Clearing a row and saving removes that
+   score. If you try to leave with unsaved scores, HackHub asks "Leave without saving your scores?".
+7. If you see "Scoring starts when the organizer closes submissions." or "Results are published, so scores can't be
+   changed.", the scores are read-only.
 
 ---
 

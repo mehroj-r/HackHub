@@ -57,7 +57,7 @@ export function TabBarNav({
                   href={item.href}
                   aria-current={current ? "page" : undefined}
                   className={cn(
-                    "relative flex flex-1 flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
+                    "relative flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
                     current
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground",

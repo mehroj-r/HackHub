@@ -11,7 +11,7 @@ import {
 } from "./scoring";
 
 describe("scoringStatus", () => {
-  it("is Not started, In progress or Scored by how many criteria have a score", () => {
+  it("is To score, In progress or Scored by how many criteria have a score", () => {
     expect(scoringStatus(0, 3)).toBe("NOT_STARTED");
     expect(scoringStatus(2, 3)).toBe("IN_PROGRESS");
     expect(scoringStatus(3, 3)).toBe("SCORED");

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { fieldErrorsFrom } from "@/lib/forms/field-errors";
 import {
+  eventFormSchema,
   eventSchema,
   parseDateInput,
   readEventForm,
@@ -168,5 +170,40 @@ describe("withDateOrderError (TC-24)", () => {
       withDateOrderError(fieldErrors, { startDate: "", endDate: "2026-12-19" }),
     ).toEqual(fieldErrors);
     expect(withDateOrderError(undefined, valid)).toEqual({});
+  });
+});
+
+describe("eventFormSchema (validate as you go)", () => {
+  it("gives the server's field messages, all at once", () => {
+    expect(
+      fieldErrorsFrom(eventFormSchema, {
+        ...valid,
+        name: " ",
+        startDate: "2026-12-20",
+        endDate: "2026-12-19",
+        maxTeamSize: "11",
+      }),
+    ).toEqual({
+      name: "Enter the event name.",
+      endDate: "The end date can't be before the start date.",
+      maxTeamSize: TEAM_SIZE,
+    });
+  });
+
+  it("accepts a valid form, including a one-day event (TC-24)", () => {
+    expect(fieldErrorsFrom(eventFormSchema, valid)).toEqual({});
+    expect(
+      fieldErrorsFrom(eventFormSchema, { ...valid, endDate: valid.startDate }),
+    ).toEqual({});
+  });
+
+  it("ignores the image fields; the server checks those", () => {
+    expect(
+      fieldErrorsFrom(eventFormSchema, {
+        ...valid,
+        logo: new File([], ""),
+        removeBanner: "on",
+      }),
+    ).toEqual({});
   });
 });
