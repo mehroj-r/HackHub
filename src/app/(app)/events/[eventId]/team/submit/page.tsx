@@ -1,7 +1,6 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 
+import { EventContext } from "@/components/events/event-context";
 import { SubmissionForm } from "@/components/submission/submission-form";
 import { SubmissionView } from "@/components/submission/submission-view";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -14,7 +13,9 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireEvent, requireRole, requireTeamMember } from "@/lib/auth/dal";
+import { eventPhase } from "@/lib/domain/event-phase";
 import { submissionPhase } from "@/lib/domain/submission";
+import { isProfileComplete } from "@/lib/domain/registration";
 import { prisma } from "@/lib/prisma";
 
 import { submitProject } from "./actions";
@@ -27,7 +28,7 @@ export default function SubmitPage({
   params,
 }: PageProps<"/events/[eventId]/team/submit">) {
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-8">
+    <main className="mx-auto w-full max-w-3xl px-4 py-8 md:py-10">
       <Suspense fallback={<SubmitSkeleton />}>
         <Submit params={params} />
       </Suspense>
@@ -38,12 +39,12 @@ export default function SubmitPage({
 async function Submit({
   params,
 }: Pick<PageProps<"/events/[eventId]/team/submit">, "params">) {
-  await requireRole("PARTICIPANT");
+  const user = await requireRole("PARTICIPANT");
   const { eventId } = await params;
   const event = await requireEvent(eventId);
   const team = await requireTeamMember(eventId);
 
-  const [submission, anySubmission] = await Promise.all([
+  const [submission, anySubmission, profile] = await Promise.all([
     prisma.submission.findUnique({
       where: { teamId: team.id },
       select: {
@@ -57,6 +58,10 @@ async function Submit({
       where: { team: { eventId } },
       select: { id: true },
     }),
+    prisma.profile.findUnique({
+      where: { userId: user.id },
+      select: { name: true, faculty: true },
+    }),
   ]);
 
   const phase = submissionPhase({
@@ -69,19 +74,23 @@ async function Submit({
   const teamHref = `/events/${eventId}/team`;
 
   return (
-    <div className="flex flex-col gap-4">
-      <Link
-        href={teamHref}
-        className="text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center gap-1 self-start text-sm md:min-h-0"
-      >
-        <ArrowLeft className="size-4" aria-hidden />
-        Back to {team.name}
-      </Link>
+    <div className="flex flex-col gap-6">
+      <EventContext
+        event={event}
+        phase={eventPhase({ ...event, hasSubmissions: anySubmission !== null })}
+        crumbs={[{ label: "Team", href: teamHref }, { label: "Submit" }]}
+        participant={{
+          profileComplete: isProfileComplete(profile),
+          registered: true,
+          onTeam: true,
+          submitted: submission !== null,
+        }}
+      />
 
       <Card>
         <CardHeader>
           <CardTitle>
-            <h1 className="text-xl font-semibold text-balance">
+            <h1 className="text-page-title text-balance">
               {phase === "open" && submission
                 ? "Edit submission"
                 : phase === "open"

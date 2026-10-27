@@ -21,7 +21,8 @@ import {
 
 // The two forms of the "no team" state on /events/[eventId]/team (docs/08 >
 // My team). Each is one field and one button; the page shows them side by side
-// with equal weight.
+// with equal weight. Amber stays with one primary per view (DESIGN.md), so
+// "Create team" is the primary and "Join team" the outline secondary.
 
 export function CreateTeamForm({ action }: { action: FormAction }) {
   const [state, formAction, pending] = useToastAction(action);
@@ -99,6 +100,7 @@ export function JoinTeamForm({ action }: { action: FormAction }) {
       <Button
         type="submit"
         size="lg"
+        variant="outline"
         disabled={pending}
         className="h-11 w-full text-base"
       >

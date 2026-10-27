@@ -25,9 +25,9 @@ export function RegisterForm({ action }: { action: Action }) {
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-3 md:items-end">
+    <form action={formAction} className="flex flex-col gap-3">
       {state?.ok === false && state.formError && (
-        <Alert variant="destructive" className="md:max-w-xs">
+        <Alert variant="destructive">
           <AlertDescription>{state.formError}</AlertDescription>
         </Alert>
       )}
@@ -36,7 +36,7 @@ export function RegisterForm({ action }: { action: Action }) {
         size="lg"
         disabled={pending}
         aria-busy={pending}
-        className="h-11 w-full px-6 text-base md:w-auto"
+        className="h-11 w-full px-6 text-base"
       >
         {pending ? "Registering…" : "Register"}
       </Button>
