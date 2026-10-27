@@ -55,6 +55,10 @@ model Event {
   registrationOpen Boolean             @default(false) @map("registration_open")
   submissionsOpen  Boolean             @default(false) @map("submissions_open")
   resultsPublished Boolean             @default(false) @map("results_published")
+  /// Relative to UPLOAD_DIR, e.g. events/<id>/logo-<random>.webp (512x512 WebP). Served at /uploads/<path>.
+  logoPath         String?             @map("logo_path")
+  /// Relative to UPLOAD_DIR, e.g. events/<id>/banner-<random>.webp (1600x600 WebP).
+  bannerPath       String?             @map("banner_path")
   createdById      String              @map("created_by_id")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
