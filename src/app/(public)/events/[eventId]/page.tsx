@@ -21,7 +21,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/auth/dal";
-import { isProfileComplete, REGISTRATION_CLOSED } from "@/lib/domain/registration";
+import {
+  isProfileComplete,
+  REGISTRATION_CLOSED,
+} from "@/lib/domain/registration";
 import { prisma } from "@/lib/prisma";
 import { eventImageUrl } from "@/lib/uploads/url";
 
@@ -91,7 +94,11 @@ async function EventDetails({
     };
   }
 
-  const action = primaryAction({ event, role: user?.role ?? null, participant });
+  const action = primaryAction({
+    event,
+    role: user?.role ?? null,
+    participant,
+  });
 
   return (
     <div className="flex flex-col gap-8">
@@ -174,7 +181,9 @@ function Fact({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 text-muted-foreground [&_svg]:size-5">{icon}</span>
+      <span className="mt-0.5 text-muted-foreground [&_svg]:size-5">
+        {icon}
+      </span>
       <div>
         <dt className="text-sm text-muted-foreground">{label}</dt>
         <dd className="font-medium">{children}</dd>

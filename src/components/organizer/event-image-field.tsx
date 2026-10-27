@@ -94,7 +94,7 @@ export function EventImageField({
           className={cn(
             "flex shrink-0 items-center justify-center overflow-hidden border bg-muted text-muted-foreground",
             shape === "square"
-              ? "size-24 rounded-full"
+              ? "size-24 rounded-2xl"
               : "aspect-[8/3] w-full rounded-lg sm:w-64",
           )}
         >

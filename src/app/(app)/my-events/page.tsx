@@ -4,7 +4,10 @@ import { Suspense } from "react";
 
 import { EventCardMedia } from "@/components/events/event-card-media";
 import { formatEventDates } from "@/components/events/event-format";
-import { EventStatusBadges, StatusBadge } from "@/components/events/status-badge";
+import {
+  EventStatusBadges,
+  StatusBadge,
+} from "@/components/events/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +34,12 @@ export default function MyEventsPage() {
         title="My events"
         description="The events you registered for, and what to do next in each."
         action={
-          <Button asChild variant="outline" size="lg" className="h-11 w-full px-5 md:w-auto">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="h-11 w-full px-5 md:w-auto"
+          >
             <Link href="/events">Browse events</Link>
           </Button>
         }
@@ -64,7 +72,9 @@ async function MyEventsList() {
       },
       membership: {
         select: {
-          team: { select: { name: true, submission: { select: { id: true } } } },
+          team: {
+            select: { name: true, submission: { select: { id: true } } },
+          },
         },
       },
     },
@@ -113,57 +123,67 @@ async function MyEventsList() {
               bannerUrl={eventImageUrl(event.bannerPath)}
             />
             <div className="flex flex-1 flex-col gap-4 p-5 pt-2">
-            <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold break-words">
-                <Link
-                  href={`/events/${event.id}`}
-                  className="inline-flex min-h-11 items-center rounded-sm outline-none hover:underline hover:underline-offset-4 focus-visible:ring-3 focus-visible:ring-ring/50"
-                >
-                  {event.name}
-                </Link>
-              </h2>
-              <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                <CalendarDaysIcon className="size-4" aria-hidden />
-                {formatEventDates(event.startDate, event.endDate)}
-              </p>
-              <EventStatusBadges event={event} />
-            </div>
-
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-muted-foreground">My team</dt>
-                <dd className="font-medium break-words">
-                  {event.team?.name ?? "No team yet"}
-                </dd>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-lg font-semibold break-words">
+                  <Link
+                    href={`/events/${event.id}`}
+                    className="inline-flex min-h-11 items-center rounded-sm outline-none hover:underline hover:underline-offset-4 focus-visible:ring-3 focus-visible:ring-ring/50"
+                  >
+                    {event.name}
+                  </Link>
+                </h2>
+                <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <CalendarDaysIcon className="size-4" aria-hidden />
+                  {formatEventDates(event.startDate, event.endDate)}
+                </p>
+                <EventStatusBadges event={event} />
               </div>
-              <div>
-                <dt className="text-muted-foreground">Submission</dt>
-                <dd className="mt-0.5">
-                  <StatusBadge on={submitted}>
-                    {submitted ? "Submitted" : "Not submitted"}
-                  </StatusBadge>
-                </dd>
-              </div>
-            </dl>
 
-            <div className="mt-auto flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-              <Button asChild size="lg" className="h-11 px-5">
-                <Link href={`/events/${event.id}/team`}>
-                  {event.team ? "Go to my team" : "Create or join a team"}
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-11 px-5">
-                <Link href={`/events/${event.id}`}>Open event</Link>
-              </Button>
-              {event.resultsPublished && (
-                <Button asChild variant="secondary" size="lg" className="h-11 px-5">
-                  <Link href={`/events/${event.id}#ranking`}>
-                    <TrophyIcon aria-hidden />
-                    Results published: see the ranking
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <div>
+                  <dt className="text-muted-foreground">My team</dt>
+                  <dd className="font-medium break-words">
+                    {event.team?.name ?? "No team yet"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Submission</dt>
+                  <dd className="mt-0.5">
+                    <StatusBadge on={submitted}>
+                      {submitted ? "Submitted" : "Not submitted"}
+                    </StatusBadge>
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-auto flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                <Button asChild size="lg" className="h-11 px-5">
+                  <Link href={`/events/${event.id}/team`}>
+                    {event.team ? "Go to my team" : "Create or join a team"}
                   </Link>
                 </Button>
-              )}
-            </div>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-11 px-5"
+                >
+                  <Link href={`/events/${event.id}`}>Open event</Link>
+                </Button>
+                {event.resultsPublished && (
+                  <Button
+                    asChild
+                    variant="secondary"
+                    size="lg"
+                    className="h-11 px-5"
+                  >
+                    <Link href={`/events/${event.id}#ranking`}>
+                      <TrophyIcon aria-hidden />
+                      Results published: see the ranking
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
           </li>
         );

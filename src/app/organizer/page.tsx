@@ -100,29 +100,29 @@ async function EventList() {
                 bannerUrl={eventImageUrl(event.bannerPath)}
               />
               <div className="p-4 pt-3 sm:p-5 sm:pt-3">
-              <h2 className="text-xl font-semibold break-words">
-                {/* The whole card is the link target; the name is its text. */}
-                <Link
-                  href={`/organizer/events/${event.id}`}
-                  className="outline-none after:absolute after:inset-0 after:rounded-2xl hover:underline"
-                >
-                  {event.name}
-                </Link>
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {formatDateRange(event.startDate, event.endDate)}
-              </p>
-              <EventStatusBadges event={event} className="mt-3" />
-              <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                {counts.map(({ label, value }) => (
-                  <div key={label} className="flex items-baseline gap-1.5">
-                    <dt className="text-muted-foreground">{label}</dt>
-                    <dd className="font-mono font-semibold tabular-nums">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+                <h2 className="text-xl font-semibold break-words">
+                  {/* The whole card is the link target; the name is its text. */}
+                  <Link
+                    href={`/organizer/events/${event.id}`}
+                    className="outline-none after:absolute after:inset-0 after:rounded-2xl hover:underline"
+                  >
+                    {event.name}
+                  </Link>
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {formatDateRange(event.startDate, event.endDate)}
+                </p>
+                <EventStatusBadges event={event} className="mt-3" />
+                <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                  {counts.map(({ label, value }) => (
+                    <div key={label} className="flex items-baseline gap-1.5">
+                      <dt className="text-muted-foreground">{label}</dt>
+                      <dd className="font-mono font-semibold tabular-nums">
+                        {value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             </article>
           </li>
@@ -134,7 +134,10 @@ async function EventList() {
 
 function EventListSkeleton() {
   return (
-    <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+    <div
+      className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      aria-busy="true"
+    >
       <Skeleton className="h-80 rounded-2xl" />
       <Skeleton className="h-80 rounded-2xl" />
     </div>

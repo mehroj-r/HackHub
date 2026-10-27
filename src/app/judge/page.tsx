@@ -104,16 +104,16 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
                       className="ring-card"
                     />
                     <div className="min-w-0">
-                    <h2 id={`event-${event.id}`} className="text-xl font-semibold break-words">
-                      {event.name}
-                    </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {event.criteriaCount === 1 ? "1 criterion" : `${event.criteriaCount} criteria`}
-                      {" · "}
-                      <span className="font-medium text-foreground">
-                        {scored} of {event.teams.length} teams scored
-                      </span>
-                    </p>
+                      <h2 id={`event-${event.id}`} className="text-xl font-semibold break-words">
+                        {event.name}
+                      </h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {event.criteriaCount === 1 ? "1 criterion" : `${event.criteriaCount} criteria`}
+                        {" · "}
+                        <span className="font-medium text-foreground">
+                          {scored} of {event.teams.length} teams scored
+                        </span>
+                      </p>
                     </div>
                   </div>
                   {next && event.criteriaCount > 0 && (
@@ -176,6 +176,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
                     name={event.name}
                     logoUrl={eventImageUrl(event.logoPath)}
                     size="sm"
+                    decorative
                     className="size-7 rounded-md text-xs ring-0"
                   />
                   {event.name}: see the ranking
