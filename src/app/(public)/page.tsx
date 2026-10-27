@@ -2,46 +2,34 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import {
-  ClipboardCheckIcon,
-  GavelIcon,
-  SettingsIcon,
-  UsersIcon,
-  type LucideIcon,
-} from "lucide-react";
 
+import { OpenEvents, OpenEventsSkeleton } from "@/components/landing/open-events";
+import { SampleScoreboard } from "@/components/landing/sample-scoreboard";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { ROLE_HOME } from "@/lib/auth/permissions";
 
-// docs/08 > "/ Landing". Everything on the page is static; only the redirect
-// for signed-in users reads the session, inside Suspense (Cache Components).
+// docs/08 > "/ Landing", redesigned as the demo-day big screen (redesign plan >
+// Landing): a sample event's published ranking as the hero, the two ways in
+// ("Run a hackathon", "Join one"), then the real open events, then what each
+// role does and how a hackathon runs. A signed-in user goes to their role home.
 
-const ROLES: { title: string; text: string; icon: LucideIcon }[] = [
+const ROLES = [
   {
     title: "Participants",
     text: "Join an event, build your profile, team up and submit your project.",
-    icon: UsersIcon,
   },
   {
     title: "Judges",
-    text: "Score every submitted team against the published criteria.",
-    icon: GavelIcon,
+    text: "Score every submitted team against the same published criteria.",
   },
   {
     title: "Organizers",
     text: "Set up the event, open and close registration, and publish the ranking.",
-    icon: SettingsIcon,
   },
 ];
 
-const STEPS = [
-  { title: "Register", text: "Create an account and add your skills." },
-  { title: "Form a team", text: "Start a team or join one with an invite code." },
-  { title: "Submit", text: "Send in your project before submissions close." },
-  { title: "Get judged", text: "Judges score every team on the same criteria." },
-  { title: "See the ranking", text: "The final ranking is published for everyone." },
-];
+const STEPS = ["Register", "Form a team", "Submit", "Get judged", "See the ranking"];
 
 async function RedirectSignedIn() {
   await connection();
@@ -57,84 +45,71 @@ export default function LandingPage() {
         <RedirectSignedIn />
       </Suspense>
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-20">
-        <section className="relative isolate overflow-hidden py-16 sm:py-24">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-24 left-1/2 -z-10 size-96 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
-          />
-          <p className="mb-4 inline-flex items-center rounded-full border border-highlight/40 bg-highlight/10 px-3 py-1 text-sm font-medium text-highlight">
-            Hackathons, minus the chaos
-          </p>
-          <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">
-            Run a hackathon from first sign-up to{" "}
-            <span className="text-highlight">final ranking</span>.
+      <main className="mx-auto w-full max-w-5xl px-4 pb-20">
+        <section aria-labelledby="hero-heading" className="pt-10 pb-12 sm:pt-16 sm:pb-16">
+          <h1
+            id="hero-heading"
+            className="max-w-3xl text-[clamp(2.25rem,1.6rem+2.6vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.025em] text-balance"
+          >
+            Run a hackathon from first sign-up to the final ranking.
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-pretty text-muted-foreground">
-            HackHub handles registration, teams, project submissions, judging
-            and results, all in one place.
+          <p className="mt-4 max-w-2xl text-lg text-pretty text-muted-foreground">
+            HackHub handles registration, teams, project submissions, judging and
+            the results board, in one place.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+
+          <SampleScoreboard className="mt-8 sm:mt-10" />
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-6 text-base">
-              <Link href="/events">Browse events</Link>
+              <Link href="/register">Run a hackathon</Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="h-12 px-6 text-base"
-            >
-              <Link href="/register">Create an account</Link>
+            <Button asChild size="lg" variant="outline" className="h-12 px-6 text-base">
+              <Link href="/events">Join one</Link>
             </Button>
           </div>
         </section>
 
-        <section aria-labelledby="roles-heading" className="py-8">
-          <h2 id="roles-heading" className="text-2xl font-semibold">
-            Who it&apos;s for
+        <section aria-labelledby="open-heading" className="py-10">
+          <h2 id="open-heading" className="text-section-title">
+            Open for registration
           </h2>
-          <ul className="mt-5 grid gap-4 sm:grid-cols-3">
-            {ROLES.map(({ title, text, icon: Icon }) => (
-              <li
-                key={title}
-                className="rounded-2xl border bg-card p-5 text-card-foreground"
-              >
-                <span className="flex size-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                  <Icon className="size-5" aria-hidden />
-                </span>
-                <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{text}</p>
+          <Suspense fallback={<OpenEventsSkeleton />}>
+            <OpenEvents />
+          </Suspense>
+        </section>
+
+        <section
+          aria-labelledby="how-heading"
+          className="grid gap-10 border-t py-12 md:grid-cols-[1fr_1.4fr] md:gap-16"
+        >
+          <div>
+            <h2 id="how-heading" className="text-section-title">
+              How a hackathon runs on HackHub
+            </h2>
+            <ol className="mt-5 flex flex-col gap-3">
+              {STEPS.map((step, i) => (
+                <li key={step} className="flex items-baseline gap-3">
+                  <span
+                    aria-hidden
+                    className="font-mono text-small text-primary/70 tabular-nums"
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="font-medium">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <ul className="flex flex-col divide-y">
+            {ROLES.map((role) => (
+              <li key={role.title} className="flex flex-col gap-1 py-4 first:pt-0 last:pb-0">
+                <h3 className="font-semibold">{role.title}</h3>
+                <p className="text-pretty text-muted-foreground">{role.text}</p>
               </li>
             ))}
           </ul>
         </section>
-
-        <section aria-labelledby="steps-heading" className="py-8">
-          <h2 id="steps-heading" className="text-2xl font-semibold">
-            How it works
-          </h2>
-          <ol className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {STEPS.map((step, index) => (
-              <li
-                key={step.title}
-                className="rounded-2xl border bg-card p-5 text-card-foreground"
-              >
-                <span className="font-mono text-sm font-semibold text-highlight">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-2 font-semibold">{step.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {step.text}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
-          <ClipboardCheckIcon className="size-4 text-success" aria-hidden />
-          Free to join. Pick an event and register in a minute.
-        </div>
       </main>
     </>
   );
