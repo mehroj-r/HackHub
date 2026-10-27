@@ -1,6 +1,6 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 
 import { auth } from "@/auth";
@@ -39,4 +39,44 @@ export async function requireRole(...roles: Role[]) {
     redirect(`${ROLE_HOME[user.role]}?notice=no-access`);
   }
   return user;
+}
+
+// Data-dependent guards (docs/07 > lib/auth). They sit next to the role guards
+// so every check a page or action makes can be found in one file.
+
+/** The event, or the not-found page for an unknown id. Deduped per render. */
+export const requireEvent = cache(async (eventId: string) => {
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    select: {
+      id: true,
+      name: true,
+      startDate: true,
+      endDate: true,
+      maxTeamSize: true,
+      registrationOpen: true,
+      submissionsOpen: true,
+      resultsPublished: true,
+    },
+  });
+  if (!event) notFound();
+  return event;
+});
+
+/**
+ * The signed-in user's team in this event. Anyone without one goes to the
+ * event's team page, where they can create or join a team.
+ */
+export async function requireTeamMember(eventId: string) {
+  const user = await requireUser();
+  const membership = await prisma.teamMember.findUnique({
+    where: { eventId_userId: { eventId, userId: user.id } },
+    select: {
+      team: {
+        select: { id: true, eventId: true, name: true, inviteCode: true },
+      },
+    },
+  });
+  if (!membership) redirect(`/events/${eventId}/team`);
+  return membership.team;
 }
