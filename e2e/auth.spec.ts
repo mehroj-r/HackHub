@@ -56,10 +56,14 @@ test("register validates each field on blur, and the error goes once it's fixed"
 }) => {
   await page.goto("/register");
   await page.getByLabel("Email").fill("not-an-email");
-  await page.getByLabel("Password", { exact: true }).focus();
-  await expect(
-    page.getByText("Enter a valid email address, like name@example.com."),
-  ).toBeVisible();
+  // Retry the blur until React has hydrated and the handler reacts.
+  await expect(async () => {
+    await page.getByLabel("Email").focus();
+    await page.getByLabel("Password", { exact: true }).focus();
+    await expect(
+      page.getByText("Enter a valid email address, like name@example.com."),
+    ).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 15_000 });
 
   await page.getByLabel("Password", { exact: true }).fill("short");
   await page.getByLabel("Confirm password").focus();
@@ -83,10 +87,14 @@ test("register validates each field on blur, and the error goes once it's fixed"
 
 test("login asks for both fields on blur", async ({ page }) => {
   await page.goto("/login");
-  await page.getByLabel("Email").focus();
-  await page.getByLabel("Password").focus();
-  await page.getByRole("button", { name: "Log in" }).focus();
-  await expect(page.getByText("Enter your email.")).toBeVisible();
+  // Blur handlers only exist once React has hydrated: retry the blur until
+  // they react, instead of racing a cold page.
+  await expect(async () => {
+    await page.getByLabel("Email").focus();
+    await page.getByLabel("Password").focus();
+    await page.getByRole("button", { name: "Log in" }).focus();
+    await expect(page.getByText("Enter your email.")).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 15_000 });
   await expect(page.getByText("Enter your password.")).toBeVisible();
 });
 

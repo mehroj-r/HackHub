@@ -108,14 +108,14 @@ export function RegisterForm({ action }: Props) {
       <Button
         type="submit"
         disabled={pending}
-        className="h-11 text-base motion-safe:transition-transform motion-safe:active:scale-[0.98]"
+        className="h-11 text-base"
       >
         {pending ? "Creating account…" : "Create account"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-foreground underline underline-offset-4">
+        <Link href="/login" className="font-medium text-foreground underline">
           Log in
         </Link>
       </p>
