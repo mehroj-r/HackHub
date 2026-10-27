@@ -35,9 +35,8 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 const { createEvent } = await import("@/app/organizer/events/new/actions");
-const { updateEvent } = await import(
-  "@/app/organizer/events/[eventId]/edit/actions"
-);
+const { updateEvent } =
+  await import("@/app/organizer/events/[eventId]/edit/actions");
 
 function signInAs(role: Role | null) {
   auth.mockResolvedValue(role && { user: { id: "user-1" } });
@@ -121,7 +120,9 @@ describe("createEvent", () => {
     const values = { ...VALID, endDate: "2026-10-28" };
     await expect(createEvent(null, form(values))).resolves.toEqual({
       ok: false,
-      fieldErrors: { endDate: ["The end date can't be before the start date."] },
+      fieldErrors: {
+        endDate: ["The end date can't be before the start date."],
+      },
       values,
     });
     expect(db.event.create).not.toHaveBeenCalled();
@@ -165,7 +166,10 @@ describe("updateEvent", () => {
 
   it("saves the details, then opens the overview (TC-25)", async () => {
     signInAs("ORGANIZER");
-    db.team.findFirst.mockResolvedValue({ name: "Byte Me", _count: { members: 3 } });
+    db.team.findFirst.mockResolvedValue({
+      name: "Byte Me",
+      _count: { members: 3 },
+    });
     await expect(
       updateEvent("event-1", null, form({ ...VALID, maxTeamSize: "3" })),
     ).rejects.toThrow("NEXT_REDIRECT /organizer/events/event-1?saved=updated");
@@ -187,7 +191,9 @@ describe("updateEvent", () => {
     const values = { ...VALID, startDate: "2026-11-01" };
     await expect(updateEvent("event-1", null, form(values))).resolves.toEqual({
       ok: false,
-      fieldErrors: { endDate: ["The end date can't be before the start date."] },
+      fieldErrors: {
+        endDate: ["The end date can't be before the start date."],
+      },
       values,
     });
     expect(db.event.update).not.toHaveBeenCalled();
@@ -195,7 +201,10 @@ describe("updateEvent", () => {
 
   it("refuses a max team size below the largest team", async () => {
     signInAs("ORGANIZER");
-    db.team.findFirst.mockResolvedValue({ name: "Byte Me", _count: { members: 3 } });
+    db.team.findFirst.mockResolvedValue({
+      name: "Byte Me",
+      _count: { members: 3 },
+    });
     const values = { ...VALID, maxTeamSize: "2" };
     await expect(updateEvent("event-1", null, form(values))).resolves.toEqual({
       ok: false,

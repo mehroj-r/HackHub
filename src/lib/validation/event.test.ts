@@ -72,10 +72,18 @@ describe("eventSchema", () => {
 
   it("caps the name at 100 and the description at 2000 characters", () => {
     expect(
-      errors({ ...valid, name: "a".repeat(100), description: "a".repeat(2000) }),
+      errors({
+        ...valid,
+        name: "a".repeat(100),
+        description: "a".repeat(2000),
+      }),
     ).toEqual({});
     expect(
-      errors({ ...valid, name: "a".repeat(101), description: "a".repeat(2001) }),
+      errors({
+        ...valid,
+        name: "a".repeat(101),
+        description: "a".repeat(2001),
+      }),
     ).toEqual({
       name: ["Keep the name under 100 characters."],
       description: ["Keep the description under 2000 characters."],
@@ -92,9 +100,15 @@ describe("eventSchema", () => {
   });
 
   it("takes a whole team size from 1 to 10, default 4", () => {
-    expect(eventSchema.parse({ ...valid, maxTeamSize: "1" }).maxTeamSize).toBe(1);
-    expect(eventSchema.parse({ ...valid, maxTeamSize: "10" }).maxTeamSize).toBe(10);
-    expect(eventSchema.parse({ ...valid, maxTeamSize: "" }).maxTeamSize).toBe(4);
+    expect(eventSchema.parse({ ...valid, maxTeamSize: "1" }).maxTeamSize).toBe(
+      1,
+    );
+    expect(eventSchema.parse({ ...valid, maxTeamSize: "10" }).maxTeamSize).toBe(
+      10,
+    );
+    expect(eventSchema.parse({ ...valid, maxTeamSize: "" }).maxTeamSize).toBe(
+      4,
+    );
     expect(
       eventSchema.parse({ ...valid, maxTeamSize: undefined }).maxTeamSize,
     ).toBe(4);

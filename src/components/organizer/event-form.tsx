@@ -65,7 +65,8 @@ export function EventForm({ action, initial, submitLabel, cancelHref }: Props) {
   }
 
   function cancel() {
-    if (dirty) setConfirming(true);
+    // A refused save still holds the values that weren't saved.
+    if (dirty || failed) setConfirming(true);
     else leave();
   }
 
@@ -108,7 +109,10 @@ export function EventForm({ action, initial, submitLabel, cancelHref }: Props) {
               errorsFor("description") ? "description-error" : undefined
             }
           />
-          <FieldError id="description-error" errors={errorsFor("description")} />
+          <FieldError
+            id="description-error"
+            errors={errorsFor("description")}
+          />
         </Field>
 
         <div className="grid gap-6 sm:grid-cols-2">
@@ -139,7 +143,7 @@ export function EventForm({ action, initial, submitLabel, cancelHref }: Props) {
           min={1}
           max={10}
           step={1}
-          className="w-28"
+          className="max-w-28"
           defaultValue={values.maxTeamSize}
           errors={errorsFor("maxTeamSize")}
           description="From 1 to 10 people."
@@ -214,7 +218,9 @@ function TextField({
         {...input}
       />
       {description && (
-        <FieldDescription id={`${name}-description`}>{description}</FieldDescription>
+        <FieldDescription id={`${name}-description`}>
+          {description}
+        </FieldDescription>
       )}
       <FieldError id={`${name}-error`} errors={errors} />
     </Field>

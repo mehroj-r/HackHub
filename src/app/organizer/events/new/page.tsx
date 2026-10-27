@@ -1,16 +1,18 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 
 import { EventForm } from "@/components/organizer/event-form";
+import { EventFormSkeleton } from "@/components/organizer/event-form-skeleton";
 import { requireRole } from "@/lib/auth/dal";
 
 import { createEvent } from "./actions";
 
-// docs/08 > Event form. The organizer loading.tsx wraps this page in Suspense.
+// docs/08 > Event form. The heading is static; the session is read inside this
+// page's own Suspense (Cache Components). The organizer loading.tsx doesn't
+// cover a client navigation from another organizer page: it is already on screen.
 
-export default async function NewEventPage() {
-  await requireRole("ORGANIZER");
-
+export default function NewEventPage() {
   return (
     <>
       <Link
@@ -25,19 +27,28 @@ export default async function NewEventPage() {
         Participants can&apos;t see it until you open registration.
       </p>
       <div className="mt-8">
-        <EventForm
-          action={createEvent}
-          initial={{
-            name: "",
-            description: "",
-            startDate: "",
-            endDate: "",
-            maxTeamSize: "4",
-          }}
-          submitLabel="Create event"
-          cancelHref="/organizer"
-        />
+        <Suspense fallback={<EventFormSkeleton />}>
+          <NewEventForm />
+        </Suspense>
       </div>
     </>
+  );
+}
+
+async function NewEventForm() {
+  await requireRole("ORGANIZER");
+  return (
+    <EventForm
+      action={createEvent}
+      initial={{
+        name: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        maxTeamSize: "4",
+      }}
+      submitLabel="Create event"
+      cancelHref="/organizer"
+    />
   );
 }
