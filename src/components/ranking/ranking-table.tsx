@@ -82,7 +82,7 @@ function Rank({ rank }: { rank: number }) {
       <span className="sr-only">Rank </span>
       {rank}
       {leader && (
-        <TrophyIcon className="size-4 text-live" aria-label="Leader" />
+        <TrophyIcon role="img" className="size-4 text-live" aria-label="Leader" />
       )}
     </span>
   );
