@@ -21,8 +21,9 @@ export async function saveProfile(
   if (!parsed.success) {
     return {
       ...fromZodError(parsed.error),
+      ok: false,
       values: { name: raw.name, faculty: raw.faculty, bio: raw.bio },
-    } as ActionState;
+    };
   }
 
   const data = parsed.data;
