@@ -68,7 +68,7 @@ async function MyProfile() {
       <Card>
         <CardHeader>
           <CardTitle>
-            <h1 className="text-xl font-semibold">My profile</h1>
+            <h1 className="text-page-title">My profile</h1>
           </CardTitle>
           <CardDescription>
             Other signed-in users see this on your team and in rankings.

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { profileSchema, readProfileForm } from "@/lib/validation/profile";
+import {
+  profileFormSchema,
+  profileSchema,
+  readProfileForm,
+} from "@/lib/validation/profile";
 
 // docs/08 > /profile, docs/06 TC-09, TC-11.
 
@@ -131,6 +135,46 @@ describe("readProfileForm", () => {
     expect(errors(readProfileForm(new FormData()))).toEqual({
       name: ["Enter your name."],
       faculty: ["Enter your faculty."],
+    });
+  });
+});
+
+// The form's validate-as-you-go reads the form field by field, so a lone
+// skill or link arrives as a string and none as nothing.
+describe("profileFormSchema", () => {
+  it("treats a lone skill and link as lists", () => {
+    const result = profileFormSchema.safeParse({
+      ...valid,
+      skills: "React",
+      links: "https://github.com/ana",
+    });
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      skills: ["React"],
+      links: ["https://github.com/ana"],
+    });
+  });
+
+  it("treats missing skills and links as empty lists", () => {
+    const { skills: _s, links: _l, ...rest } = valid;
+    void _s;
+    void _l;
+    expect(profileFormSchema.safeParse(rest).success).toBe(true);
+  });
+
+  it("keeps the server's messages", () => {
+    const result = profileFormSchema.safeParse({
+      ...valid,
+      name: "",
+      links: "github.com/ana",
+    });
+    expect(result.success).toBe(false);
+    const byField = Object.fromEntries(
+      result.error!.issues.map((i) => [String(i.path[0]), i.message]),
+    );
+    expect(byField).toEqual({
+      name: "Enter your name.",
+      links: "Enter a full link starting with https://.",
     });
   });
 });

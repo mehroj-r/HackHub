@@ -49,6 +49,25 @@ export const profileSchema = z.object({
 
 export type ProfileInput = z.output<typeof profileSchema>;
 
+/** One value, several, or none: always a list (repeated form names). */
+const asList = (value: unknown) =>
+  value === undefined ? [] : Array.isArray(value) ? value : [value];
+
+/**
+ * profileSchema for the form's validate-as-you-go: a form read field by
+ * field gives a lone skill or link as a string and none as nothing, so those
+ * become lists first. Same rules and messages as the server.
+ */
+export const profileFormSchema = z.preprocess((input) => {
+  if (typeof input !== "object" || input === null) return input;
+  const values = input as Record<string, unknown>;
+  return {
+    ...values,
+    skills: asList(values.skills),
+    links: asList(values.links),
+  };
+}, profileSchema);
+
 /**
  * The profile form's fields as plain values for profileSchema. Skills and
  * links are repeated inputs, so they are read with getAll().

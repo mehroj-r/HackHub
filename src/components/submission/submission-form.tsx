@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { SavedTick } from "@/components/feedback/saved-tick";
+import { ActionDock } from "@/components/layout/action-dock";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,10 +18,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { ActionState } from "@/lib/action-state";
+import { useFieldValidation } from "@/lib/forms/use-field-validation";
+import { submissionSchema } from "@/lib/validation/submission";
 
-// The submit form (docs/08 > Submit project). Fields are controlled so the
-// values survive React's form reset after the action returns; the server's
-// result is the one that counts.
+// The submit form (docs/08 > Submit project), validating as you go (redesign
+// > Forms): each field is checked on blur with the same zod schema the
+// action uses, the error sits under the field, and the field keeps its value.
+// Fields are controlled, so values also survive React's form reset after the
+// action returns. The server's result is the one that counts; its field
+// errors still land under the fields.
 
 export type SubmissionValues = {
   title: string;
@@ -41,14 +48,28 @@ export function SubmissionForm({
   teamHref: string;
 }) {
   const router = useRouter();
-  const [state, formAction, pending] = useActionState(action, null);
   // Read once: the page re-renders with the saved row in the same update as
   // the action's result.
   const [isFirstSubmit] = useState(initial === null);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [state, formAction, pending] = useActionState<ActionState, FormData>(
+    async (prev, formData) => {
+      const result = await action(prev, formData);
+      // A short "Saved" tick after an edit (the first submit moves on).
+      if (result?.ok && !isFirstSubmit) setSavedAt(Date.now());
+      return result;
+    },
+    null,
+  );
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [repoUrl, setRepoUrl] = useState(initial?.repoUrl ?? "");
+
+  const v = useFieldValidation(
+    submissionSchema,
+    state?.ok === false ? state.fieldErrors : undefined,
+  );
 
   useEffect(() => {
     if (!state?.ok) return;
@@ -56,9 +77,24 @@ export function SubmissionForm({
     if (isFirstSubmit) router.push(teamHref);
   }, [state, isFirstSubmit, router, teamHref]);
 
-  const errors = state?.ok === false ? (state.fieldErrors ?? {}) : {};
-  const fieldError = (key: string) =>
-    errors[key]?.map((message) => ({ message }));
+  /** The hook's props, with our own onChange keeping the controlled value. */
+  function wire<E extends HTMLInputElement | HTMLTextAreaElement>(
+    name: keyof SubmissionValues,
+    set: (value: string) => void,
+  ) {
+    const props = v.fieldProps(name);
+    return {
+      ...props,
+      onChange: (e: React.ChangeEvent<E>) => {
+        set(e.target.value);
+        props.onChange(e);
+      },
+    };
+  }
+
+  const titleError = v.errorFor("title");
+  const descriptionError = v.errorFor("description");
+  const repoError = v.errorFor("repoUrl");
 
   return (
     <form action={formAction} className="flex flex-col gap-6" noValidate>
@@ -69,58 +105,71 @@ export function SubmissionForm({
       )}
 
       <FieldGroup>
-        <Field data-invalid={!!errors.title}>
+        <Field data-invalid={Boolean(titleError)}>
           <FieldLabel htmlFor="title">Project title</FieldLabel>
           <Input
             id="title"
-            name="title"
             maxLength={100}
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            aria-invalid={!!errors.title}
+            {...wire<HTMLInputElement>("title", setTitle)}
           />
-          <FieldError errors={fieldError("title")} />
+          <FieldError id={v.errorId("title")}>{titleError}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.description}>
+        <Field data-invalid={Boolean(descriptionError)}>
           <FieldLabel htmlFor="description">Description</FieldLabel>
           <Textarea
             id="description"
-            name="description"
             rows={8}
             className="min-h-40"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            aria-invalid={!!errors.description}
-            aria-describedby="description-count"
+            {...wire<HTMLTextAreaElement>("description", setDescription)}
+            aria-describedby={
+              descriptionError
+                ? `description-count ${v.errorId("description")}`
+                : "description-count"
+            }
           />
-          <FieldDescription id="description-count" aria-live="polite">
+          <FieldDescription
+            id="description-count"
+            aria-live="polite"
+            className="tabular-nums"
+          >
             {description.length} / {MAX_DESCRIPTION} characters
           </FieldDescription>
-          <FieldError errors={fieldError("description")} />
+          <FieldError id={v.errorId("description")}>
+            {descriptionError}
+          </FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.repoUrl}>
+        <Field data-invalid={Boolean(repoError)}>
           <FieldLabel htmlFor="repoUrl">Repository link</FieldLabel>
           <Input
             id="repoUrl"
-            name="repoUrl"
             type="url"
             inputMode="url"
+            autoComplete="url"
             placeholder="https://github.com/team/project"
             value={repoUrl}
-            onChange={(e) => setRepoUrl(e.target.value)}
-            aria-invalid={!!errors.repoUrl}
+            {...wire<HTMLInputElement>("repoUrl", setRepoUrl)}
           />
-          <FieldError errors={fieldError("repoUrl")} />
+          <FieldError id={v.errorId("repoUrl")}>{repoError}</FieldError>
         </Field>
       </FieldGroup>
 
-      <div className="flex flex-col gap-3">
+      {isFirstSubmit && (
+        <p className="text-sm text-muted-foreground">
+          Submitting locks your team: nobody can join or leave after this.
+        </p>
+      )}
+      {/* Thumb-first: the submit docks to the bottom on phones. */}
+      <ActionDock className="bg-card/95 supports-[backdrop-filter]:bg-card/85 md:flex-row md:items-center md:gap-3 md:bg-transparent">
         <Button
           type="submit"
+          size="lg"
           disabled={pending}
-          className="min-h-11 self-start md:min-h-9"
+          aria-busy={pending}
+          className="h-11 w-full px-6 text-base md:w-auto"
         >
           {pending
             ? "Saving…"
@@ -128,12 +177,9 @@ export function SubmissionForm({
               ? "Submit project"
               : "Save changes"}
         </Button>
-        {isFirstSubmit && (
-          <p className="text-muted-foreground text-sm">
-            Submitting locks your team: nobody can join or leave after this.
-          </p>
-        )}
-      </div>
+        {/* Phones get the toast; the tick sits beside the button from md. */}
+        <SavedTick savedAt={savedAt} className="hidden md:inline-flex" />
+      </ActionDock>
     </form>
   );
 }

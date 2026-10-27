@@ -44,7 +44,7 @@ export function ProfileCard({
     <Card>
       <CardHeader>
         <CardTitle>
-          <h1 className="text-xl font-semibold text-balance">
+          <h1 className="text-page-title text-balance">
             {profile?.name ?? "Profile"}
           </h1>
         </CardTitle>
