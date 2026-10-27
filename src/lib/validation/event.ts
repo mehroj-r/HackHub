@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { validateEventDates } from "@/lib/domain/event-state";
+
 // Field rules and messages from docs/08-ui-spec.md > Event form. Used by the
 // createEvent and updateEvent actions. The end date's order against the start
 // date is a product rule (validateEventDates in lib/domain/event-state.ts), so
@@ -70,6 +72,23 @@ export const eventSchema = z.object({
 });
 
 export type EventInput = z.output<typeof eventSchema>;
+
+/**
+ * The schema's field errors plus the date-order error, so a refused form shows
+ * every problem at once: an end before the start is reported even when another
+ * field (say the team size) also failed.
+ */
+export function withDateOrderError(
+  fieldErrors: Record<string, string[]> | undefined,
+  values: { startDate: string; endDate: string },
+): Record<string, string[]> {
+  const start = parseDateInput(values.startDate.trim());
+  const end = parseDateInput(values.endDate.trim());
+  if (start && end && !validateEventDates(start, end)) {
+    return { ...fieldErrors, endDate: [END_BEFORE_START] };
+  }
+  return fieldErrors ?? {};
+}
 
 /** The event form's fields as plain strings, also echoed back as `values` on failure. */
 export function readEventForm(formData: FormData) {
