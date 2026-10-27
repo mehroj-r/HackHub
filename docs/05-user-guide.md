@@ -309,7 +309,8 @@ results.
 **Good to know:**
 - Judges can score once submissions are closed.
 - Submissions can't reopen once any judge has scored.
-- Publishing needs submissions closed and criteria set. It can't be undone, and afterwards scores are locked.
+- Publishing needs at least one team to have submitted, submissions closed and criteria set. It can't be undone, and
+  afterwards scores are locked.
 
 **Steps:**
 

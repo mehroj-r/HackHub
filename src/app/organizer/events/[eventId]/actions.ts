@@ -110,7 +110,11 @@ export async function publishResults(eventId: string): Promise<ActionState> {
         where: { eventId },
         select: { weightPercent: true },
       });
-      const refused = publishBlocker(event, criteria);
+      // Read under the event's row lock: submitting takes FOR SHARE on it.
+      const submissions = await tx.submission.count({
+        where: { team: { eventId } },
+      });
+      const refused = publishBlocker(event, criteria, submissions > 0);
       if (refused) throw new RuleError(refused);
       await tx.event.update({
         where: { id: eventId },

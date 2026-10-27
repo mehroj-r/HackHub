@@ -145,7 +145,7 @@ export function nextStep(e: EventProgress, eventName: string): NextStep {
             "Everyone will see the ranking, and judges can't change scores any more. This can't be undone.",
           action: "Publish results",
         },
-        blocker: publishBlocker(e, e.criteria),
+        blocker: publishBlocker(e, e.criteria, e.submissions > 0),
         note:
           e.scoredTeams < e.submissions
             ? `Only ${e.scoredTeams} of ${e.submissions} submitted teams ${e.scoredTeams === 1 ? "has" : "have"} been scored on every criterion. Check with your judges first.`

@@ -11,6 +11,8 @@ export const SWITCH_MESSAGES = {
   scoringStarted: "Judges have started scoring, so submissions can't reopen.",
   submissionsOpen: "Close submissions first.",
   noCriteria: "Set the judging criteria first.",
+  noSubmissions:
+    "You can publish once at least one team has submitted and submissions are closed.",
 } as const;
 
 /** The criteria are set once they exist and their weights total exactly 100% (Decision 6). */
@@ -51,13 +53,22 @@ export function submissionsBlocker(
   return null;
 }
 
-/** Publishing needs submissions closed and the criteria set, and happens once (Decision 3). */
+/**
+ * Publishing happens once (Decision 3) and needs submissions closed *after*
+ * teams submitted, and the criteria set. "Closed" alone isn't enough: before
+ * submissions ever open they're closed too, and publishing then would lock an
+ * empty ranking for good. Unscored teams are a warning on the page, not a
+ * block here.
+ */
 export function publishBlocker(
   event: Pick<EventState, "submissionsOpen" | "resultsPublished">,
   criteria: { weightPercent: number }[],
+  /** Whether any team in the event has submitted (submissionPhase's eventHasSubmissions). */
+  hasSubmissions: boolean,
 ): string | null {
   if (event.resultsPublished) return SWITCH_MESSAGES.published;
   if (event.submissionsOpen) return SWITCH_MESSAGES.submissionsOpen;
+  if (!hasSubmissions) return SWITCH_MESSAGES.noSubmissions;
   if (!criteriaAreSet(criteria)) return SWITCH_MESSAGES.noCriteria;
   return null;
 }

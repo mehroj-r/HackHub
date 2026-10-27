@@ -92,7 +92,13 @@ async function RankingPreview({
               rankingHref={`/organizer/events/${eventId}/ranking`}
               disabled={published}
               disabledReason={
-                published ? null : publishBlocker(event, ranking.criteria)
+                published
+                  ? null
+                  : publishBlocker(
+                      event,
+                      ranking.criteria,
+                      ranking.ranked.length > 0,
+                    )
               }
               action={publishResults.bind(null, eventId)}
             />
