@@ -11,10 +11,12 @@ type Props = {
   to: "PARTICIPANT" | "JUDGE";
   /** Why the change isn't allowed; the button is then disabled with this text. */
   disabledReason?: string;
+  /** In a table row: the reason is read out but not printed (the side panel prints it). */
+  compact?: boolean;
 };
 
 /** "Make judge" / "Make participant" on one row of /organizer/users. */
-export function RoleButton({ action, to, disabledReason }: Props) {
+export function RoleButton({ action, to, disabledReason, compact }: Props) {
   const [state, formAction, pending] = useActionState(action, null);
   const reasonId = useId();
 
@@ -32,10 +34,19 @@ export function RoleButton({ action, to, disabledReason }: Props) {
         aria-describedby={disabledReason ? reasonId : undefined}
         className="h-11 md:h-9"
       >
-        {pending ? "Saving…" : to === "JUDGE" ? "Make judge" : "Make participant"}
+        {pending
+          ? "Saving…"
+          : to === "JUDGE"
+            ? "Make judge"
+            : "Make participant"}
       </Button>
       {disabledReason && (
-        <p id={reasonId} className="max-w-64 text-xs text-muted-foreground">
+        <p
+          id={reasonId}
+          className={
+            compact ? "sr-only" : "max-w-64 text-xs text-muted-foreground"
+          }
+        >
           {disabledReason}
         </p>
       )}
@@ -47,4 +58,3 @@ export function RoleButton({ action, to, disabledReason }: Props) {
     </form>
   );
 }
-

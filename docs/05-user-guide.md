@@ -289,13 +289,15 @@ banner across the top of the event). Both are optional.
 
 **Steps:**
 
-1. Select **Users** in the navigation.
-2. Find the person: type part of their name or email in **Search by name or email**, pick a **Role** if you like,
-   and select **Search**.
-3. Select **Make judge** on a participant, or **Make participant** on a judge. You see "{name} is now a judge." (or
-   "a participant") and the row updates. To undo, select the other button.
-4. If the button is greyed out, the line under it says why, for example "Ana is on a team in Demo Hack, so they
-   can't become a judge."
+1. Select **Users** in the navigation. Everyone is listed, organizers first.
+2. Find the person: type part of their name or email in **Search by name or email**, or select a role chip
+   (**Participants**, **Judges**, **Organizers**). Each chip shows how many people it has. Select a column heading to
+   sort by it.
+3. Select **Make judge** on a participant, or **Make participant** on a judge. You can also select the person's name
+   to open their details on the side (full screen on a phone) and change the role there. You see "{name} is now a
+   judge." (or "a participant") and the row updates. To undo, select the other button.
+4. If the button is greyed out, the details panel says why, for example "Ana is on a team in Demo Hack, so they can't
+   become a judge."
 
 ### Open and close registration and submissions
 <!-- owner: Abdurauf · card #12 · fill in your PR -->
@@ -332,18 +334,20 @@ submitted.
 **Good to know:**
 - Only organizers can open this page.
 - People who haven't filled in their profile yet are shown by their email.
-- On a phone, each person and each team is shown as a card instead of a table row.
+- On a phone, each person and each team is a large row you can tap instead of a table row.
 
 **Steps:**
 
 1. Open the event from **Events I run** and select **Participants** in the menu under its name.
-2. The **Participants** tab lists everyone registered, sorted by name: their email, faculty, team (or "No team") and
-   the day they registered. Select a name to open their profile.
-3. To find someone, type part of their name or email under **Search by name or email** and select **Search**.
-   **Clear search** shows everyone again.
-4. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted.
-   A submitted team shows "Submitted" with the date, the project title and a **Repository** link that opens in a new
-   tab. Select **Show description** to read the project description.
+2. The **Participants** tab lists everyone registered: name, email, faculty, team (or "No team") and the day they
+   registered. Select a column heading to sort by it.
+3. To find someone, type part of their name, email, faculty or team in the search box. The **In a team** and **No
+   team** chips narrow the list; each shows how many people it has.
+4. Select a person to open their details on the side (full screen on a phone): faculty, team, skills, bio and links,
+   and a link to their full profile. Press Escape or select **Close** to go back to the list.
+5. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted. The
+   **Submitted** and **Not submitted** chips filter the list. Select a team to see its members and its submission:
+   the project title, description and repository link.
 
 The number next to each tab is how many people registered and how many teams formed. Before anyone registers, the
 page says "Nobody has registered yet."; before any team forms, "No teams yet."
