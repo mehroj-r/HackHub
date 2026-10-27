@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils";
 // The participant's progress inside an event (redesign plan > Participant
 // progress): Profile · Registered · Team · Submitted. Done steps are amber
 // with a check, the current step is outlined amber, and each step links to
-// where you complete it. Once every step is done it folds to "All set".
+// where you complete it. On phones only the current step shows its label (the
+// others keep it for screen readers), so all four fit at 390 px. Once every
+// step is done it folds to "All set".
 
 export type ProgressStep = {
   label: string;
@@ -48,7 +50,7 @@ export function ProgressRail({
       <p className="sr-only">
         {doneCount} of {steps.length} steps done.
       </p>
-      <ol className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none]">
+      <ol className="relative flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none]">
         {steps.map((step, i) => {
           const body = (
             <>
@@ -66,7 +68,9 @@ export function ProgressRail({
               <span
                 className={cn(
                   "whitespace-nowrap",
-                  step.current ? "font-medium text-foreground" : "text-muted-foreground",
+                  step.current
+                    ? "font-medium text-foreground"
+                    : "sr-only text-muted-foreground sm:not-sr-only",
                 )}
               >
                 {step.label}
@@ -77,12 +81,12 @@ export function ProgressRail({
             </>
           );
           return (
-            <li key={step.label} className="flex shrink-0 items-center gap-1">
+            <li key={step.label} className="relative flex shrink-0 items-center gap-1">
               {i > 0 && (
                 <span
                   aria-hidden
                   className={cn(
-                    "h-px w-4 sm:w-8",
+                    "h-px w-3 sm:w-8",
                     steps[i - 1].done ? "bg-primary" : "bg-border",
                   )}
                 />
