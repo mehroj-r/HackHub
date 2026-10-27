@@ -154,7 +154,11 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
       )}
 
       {published.length > 0 && (
-        <section aria-labelledby="published-heading" className="mt-12 border-t pt-8">
+        <section
+          id="results"
+          aria-labelledby="published-heading"
+          className="mt-12 scroll-mt-24 border-t pt-8"
+        >
           <h2 id="published-heading" className="text-xl font-semibold">
             Results published
           </h2>
