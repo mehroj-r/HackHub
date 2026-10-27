@@ -35,6 +35,7 @@ cp .env.example .env     # fill in AUTH_SECRET and SEED_ORGANIZER_*
 docker compose up -d
 npx prisma migrate dev
 npx prisma db seed
+npm run db:seed:demo     # demo events and accounts (set SEED_DEMO_* in .env first)
 npm run dev              # http://localhost:3000
 ```
 
