@@ -31,7 +31,9 @@ export function EventSavedToast() {
     const rest = new URLSearchParams(searchParams.toString());
     rest.delete("saved");
     const query = rest.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   }, [key, pathname, router, searchParams]);
 
   return null;

@@ -1,17 +1,30 @@
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { requireRole } from "@/lib/auth/dal";
+import { Skeleton } from "@/components/ui/skeleton";
+import { requireEvent, requireRole } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 
 // The event overview. #9 lands here after create and edit; the switches and
-// publish button arrive with #12 (docs/08 > Event overview).
+// publish button arrive with #12 (docs/08 > Event overview). Reads inside its
+// own Suspense, like every organizer page (see edit/page.tsx).
 
-export default async function EventOverviewPage({
+export default function EventOverviewPage({
   params,
 }: PageProps<"/organizer/events/[eventId]">) {
+  return (
+    <Suspense fallback={<OverviewSkeleton />}>
+      <EventOverview params={params} />
+    </Suspense>
+  );
+}
+
+async function EventOverview({
+  params,
+}: Pick<PageProps<"/organizer/events/[eventId]">, "params">) {
   await requireRole("ORGANIZER");
   const { eventId } = await params;
-  const event = await prisma.event.findUnique({
+  await requireEvent(eventId);
+  const event = await prisma.event.findUniqueOrThrow({
     where: { id: eventId },
     select: {
       description: true,
@@ -19,7 +32,6 @@ export default async function EventOverviewPage({
       _count: { select: { registrations: true, teams: true } },
     },
   });
-  if (!event) notFound();
   const submissions = await prisma.submission.count({
     where: { team: { eventId } },
   });
@@ -49,6 +61,20 @@ export default async function EventOverviewPage({
           Teams of up to {event.maxTeamSize}.
         </p>
       </section>
+    </div>
+  );
+}
+
+function OverviewSkeleton() {
+  return (
+    <div className="flex flex-col gap-6" aria-busy="true">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Skeleton className="h-24 rounded-2xl" />
+        <Skeleton className="h-24 rounded-2xl" />
+        <Skeleton className="h-24 rounded-2xl" />
+      </div>
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-16" />
     </div>
   );
 }

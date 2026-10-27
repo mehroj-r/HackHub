@@ -60,7 +60,7 @@ export const eventSchema = z.object({
     .transform((value) => (value === "" ? "4" : value))
     .pipe(
       z.coerce
-        .number({ error: TEAM_SIZE })
+        .number<string>({ error: TEAM_SIZE })
         .int(TEAM_SIZE)
         .min(1, TEAM_SIZE)
         .max(10, TEAM_SIZE),

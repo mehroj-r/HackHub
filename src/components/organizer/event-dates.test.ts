@@ -16,15 +16,21 @@ describe("formatDate", () => {
 
 describe("formatDateRange", () => {
   it("shows one date for a same-day event", () => {
-    expect(formatDateRange(d("2026-10-29"), d("2026-10-29"))).toBe("29 Oct 2026");
+    expect(formatDateRange(d("2026-10-29"), d("2026-10-29"))).toBe(
+      "29 Oct 2026",
+    );
   });
 
   it("shares the month and year inside one month", () => {
-    expect(formatDateRange(d("2026-10-29"), d("2026-10-30"))).toBe("29–30 Oct 2026");
+    expect(formatDateRange(d("2026-10-29"), d("2026-10-30"))).toBe(
+      "29–30 Oct 2026",
+    );
   });
 
   it("shares the year across months", () => {
-    expect(formatDateRange(d("2026-10-30"), d("2026-11-02"))).toBe("30 Oct – 2 Nov 2026");
+    expect(formatDateRange(d("2026-10-30"), d("2026-11-02"))).toBe(
+      "30 Oct – 2 Nov 2026",
+    );
   });
 
   it("writes both dates in full across years", () => {

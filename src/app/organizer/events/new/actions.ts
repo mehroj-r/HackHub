@@ -25,7 +25,8 @@ export async function createEvent(
 
   const values = readEventForm(formData);
   const parsed = eventSchema.safeParse(values);
-  if (!parsed.success) return { ...fromZodError(parsed.error), ok: false, values };
+  if (!parsed.success)
+    return { ...fromZodError(parsed.error), ok: false, values };
   const data = parsed.data;
 
   if (!validateEventDates(data.startDate, data.endDate)) {

@@ -24,7 +24,7 @@ export function EventSubNav({ eventId }: { eventId: string }) {
   return (
     <nav aria-label="Event" className="border-b">
       {/* Wraps on phone instead of scrolling sideways. */}
-      <ul className="-mb-px flex flex-wrap gap-x-1">
+      <ul className="-mb-px flex flex-wrap sm:gap-x-1">
         {ITEMS.map(({ label, segment }) => {
           const href = base + segment;
           // Overview matches only itself; the others also match their sub-pages.
@@ -37,7 +37,7 @@ export function EventSubNav({ eventId }: { eventId: string }) {
                 href={href}
                 aria-current={isCurrent ? "page" : undefined}
                 className={cn(
-                  "inline-flex min-h-11 items-center border-b-2 px-3 text-sm outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "inline-flex min-h-11 min-w-11 items-center justify-center border-b-2 px-1.5 text-sm sm:px-3 outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
                   isCurrent
                     ? "border-highlight font-semibold text-foreground"
                     : "border-transparent font-medium text-muted-foreground hover:text-foreground",

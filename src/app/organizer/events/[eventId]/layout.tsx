@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 
@@ -8,8 +7,7 @@ import { EventSavedToast } from "@/components/organizer/event-saved-toast";
 import { EventStatusBadges } from "@/components/organizer/event-status-badges";
 import { EventSubNav } from "@/components/organizer/event-sub-nav";
 import { Skeleton } from "@/components/ui/skeleton";
-import { requireRole } from "@/lib/auth/dal";
-import { prisma } from "@/lib/prisma";
+import { requireEvent, requireRole } from "@/lib/auth/dal";
 
 // Shared by the five organizer event pages (docs/08 > App shell): a back link,
 // the event name and status badges, and the sub-nav Overview / Edit / Criteria
@@ -46,18 +44,7 @@ async function EventHeader({
 }: Pick<LayoutProps<"/organizer/events/[eventId]">, "params">) {
   await requireRole("ORGANIZER");
   const { eventId } = await params;
-  const event = await prisma.event.findUnique({
-    where: { id: eventId },
-    select: {
-      name: true,
-      startDate: true,
-      endDate: true,
-      registrationOpen: true,
-      submissionsOpen: true,
-      resultsPublished: true,
-    },
-  });
-  if (!event) notFound();
+  const event = await requireEvent(eventId);
 
   return (
     <header className="mt-2">
