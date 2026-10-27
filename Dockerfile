@@ -25,8 +25,12 @@ WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
-    PORT=3000
+    PORT=3000 \
+    UPLOAD_DIR=/app/uploads
 RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
+# Event images (src/lib/uploads). docker-compose.prod.yml mounts the "uploads"
+# volume here; a new volume copies this directory's owner, so nextjs can write.
+RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nodejs /app/public ./public

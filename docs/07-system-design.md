@@ -34,6 +34,17 @@ authorizes itself and checks that the ids exist and that the user may touch them
 |---|---|---|
 | **Server action** (`actions.ts` next to the page, `"use server"`) | Every mutation from our own UI: forms, switches, buttons | register, save profile, create team, save scores, publish results |
 | **Route handler** (`app/api/**/route.ts`) | Only when something other than our UI calls the server | `api/auth/[...nextauth]` (exists), `api/health` for the deploy smoke test (#28) |
+| **Route handler, uploads** (`app/uploads/[...path]/route.ts`) | A deliberate exception: serving a stored file needs a GET handler | Event logos and header images; see Uploads below |
+
+**Uploads (event images).** The event form's actions take a logo and a header image (`src/lib/uploads`). The file
+type is checked by its first bytes (PNG, JPEG or WebP), up to 5 MB, then `sharp` crops it to cover and stores a WebP:
+512 × 512 for the logo, 1600 × 600 for the banner, as `events/<eventId>/<kind>-<random>.webp` under `UPLOAD_DIR`.
+`Event.logoPath` / `bannerPath` hold that relative path, and `eventImageUrl(path)` (`src/lib/uploads/url.ts`) turns it
+into `/uploads/<path>`. The GET handler resolves the path safely: every segment must be plain (no `..`, `.`, hidden or
+absolute parts) and inside `UPLOAD_DIR`, only `.webp` is served, and anything else is a 404. Names are random and never
+reused, so responses are `Cache-Control: public, max-age=31536000, immutable`. A replaced or removed image's old file
+is deleted after the database update succeeds. Server actions accept bodies up to 12 MB (`next.config.ts`), and nginx
+allows the same.
 
 Reads never go through an action or API route: a page reads with Prisma directly. A read used by more than one page (for example the ranking inputs,
 used by the organizer preview and the public event page) goes in `src/lib/queries/<feature>.ts`, which starts with `import "server-only"`.

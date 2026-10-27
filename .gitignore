@@ -51,3 +51,6 @@ AGENTS.md
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# event images (UPLOAD_DIR), local only
+/uploads/

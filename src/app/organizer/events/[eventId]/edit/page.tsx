@@ -4,6 +4,7 @@ import { EventForm } from "@/components/organizer/event-form";
 import { EventFormSkeleton } from "@/components/organizer/event-form-skeleton";
 import { requireEvent, requireRole } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
+import { eventImageUrl } from "@/lib/uploads/url";
 import { toDateInput } from "@/lib/validation/event";
 
 import { updateEvent } from "./actions";
@@ -34,10 +35,11 @@ async function EditEventForm({
   await requireRole("ORGANIZER");
   const { eventId } = await params;
   const event = await requireEvent(eventId);
-  const { description } = await prisma.event.findUniqueOrThrow({
-    where: { id: eventId },
-    select: { description: true },
-  });
+  const { description, logoPath, bannerPath } =
+    await prisma.event.findUniqueOrThrow({
+      where: { id: eventId },
+      select: { description: true, logoPath: true, bannerPath: true },
+    });
 
   return (
     <EventForm
@@ -51,6 +53,10 @@ async function EditEventForm({
       }}
       submitLabel="Save changes"
       cancelHref={`/organizer/events/${eventId}`}
+      images={{
+        logoUrl: eventImageUrl(logoPath),
+        bannerUrl: eventImageUrl(bannerPath),
+      }}
     />
   );
 }
