@@ -70,7 +70,7 @@ export default async function EventOverviewPage({
         </Alert>
       )}
 
-      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {counts.map(({ label, value }) => (
           <div key={label} className="rounded-2xl border bg-card p-4">
             <dt className="text-sm text-muted-foreground">{label}</dt>
