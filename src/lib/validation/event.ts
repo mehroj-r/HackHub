@@ -37,6 +37,9 @@ const day = (message: string) =>
 
 const TEAM_SIZE = "Team size must be a whole number from 1 to 10.";
 
+/** The actions' message when validateEventDates refuses the dates (TC-24). */
+export const END_BEFORE_START = "The end date can't be before the start date.";
+
 export const eventSchema = z.object({
   name: z
     .string({ error: "Enter the event name." })
