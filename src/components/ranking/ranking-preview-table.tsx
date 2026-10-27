@@ -1,5 +1,6 @@
 import type * as React from "react";
 
+import { EmptyState } from "@/components/feedback/empty-state";
 import { RankingTable } from "@/components/ranking/ranking-table";
 import type { EventRanking } from "@/lib/queries/ranking";
 
@@ -19,16 +20,16 @@ export function RankingPreviewTable({ ranking, actions }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      {scoreCount === 0 && (
+      {scoreCount === 0 && ranked.length > 0 && (
         <p className="text-muted-foreground">No scores yet.</p>
       )}
 
       {ranked.length > 0 ? (
         <RankingTable rows={ranked} linkMembers showJudgeCount />
       ) : (
-        <p className="text-muted-foreground">
-          No team has submitted a project.
-        </p>
+        <EmptyState title="Nothing to rank yet">
+          No team has submitted a project. Teams appear here once they submit.
+        </EmptyState>
       )}
 
       {unranked.length > 0 && (
