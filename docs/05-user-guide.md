@@ -159,10 +159,22 @@ TODO(user-guide) _To be completed with screenshots when the screen is built._
 - The end date can't be before the start date. An event can start and end on the same day.
 - A new event has registration closed, so participants don't see it until you open registration.
 - Any organizer can manage any event.
+- The maximum team size is a whole number from 1 to 10 (4 by default). When you edit it, you can't set it below the
+  size of the largest team that already exists.
 
 **Steps:**
 
-TODO(user-guide) _To be completed with screenshots when the screen is built._
+1. Open **Events I run**. It lists every event with its dates, its status (registration and submissions open or
+   closed) and how many people registered, how many teams formed and how many submitted.
+2. Select **New event**. Enter the name, a description, the start and end dates, and the maximum team size.
+3. Select **Create event**. You land on the event's overview with the message "Event created. It's hidden from
+   participants until you open registration."
+4. To change it later, open the event and select **Edit** in the menu under its name. Change what you need and select
+   **Save changes**. You go back to the overview with "Event saved."
+5. **Cancel** takes you back to the page you came from. If you changed anything, HackHub asks whether to discard your
+   changes first.
+
+The menu under an event's name has the event's pages: Overview, Edit, Criteria, Participants and Ranking.
 
 ### Set the judging criteria
 <!-- owner: Ollayorbek · card #10 · fill in your PR -->
@@ -205,7 +217,18 @@ results.
 
 **Steps:**
 
-TODO(user-guide) _To be completed with screenshots when the screen is built._
+1. Open the event from **Events I run**. The **Overview** shows how many people registered, how many teams formed,
+   how many submitted, and whether the criteria are set.
+2. Under **Event controls**, turn **Registration** on to list the event on Events so participants can register. Turn
+   it off to stop new registrations. You see "Registration opened." or "Registration closed."
+3. Turn **Submissions** on when teams may submit. When you turn it off, HackHub asks you to confirm: teams can't
+   submit or edit any more, and judges can start scoring. If a judge has already scored, the switch stays off and says
+   why.
+4. When the judges are done, select **Publish results**. If the button is greyed out, the line under it says what's
+   missing: close submissions first, or set the judging criteria first. The confirmation reminds you to check the
+   ranking preview, because HackHub doesn't track whether every team has been scored.
+5. After you publish, the overview says "Results were published." with a link to the public event page, and every
+   control is greyed out.
 
 ### See participants and teams
 <!-- owner: Abdurauf · card #11 · fill in your PR -->
@@ -213,9 +236,24 @@ TODO(user-guide) _To be completed with screenshots when the screen is built._
 **What you can do:** see everyone registered for an event, every team with its members, and which teams have
 submitted.
 
+**Good to know:**
+- Only organizers can open this page.
+- People who haven't filled in their profile yet are shown by their email.
+- On a phone, each person and each team is shown as a card instead of a table row.
+
 **Steps:**
 
-TODO(user-guide) _To be completed with screenshots when the screen is built._
+1. Open the event from **Events I run** and select **Participants** in the menu under its name.
+2. The **Participants** tab lists everyone registered, sorted by name: their email, faculty, team (or "No team") and
+   the day they registered. Select a name to open their profile.
+3. To find someone, type part of their name or email under **Search by name or email** and select **Search**.
+   **Clear search** shows everyone again.
+4. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted.
+   A submitted team shows "Submitted" with the date, the project title and a **Repository** link that opens in a new
+   tab. Select **Show description** to read the project description.
+
+The number next to each tab is how many people registered and how many teams formed. Before anyone registers, the
+page says "Nobody has registered yet."; before any team forms, "No teams yet."
 
 ### Review and publish the ranking
 <!-- owner: Mehroj · card #16 · fill in your PR -->
