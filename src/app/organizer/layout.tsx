@@ -4,5 +4,10 @@
 export default function OrganizerLayout({
   children,
 }: LayoutProps<"/organizer">) {
-  return <main className="mx-auto w-full max-w-5xl px-4 py-8">{children}</main>;
+  // Organizer screens are compact (redesign plan > Density).
+  return (
+    <main data-density="compact" className="mx-auto w-full max-w-5xl px-4 py-8">
+      {children}
+    </main>
+  );
 }

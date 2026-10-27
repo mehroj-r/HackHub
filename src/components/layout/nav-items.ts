@@ -47,3 +47,98 @@ export function getActiveHref(items: NavItem[], pathname: string): string | null
   }
   return best;
 }
+
+// ---------------------------------------------------------------------------
+// Phone bottom tab bar (redesign plan > App shell). Below md these replace the
+// header navigation as the way around; the header keeps the logo and account.
+
+export type TabIcon =
+  | "events"
+  | "my-events"
+  | "team"
+  | "profile"
+  | "users"
+  | "score"
+  | "results";
+
+export type TabItem = {
+  label: string;
+  href: string;
+  icon: TabIcon;
+  /** Whether this tab is the current section for a pathname. */
+  match: (pathname: string) => boolean;
+};
+
+const TEAM_PATH = /^\/events\/[^/]+\/team(\/|$)/;
+const under = (prefix: string) => (p: string) =>
+  p === prefix || p.startsWith(`${prefix}/`);
+
+/**
+ * The tabs for a role, or none for a visitor. `teamHref` is the participant's
+ * team page in their current event, or /my-events when they have none.
+ */
+export function getTabItems(
+  role: Role | null,
+  { teamHref = "/my-events" }: { teamHref?: string } = {},
+): TabItem[] {
+  const profile: TabItem = {
+    label: "Profile",
+    href: "/profile",
+    icon: "profile",
+    match: under("/profile"),
+  };
+  switch (role) {
+    case "PARTICIPANT":
+      return [
+        {
+          label: "Events",
+          href: "/events",
+          icon: "events",
+          match: (p) => under("/events")(p) && !TEAM_PATH.test(p),
+        },
+        {
+          label: "My events",
+          href: "/my-events",
+          icon: "my-events",
+          match: under("/my-events"),
+        },
+        {
+          label: "Team",
+          href: teamHref,
+          icon: "team",
+          match: (p) => TEAM_PATH.test(p),
+        },
+        profile,
+      ];
+    case "ORGANIZER":
+      return [
+        {
+          label: "Events",
+          href: "/organizer",
+          icon: "events",
+          match: (p) => under("/organizer")(p) && !under("/organizer/users")(p),
+        },
+        {
+          label: "Users",
+          href: "/organizer/users",
+          icon: "users",
+          match: under("/organizer/users"),
+        },
+        profile,
+      ];
+    case "JUDGE":
+      return [
+        { label: "Score", href: "/judge", icon: "score", match: under("/judge") },
+        // The judge page's "Results published" section (id="results").
+        {
+          label: "Results",
+          href: "/judge#results",
+          icon: "results",
+          match: () => false,
+        },
+        profile,
+      ];
+    default:
+      return [];
+  }
+}
