@@ -387,10 +387,11 @@ page says "Nobody has registered yet."; before any team forms, "No teams yet."
 **Steps:**
 
 1. Log in, or select **Judging** in the navigation.
-2. Each event being judged shows its number of criteria and your progress, for example "1 of 2 teams scored".
-3. Under it, every team that submitted shows its project title and your status: **Not started**, **In progress**
-   (some criteria scored) or **Scored**.
-4. Select **Score next team** to open the next team you haven't finished, or select any team.
+2. Each event being judged shows your progress, for example "1 of 2 scored", and its number of criteria.
+3. Next to it is the queue: every team that submitted, in order, with its project title and your status:
+   **To score**, **In progress** (some criteria scored) or **Scored**.
+4. Select **Start scoring** (or **Continue scoring**) to open the first team you haven't finished, or select any
+   team in the queue.
 5. Events whose results are out are listed under **Results published**, with a link to the ranking.
 
 ### Score a team
@@ -405,15 +406,20 @@ page says "Nobody has registered yet."; before any team forms, "No teams yet."
 
 **Steps:**
 
-1. Open a team from **Judging**. Read the project title and description, and select **Open the repository** to see
-   the code in a new tab.
-2. Under **Your scores**, enter a whole number for each criterion. The range is shown next to each box, for example
-   "0–10".
-3. Select **Save scores** to stay on the team ("Scores saved."), or **Save and go to next team** to move on. After
-   the last team you return to Judging with "You've scored every team in {event}."
-4. To change a score, open the team again, edit it and save. Clearing a box removes that score.
-5. If you see "Scoring starts when the organizer closes submissions." or "Results are published, so scores can't be
-   changed.", the form is read-only.
+1. Open a team from **Judging**. On a computer the queue stays on the left, so you can see where you are; on a phone
+   the top of the page says "Team 2 of 7" and **Queue** takes you back to the list.
+2. Read the project title and description, and select **Open the repository** to see the code in a new tab.
+3. Under **Your scores**, each criterion has a row of numbers from 0 to its maximum. Select the score you give.
+   The **×** next to a row clears it.
+4. With a keyboard: Tab moves from criterion to criterion, keys **0**–**9** give the score (type **1** then **0**
+   quickly for 10), the arrow keys step up and down, Backspace clears, and Enter saves and opens the next team.
+5. Select **Save** to stay on the team ("Scores saved."), or **Save and next** to move on. On a phone both buttons
+   stay at the bottom of the screen. After the last team you return to Judging with "You've scored every team in
+   {event}."
+6. To change a score, open the team again, pick another number and save. Clearing a row and saving removes that
+   score. If you try to leave with unsaved scores, HackHub asks "Leave without saving your scores?".
+7. If you see "Scoring starts when the organizer closes submissions." or "Results are published, so scores can't be
+   changed.", the scores are read-only.
 
 ---
 

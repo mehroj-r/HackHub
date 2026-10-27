@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRightIcon, GavelIcon, TrophyIcon } from "lucide-react";
+import { ArrowRightIcon, CheckIcon, GavelIcon, TrophyIcon } from "lucide-react";
 
 import { EventAvatar } from "@/components/events/event-avatar";
 import { OnceToast } from "@/components/judging/once-toast";
-import { ScoringStatusBadge } from "@/components/judging/scoring-status-badge";
+import { JudgeQueue, QueueProgress } from "@/components/judging/judge-queue";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +59,10 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
     })),
   );
 
+  const firstWithWork = events.find(
+    (e) => e.criteriaCount > 0 && e.teams.some((t) => t.status !== "SCORED"),
+  )?.id;
+
   const doneEvent =
     typeof done === "string" ? await prisma.event.findUnique({ where: { id: done }, select: { name: true } }) : null;
 
@@ -66,7 +70,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
     <>
       <OnceToast param="done" message={doneEvent ? SCORING_MESSAGES.allScored(doneEvent.name) : null} />
       <h1 className="text-3xl font-bold">Judging</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="mt-1 max-w-prose text-sm text-muted-foreground">
         Score every team that submitted. You can change your scores until the
         organizer publishes the results.
       </p>
@@ -85,74 +89,64 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="mt-8 flex flex-col gap-8">
+        <div className="mt-6 flex flex-col gap-10">
           {events.map((event) => {
-            const scored = event.teams.filter((t) => t.status === "SCORED").length;
             const next = event.teams.find((t) => t.status !== "SCORED");
+            const started = event.teams.some((t) => t.status !== "NOT_STARTED");
+            // One amber action per view: only the first event with work left.
+            const primary = event.id === firstWithWork;
             return (
               <section
                 key={event.id}
                 aria-labelledby={`event-${event.id}`}
-                className="rounded-2xl border bg-card p-4 text-card-foreground sm:p-6"
+                className="grid gap-4 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-8"
               >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex min-w-0 items-start gap-3">
+                <header className="flex flex-col gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <EventAvatar
                       name={event.name}
                       logoUrl={eventImageUrl(event.logoPath)}
                       size="sm"
-                      className="ring-card"
+                      className="ring-background"
                     />
-                    <div className="min-w-0">
-                      <h2 id={`event-${event.id}`} className="text-xl font-semibold break-words">
-                        {event.name}
-                      </h2>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {event.criteriaCount === 1 ? "1 criterion" : `${event.criteriaCount} criteria`}
-                        {" · "}
-                        <span className="font-medium text-foreground">
-                          {scored} of {event.teams.length} teams scored
-                        </span>
-                      </p>
-                    </div>
+                    <h2 id={`event-${event.id}`} className="min-w-0 text-xl font-semibold break-words">
+                      {event.name}
+                    </h2>
                   </div>
-                  {next && event.criteriaCount > 0 && (
-                    <Button asChild className="h-11 self-start md:h-9">
+                  <QueueProgress teams={event.teams} className="text-base" />
+                  <p className="text-sm text-muted-foreground">
+                    {event.criteriaCount === 1 ? "1 criterion" : `${event.criteriaCount} criteria`}
+                  </p>
+                  {next && event.criteriaCount > 0 ? (
+                    <Button
+                      asChild
+                      variant={primary ? "default" : "outline"}
+                      className="h-11 self-start"
+                    >
                       <Link href={`/judge/teams/${next.id}`}>
-                        Score next team: {next.name}
+                        {started ? "Continue scoring" : "Start scoring"}
                         <ArrowRightIcon aria-hidden />
                       </Link>
                     </Button>
+                  ) : event.criteriaCount > 0 ? (
+                    <p className="flex items-center gap-1.5 text-sm font-medium">
+                      <CheckIcon aria-hidden className="size-4 text-success" />
+                      You&apos;ve scored every team.
+                    </p>
+                  ) : null}
+                </header>
+
+                <div className="flex min-w-0 flex-col gap-3">
+                  {event.criteriaCount === 0 && (
+                    <Alert>
+                      <AlertDescription>
+                        The organizer hasn&apos;t set the criteria yet. You can read
+                        the projects, but not score them.
+                      </AlertDescription>
+                    </Alert>
                   )}
+                  <JudgeQueue teams={event.teams} label={`Teams to score in ${event.name}`} />
                 </div>
-
-                {event.criteriaCount === 0 && (
-                  <Alert className="mt-4">
-                    <AlertDescription>
-                      The organizer hasn&apos;t set the criteria yet. You can read
-                      the projects, but not score them.
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                <ul className="mt-4 divide-y rounded-xl border">
-                  {event.teams.map((team) => (
-                    <li key={team.id}>
-                      <Link
-                        href={`/judge/teams/${team.id}`}
-                        className="flex min-h-11 flex-col gap-2 p-4 outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 sm:flex-row sm:items-center sm:justify-between"
-                      >
-                        <span className="min-w-0">
-                          <span className="block font-medium break-words">{team.name}</span>
-                          <span className="block text-sm break-words text-muted-foreground">
-                            {team.title}
-                          </span>
-                        </span>
-                        <ScoringStatusBadge status={team.status} />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
               </section>
             );
           })}
@@ -160,7 +154,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
       )}
 
       {published.length > 0 && (
-        <section aria-labelledby="published-heading" className="mt-10">
+        <section aria-labelledby="published-heading" className="mt-12 border-t pt-8">
           <h2 id="published-heading" className="text-xl font-semibold">
             Results published
           </h2>
