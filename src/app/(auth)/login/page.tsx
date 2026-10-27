@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { LogoMark } from "@/components/brand/logo";
 import { LoginForm } from "@/components/auth/login-form";
 import {
   Card,
@@ -32,6 +33,10 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <Card>
       <CardHeader>
+        {/* The app icon: the Podium H on an amber tile. */}
+        <span className="mb-2 flex size-12 items-center justify-center rounded-[10.5px] bg-primary">
+          <LogoMark size={34} variant="onPrimary" decorative />
+        </span>
         <CardTitle className="text-2xl">Log in</CardTitle>
         <CardDescription>Welcome back to HackHub.</CardDescription>
       </CardHeader>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TrophyIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -61,6 +62,31 @@ function Members({
   );
 }
 
+/**
+ * Rank number on the Scoreboard "fixed ramp" (DESIGN.md): the leader in full
+ * amber with a red trophy (the live light; also a non-colour marker), every
+ * other rank in amber at reduced strength (70%, still 5:1).
+ */
+function Rank({ rank }: { rank: number }) {
+  const leader = rank === 1;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 font-semibold tabular-nums",
+        leader ? "text-primary" : "text-primary/70",
+      )}
+    >
+      {leader && (
+        <TrophyIcon className="size-4 text-live" aria-label="Leader" />
+      )}
+      {rank}
+    </span>
+  );
+}
+
+const LEADER_ROW =
+  "bg-primary/10 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--primary)_45%,transparent)]";
+
 function YourTeam() {
   return (
     <Badge variant="secondary" className="ml-2">
@@ -97,10 +123,13 @@ export function RankingTable({
                 <TableRow
                   key={row.team.id}
                   aria-current={mine ? "true" : undefined}
-                  className={cn(mine && "bg-muted/50")}
+                  className={cn(
+                    row.rank === 1 && LEADER_ROW,
+                    mine && row.rank !== 1 && "bg-muted/50",
+                  )}
                 >
-                  <TableCell className="font-semibold tabular-nums">
-                    {row.rank}
+                  <TableCell>
+                    <Rank rank={row.rank} />
                   </TableCell>
                   <TableCell className="font-medium">
                     {row.team.name}
@@ -136,12 +165,18 @@ export function RankingTable({
               aria-current={mine ? "true" : undefined}
               className={cn(
                 "flex flex-col gap-2 rounded-lg border p-3",
-                mine && "border-primary bg-muted/50",
+                row.rank === 1 && LEADER_ROW,
+                mine && "border-primary",
+                mine && row.rank !== 1 && "bg-muted/50",
               )}
             >
               <div className="flex items-baseline justify-between gap-3">
-                <span className="font-semibold tabular-nums">
-                  <span className="sr-only">Rank </span>#{row.rank}
+                <span className="inline-flex items-baseline">
+                  <span className="sr-only">Rank </span>
+                  <span aria-hidden className="mr-0.5 font-semibold text-primary/70">
+                    #
+                  </span>
+                  <Rank rank={row.rank} />
                 </span>
                 <span className="font-semibold tabular-nums">
                   {formatTotal(row.total)}

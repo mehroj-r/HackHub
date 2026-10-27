@@ -29,18 +29,30 @@ export function StatusBadge({
   );
 }
 
-/** An event state: "open" is tinted with a dot, "closed" is a plain outline. */
-function EventBadge({ open, children }: { open: boolean; children: string }) {
+/**
+ * An event state. Open states get the amber tint and the red "live" dot
+ * (DESIGN.md > Badges); "Results published" the tint without a dot; closed
+ * states a plain outline.
+ */
+function EventBadge({
+  open,
+  live = open,
+  children,
+}: {
+  open: boolean;
+  live?: boolean;
+  children: string;
+}) {
   return (
     <Badge
       variant="outline"
       className={cn(open && "border-primary/50 bg-primary/15 text-foreground")}
     >
-      {open && (
+      {live && (
         <CircleIcon
           aria-hidden
           data-icon="inline-start"
-          className="fill-current text-ring"
+          className="fill-current text-live"
         />
       )}
       {children}
@@ -76,7 +88,9 @@ export function EventStatusBadges({
       </li>
       {event.resultsPublished && (
         <li>
-          <EventBadge open>Results published</EventBadge>
+          <EventBadge open live={false}>
+            Results published
+          </EventBadge>
         </li>
       )}
     </ul>

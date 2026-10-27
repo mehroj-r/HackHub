@@ -61,7 +61,7 @@ export default function LandingPage() {
         <section className="relative isolate overflow-hidden py-16 sm:py-24">
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-24 left-1/2 -z-10 size-96 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl"
+            className="pointer-events-none absolute -top-24 left-1/2 -z-10 size-96 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
           />
           <p className="mb-4 inline-flex items-center rounded-full border border-highlight/40 bg-highlight/10 px-3 py-1 text-sm font-medium text-highlight">
             Hackathons, minus the chaos
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 key={title}
                 className="rounded-2xl border bg-card p-5 text-card-foreground"
               >
-                <span className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary-foreground">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
                   <Icon className="size-5" aria-hidden />
                 </span>
                 <h3 className="mt-4 text-lg font-semibold">{title}</h3>
