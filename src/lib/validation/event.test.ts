@@ -5,6 +5,7 @@ import {
   parseDateInput,
   readEventForm,
   toDateInput,
+  withDateOrderError,
 } from "@/lib/validation/event";
 
 // docs/08 > Event form, docs/06 TC-23, TC-24, TC-29.
@@ -140,5 +141,32 @@ describe("readEventForm", () => {
       endDate: "",
       maxTeamSize: "",
     });
+  });
+});
+
+describe("withDateOrderError (TC-24)", () => {
+  const END_BEFORE = ["The end date can't be before the start date."];
+
+  it("adds the date-order error next to the schema's other errors", () => {
+    expect(
+      withDateOrderError(
+        { maxTeamSize: [TEAM_SIZE] },
+        { startDate: "2026-12-20", endDate: "2026-12-19" },
+      ),
+    ).toEqual({ maxTeamSize: [TEAM_SIZE], endDate: END_BEFORE });
+  });
+
+  it("leaves the errors alone when the order is fine or a date is missing", () => {
+    const fieldErrors = { name: ["Enter the event name."] };
+    expect(
+      withDateOrderError(fieldErrors, {
+        startDate: "2026-12-20",
+        endDate: "2026-12-20",
+      }),
+    ).toEqual(fieldErrors);
+    expect(
+      withDateOrderError(fieldErrors, { startDate: "", endDate: "2026-12-19" }),
+    ).toEqual(fieldErrors);
+    expect(withDateOrderError(undefined, valid)).toEqual({});
   });
 });

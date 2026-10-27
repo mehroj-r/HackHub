@@ -11,6 +11,7 @@ import {
   END_BEFORE_START,
   eventSchema,
   readEventForm,
+  withDateOrderError,
 } from "@/lib/validation/event";
 
 /**
@@ -25,8 +26,15 @@ export async function createEvent(
 
   const values = readEventForm(formData);
   const parsed = eventSchema.safeParse(values);
-  if (!parsed.success)
-    return { ...fromZodError(parsed.error), ok: false, values };
+  if (!parsed.success) {
+    const result = fromZodError(parsed.error);
+    const fieldErrors = result?.ok === false ? result.fieldErrors : undefined;
+    return {
+      ok: false,
+      fieldErrors: withDateOrderError(fieldErrors, values),
+      values,
+    };
+  }
   const data = parsed.data;
 
   if (!validateEventDates(data.startDate, data.endDate)) {
