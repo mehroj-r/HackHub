@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import {
   useActionState,
   useCallback,
@@ -12,6 +12,8 @@ import {
 } from "react";
 import { toast } from "sonner";
 
+import { SavedTick } from "@/components/feedback/saved-tick";
+import { ActionDock } from "@/components/layout/action-dock";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field";
@@ -62,9 +64,13 @@ export function Scorecard({ action, criteria, lastSaved }: Props) {
   // After a save the posted values are the saved ones. Adjusting state while
   // rendering (not in an effect) when a new result arrives.
   const [seenState, setSeenState] = useState(state);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
   if (state !== seenState) {
     setSeenState(state);
-    if (state?.ok) setSavedValues(values);
+    if (state?.ok) {
+      setSavedValues(values);
+      setSavedAt((n) => (n ?? 0) + 1);
+    }
   }
 
   useEffect(() => {
@@ -128,30 +134,25 @@ export function Scorecard({ action, criteria, lastSaved }: Props) {
         ))}
       </ol>
 
-      <p className="flex min-h-6 items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
-        {state?.ok && !dirty ? (
-          <>
-            <CheckIcon
-              aria-hidden
-              className="size-4 text-success motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-50 motion-safe:duration-300"
-            />
-            <span className="text-foreground">Saved</span>
-          </>
-        ) : dirty ? (
-          "Unsaved changes"
-        ) : lastSaved ? (
-          `Last saved ${lastSaved}`
-        ) : (
-          "Not saved yet. You can leave a criterion empty and come back to it."
-        )}
-        <span className="ml-auto font-mono tabular-nums">
+      <div className="flex min-h-6 items-center text-sm text-muted-foreground">
+        <SavedTick savedAt={dirty ? null : savedAt} className="[&:not(:empty)]:mr-3" />
+        <p aria-live="polite">
+          {dirty
+            ? "Unsaved changes"
+            : savedAt
+              ? null
+              : lastSaved
+                ? `Last saved ${lastSaved}`
+                : "Not saved yet. You can leave a criterion empty and come back to it."}
+        </p>
+        <span className="ml-auto pl-3 font-mono tabular-nums">
           {scoredCount}/{criteria.length}
           <span className="sr-only"> criteria scored</span>
         </span>
-      </p>
+      </div>
 
-      {/* On phones the actions dock to the bottom of the screen. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t bg-background px-4 pt-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] md:static md:z-auto md:border-0 md:bg-transparent md:p-0">
+      {/* On phones the actions dock above the tab bar (ActionDock). */}
+      <ActionDock className="flex-row md:gap-2">
         <Button
           type="submit"
           name="intent"
@@ -168,13 +169,11 @@ export function Scorecard({ action, criteria, lastSaved }: Props) {
           name="intent"
           value="next"
           disabled={pending}
-          className="h-11 flex-[2] px-6 motion-safe:transition-transform motion-safe:active:scale-[0.98] md:flex-none"
+          className="h-11 flex-[2] px-6 md:flex-none"
         >
           {pending ? "Saving…" : "Save and next"}
         </Button>
-      </div>
-      {/* Room for the docked actions, so they never cover the last row. */}
-      <div aria-hidden className="h-16 md:hidden" />
+      </ActionDock>
     </form>
   );
 }

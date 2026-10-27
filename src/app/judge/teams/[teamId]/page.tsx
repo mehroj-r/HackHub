@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeftIcon, ExternalLinkIcon, LockIcon } from "lucide-react";
+import { ExternalLinkIcon, LockIcon } from "lucide-react";
 
 import { formatDateTime } from "@/components/judging/format";
 import { JudgeQueue, QueueProgress } from "@/components/judging/judge-queue";
 import { OnceToast } from "@/components/judging/once-toast";
 import { Scorecard } from "@/components/judging/scorecard";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ScoringStatusBadge } from "@/components/judging/scoring-status-badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -85,13 +86,6 @@ export default async function ScoreTeamPage({ params }: PageProps<"/judge/teams/
       <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-10">
         <aside className="hidden lg:block">
           <div className="sticky top-24 flex flex-col gap-3">
-            <Link
-              href="/judge"
-              className="-ml-2 inline-flex min-h-9 items-center gap-1.5 self-start rounded-lg px-2 text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              <ArrowLeftIcon className="size-4" aria-hidden />
-              Judging
-            </Link>
             <div>
               <p className="font-semibold break-words">{event.name}</p>
               <QueueProgress teams={queue} />
@@ -101,31 +95,30 @@ export default async function ScoreTeamPage({ params }: PageProps<"/judge/teams/
         </aside>
 
         <div className="min-w-0">
-          {/* Phones and tablets: the queue is on /judge; keep the place here. */}
-          <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
-            <Link
-              href="/judge"
-              className="-ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              <ArrowLeftIcon className="size-4" aria-hidden />
-              Queue
-            </Link>
-            <p className="text-sm text-muted-foreground">
-              Team <span className="font-mono text-foreground tabular-nums">{position}</span> of{" "}
-              <span className="font-mono text-foreground tabular-nums">{queue.length}</span>
-            </p>
-          </div>
+          {/* The queue is on /judge, the first crumb. */}
+          <Breadcrumbs
+            className="mb-4"
+            items={[
+              { label: "Judging", href: "/judge" },
+              { label: event.name },
+              { label: team.name },
+            ]}
+          />
 
           <header>
-            <p className="text-sm text-muted-foreground">{event.name}</p>
-            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2">
-              <h1 className="text-3xl font-bold break-words">{team.name}</h1>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <h1 className="text-page-title break-words">{team.name}</h1>
               <ScoringStatusBadge status={scoringStatus(scoredCount, criteria.length)} />
+              {/* Phones and tablets have no queue column: keep the place. */}
+              <p className="text-sm text-muted-foreground lg:hidden">
+                Team <span className="font-mono text-foreground tabular-nums">{position}</span> of{" "}
+                <span className="font-mono text-foreground tabular-nums">{queue.length}</span>
+              </p>
             </div>
           </header>
 
           <article aria-labelledby="project-heading" className="mt-6">
-            <h2 id="project-heading" className="text-xl font-semibold break-words">
+            <h2 id="project-heading" className="text-section-title break-words">
               {submission.title}
             </h2>
             <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -168,7 +161,7 @@ export default async function ScoreTeamPage({ params }: PageProps<"/judge/teams/
             aria-labelledby="scorecard-heading"
             className="mt-8 scroll-mt-24 border-t pt-6"
           >
-            <h2 id="scorecard-heading" className="text-xl font-semibold">
+            <h2 id="scorecard-heading" className="text-section-title">
               Your scores
             </h2>
             <div className="mt-4">

@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRightIcon, CheckIcon, GavelIcon, TrophyIcon } from "lucide-react";
+import { ArrowRightIcon, CheckIcon, TrophyIcon } from "lucide-react";
 
 import { EventAvatar } from "@/components/events/event-avatar";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { OnceToast } from "@/components/judging/once-toast";
 import { JudgeQueue, QueueProgress } from "@/components/judging/judge-queue";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { requireRole } from "@/lib/auth/dal";
 import { SCORING_MESSAGES } from "@/lib/domain/scoring";
 import { prisma } from "@/lib/prisma";
@@ -69,25 +63,16 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
   return (
     <>
       <OnceToast param="done" message={doneEvent ? SCORING_MESSAGES.allScored(doneEvent.name) : null} />
-      <h1 className="text-3xl font-bold">Judging</h1>
+      <h1 className="text-page-title">Judging</h1>
       <p className="mt-1 max-w-prose text-sm text-muted-foreground">
         Score every team that submitted. You can change your scores until the
         organizer publishes the results.
       </p>
 
       {events.length === 0 ? (
-        <Empty className="mt-8 border">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <GavelIcon aria-hidden />
-            </EmptyMedia>
-            <EmptyTitle>Nothing to judge yet</EmptyTitle>
-            <EmptyDescription>
-              No events are being judged right now. Teams show up here once an
-              organizer closes submissions.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        <EmptyState title="Nothing to judge yet" className="mt-8">
+          Teams show up here once an organizer closes an event&apos;s submissions.
+        </EmptyState>
       ) : (
         <div className="mt-6 flex flex-col gap-10">
           {events.map((event) => {
@@ -109,7 +94,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
                       size="sm"
                       className="ring-background"
                     />
-                    <h2 id={`event-${event.id}`} className="min-w-0 text-xl font-semibold break-words">
+                    <h2 id={`event-${event.id}`} className="min-w-0 text-section-title break-words">
                       {event.name}
                     </h2>
                   </div>
@@ -159,7 +144,7 @@ export default async function JudgePage({ searchParams }: PageProps<"/judge">) {
           aria-labelledby="published-heading"
           className="mt-12 scroll-mt-24 border-t pt-8"
         >
-          <h2 id="published-heading" className="text-xl font-semibold">
+          <h2 id="published-heading" className="text-section-title">
             Results published
           </h2>
           <ul className="mt-4 flex flex-col gap-2">
