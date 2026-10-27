@@ -41,6 +41,9 @@ and the two demo events are listed under [Demo data](#demo-data-local-only).
 say. If you still have a volume from an older Postgres version, the container won't start: remove the volume with
 `docker compose down -v` (this deletes the local data), then run `docker compose up -d` and the steps above again.
 
+**Port 5432 taken.** If another Postgres already uses port 5432 on your machine, change the host side of `ports` in
+`docker-compose.yml` (for example `"5433:5432"`) and the port in `DATABASE_URL` to match.
+
 Before opening a pull request, run what CI runs:
 
 ```bash
