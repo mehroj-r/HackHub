@@ -1,28 +1,23 @@
 import { Suspense } from "react";
-import { UsersRoundIcon } from "lucide-react";
 
+import { EmptyState } from "@/components/feedback/empty-state";
 import { ParticipantsTabs } from "@/components/organizer/participants-tabs";
 import { ParticipantsViewSkeleton } from "@/components/organizer/participants-view-skeleton";
 import { TeamsTable } from "@/components/organizer/teams-table";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-} from "@/components/ui/empty";
 
 import { loadTeams } from "../data";
 
-// docs/08 > Participants and teams, the Teams tab. loadTeams() authorizes
-// (organizer only) and loads the event; params and the database are read
-// inside this page's own Suspense (Cache Components).
+// docs/08 > Participants and teams, the Teams tab (redesign: table + detail
+// panel). loadTeams() authorizes (organizer only) and loads the event; params
+// and the database are read inside this page's own Suspense (Cache
+// Components).
 
 export default function TeamsPage({
   params,
 }: PageProps<"/organizer/events/[eventId]/participants/teams">) {
   return (
     <>
-      <h2 className="text-2xl font-semibold">Participants and teams</h2>
+      <h2 className="text-section-title">Participants and teams</h2>
       <Suspense fallback={<ParticipantsViewSkeleton />}>
         <Teams params={params} />
       </Suspense>
@@ -32,7 +27,10 @@ export default function TeamsPage({
 
 async function Teams({
   params,
-}: Pick<PageProps<"/organizer/events/[eventId]/participants/teams">, "params">) {
+}: Pick<
+  PageProps<"/organizer/events/[eventId]/participants/teams">,
+  "params"
+>) {
   const { eventId } = await params;
   const { event, counts, rows } = await loadTeams(eventId);
 
@@ -40,16 +38,10 @@ async function Teams({
     <div className="mt-4 flex flex-col gap-6">
       <ParticipantsTabs eventId={eventId} current="teams" counts={counts} />
       {rows.length === 0 ? (
-        <Empty className="border">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <UsersRoundIcon aria-hidden />
-            </EmptyMedia>
-            <EmptyDescription className="text-base text-foreground">
-              No teams yet.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        // Teams form by themselves, so there's no action to offer.
+        <EmptyState title="No teams yet.">
+          Teams that participants create or join show up here.
+        </EmptyState>
       ) : (
         <TeamsTable rows={rows} maxTeamSize={event.maxTeamSize} />
       )}
