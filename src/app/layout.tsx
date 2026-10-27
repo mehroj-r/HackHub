@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Space_Grotesk, Unbounded } from "next/font/google";
 import { Suspense } from "react";
 
+import { AppToaster } from "@/components/layout/app-toaster";
 import { NoticeToast } from "@/components/layout/notice-toast";
 import { TabBar } from "@/components/layout/tab-bar";
 import {
   SiteHeader,
   SiteHeaderSkeleton,
 } from "@/components/layout/site-header";
-import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -63,11 +63,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <NoticeToast />
         </Suspense>
-        {/* Toasts are a "live" moment: their icon takes the live red. */}
-        <Toaster
-          theme="dark"
-          toastOptions={{ classNames: { toast: "cn-toast", icon: "text-live" } }}
-        />
+        {/* Top-center on phones (clear of the dock and tab bar), bottom-right on desktop. */}
+        <AppToaster />
       </body>
     </html>
   );
