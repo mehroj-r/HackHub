@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/feedback/empty-state";
 import { RankingTable } from "@/components/ranking/ranking-table";
 import { getEventRanking } from "@/lib/queries/ranking";
 
@@ -23,11 +24,13 @@ export async function PublishedRanking({
 
   return (
     <section aria-labelledby="ranking-heading" className="flex flex-col gap-4">
-      <h2 id="ranking-heading" className="text-xl font-semibold">
+      <h2 id="ranking-heading" className="text-section-title">
         Final ranking
       </h2>
       {ranked.length === 0 ? (
-        <p className="text-muted-foreground">No team submitted a project.</p>
+        <EmptyState title="No ranking">
+          No team submitted a project, so there is nothing to rank.
+        </EmptyState>
       ) : (
         <RankingTable
           rows={ranked}

@@ -26,7 +26,7 @@ export default function RankingPreviewPage({
   return (
     <section aria-labelledby="ranking-preview" className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h2 id="ranking-preview" className="text-2xl font-semibold">
+        <h2 id="ranking-preview" className="text-section-title">
           Ranking preview
         </h2>
         <p className="text-muted-foreground text-sm">
@@ -64,7 +64,7 @@ async function RankingPreview({
               Everyone can see the ranking on the{" "}
               <Link
                 href={`/events/${eventId}`}
-                className="text-foreground underline underline-offset-4"
+                className="text-foreground underline"
               >
                 public event page
               </Link>
