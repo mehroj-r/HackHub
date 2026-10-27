@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { SavedTick } from "@/components/feedback/saved-tick";
+import { ActionDock } from "@/components/layout/action-dock";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,10 +20,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { ActionState } from "@/lib/action-state";
+import { useFieldValidation } from "@/lib/forms/use-field-validation";
+import { profileFormSchema } from "@/lib/validation/profile";
 
-// The /profile form (docs/08 > /profile). Every field is controlled, so the
-// values survive React's form reset after the action returns. The server's
-// result is the one that counts; the limits here only guide typing.
+// The /profile form (docs/08 > /profile), validating as you go (redesign >
+// Forms): name, faculty, bio and links are checked on blur with the server's
+// own rules (profileFormSchema), errors sit under the field and the field
+// keeps its value. Every field is controlled, so the values also survive
+// React's form reset after the action returns. The server's result is the
+// one that counts; its field errors still land under the fields.
 
 export type ProfileFormValues = {
   name: string;
@@ -46,10 +53,22 @@ export function ProfileForm({
   goToEventsAfterSave: boolean;
 }) {
   const router = useRouter();
-  const [state, formAction, pending] = useActionState(action, null);
   // Read once: after the save the page re-renders with the profile in place,
   // and the prop turns false in the same update as the result.
   const [isFirstSave] = useState(goToEventsAfterSave);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [state, formAction, pending] = useActionState<ActionState, FormData>(
+    async (prev, formData) => {
+      const result = await action(prev, formData);
+      if (result?.ok && !isFirstSave) setSavedAt(Date.now());
+      return result;
+    },
+    null,
+  );
+  const v = useFieldValidation(
+    profileFormSchema,
+    state?.ok === false ? state.fieldErrors : undefined,
+  );
 
   const [name, setName] = useState(initial.name);
   const [faculty, setFaculty] = useState(initial.faculty);
@@ -66,9 +85,28 @@ export function ProfileForm({
     if (isFirstSave) router.push("/events");
   }, [state, isFirstSave, router]);
 
-  const errors = state?.ok === false ? (state.fieldErrors ?? {}) : {};
-  const fieldError = (key: string) =>
-    errors[key]?.map((message) => ({ message }));
+  /** The hook's props, with our own onChange keeping the controlled value. */
+  function wire<E extends HTMLInputElement | HTMLTextAreaElement>(
+    name: string,
+    set: (value: string) => void,
+  ) {
+    const props = v.fieldProps(name);
+    return {
+      ...props,
+      onChange: (e: React.ChangeEvent<E>) => {
+        set(e.target.value);
+        props.onChange(e);
+      },
+    };
+  }
+
+  const errors = {
+    name: v.errorFor("name"),
+    faculty: v.errorFor("faculty"),
+    skills: v.errorFor("skills"),
+    bio: v.errorFor("bio"),
+    links: v.errorFor("links"),
+  };
 
   function addSkill() {
     const skill = skillDraft.trim();
@@ -87,34 +125,31 @@ export function ProfileForm({
       )}
 
       <FieldGroup>
-        <Field data-invalid={!!errors.name}>
+        <Field data-invalid={Boolean(errors.name)}>
           <FieldLabel htmlFor="name">Name</FieldLabel>
           <Input
             id="name"
-            name="name"
             autoComplete="name"
             maxLength={80}
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            aria-invalid={!!errors.name}
+            {...wire<HTMLInputElement>("name", setName)}
           />
-          <FieldError errors={fieldError("name")} />
+          <FieldError id={v.errorId("name")}>{errors.name}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.faculty}>
+        <Field data-invalid={Boolean(errors.faculty)}>
           <FieldLabel htmlFor="faculty">Faculty</FieldLabel>
           <Input
             id="faculty"
-            name="faculty"
+            autoComplete="organization-title"
             maxLength={80}
             value={faculty}
-            onChange={(e) => setFaculty(e.target.value)}
-            aria-invalid={!!errors.faculty}
+            {...wire<HTMLInputElement>("faculty", setFaculty)}
           />
-          <FieldError errors={fieldError("faculty")} />
+          <FieldError id={v.errorId("faculty")}>{errors.faculty}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.skills}>
+        <Field data-invalid={Boolean(errors.skills)}>
           <FieldLabel htmlFor="skill-draft">Skills</FieldLabel>
           <FieldDescription>
             Add up to {MAX_SKILLS}, one at a time. Optional.
@@ -126,7 +161,10 @@ export function ProfileForm({
             <ul className="flex flex-wrap gap-2" aria-label="Your skills">
               {skills.map((skill) => (
                 <li key={skill}>
-                  <Badge variant="secondary" className="h-11 gap-1 pr-0 md:h-8 md:pr-1">
+                  <Badge
+                    variant="secondary"
+                    className="h-11 gap-1 pr-0 md:h-8 md:pr-1"
+                  >
                     {skill}
                     <button
                       type="button"
@@ -156,7 +194,8 @@ export function ProfileForm({
                 }
               }}
               disabled={skills.length >= MAX_SKILLS}
-              aria-invalid={!!errors.skills}
+              aria-invalid={errors.skills ? true : undefined}
+              aria-describedby={errors.skills ? v.errorId("skills") : undefined}
             />
             <Button
               type="button"
@@ -169,27 +208,31 @@ export function ProfileForm({
               Add skill
             </Button>
           </div>
-          <FieldError errors={fieldError("skills")} />
+          <FieldError id={v.errorId("skills")}>{errors.skills}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.bio}>
+        <Field data-invalid={Boolean(errors.bio)}>
           <FieldLabel htmlFor="bio">Bio</FieldLabel>
           <Textarea
             id="bio"
-            name="bio"
             rows={5}
             value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            aria-invalid={!!errors.bio}
-            aria-describedby="bio-count"
+            {...wire<HTMLTextAreaElement>("bio", setBio)}
+            aria-describedby={
+              errors.bio ? `bio-count ${v.errorId("bio")}` : "bio-count"
+            }
           />
-          <FieldDescription id="bio-count" aria-live="polite">
+          <FieldDescription
+            id="bio-count"
+            aria-live="polite"
+            className="tabular-nums"
+          >
             {bio.length} / {MAX_BIO} characters
           </FieldDescription>
-          <FieldError errors={fieldError("bio")} />
+          <FieldError id={v.errorId("bio")}>{errors.bio}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.links}>
+        <Field data-invalid={Boolean(errors.links)}>
           <FieldLabel htmlFor="link-0">Links</FieldLabel>
           <FieldDescription>
             Up to {MAX_LINKS}, each a full link starting with https://.
@@ -199,16 +242,14 @@ export function ProfileForm({
             <div key={i} className="flex gap-2">
               <Input
                 id={`link-${i}`}
-                name="links"
                 type="url"
                 inputMode="url"
                 placeholder="https://github.com/you"
                 value={link}
-                onChange={(e) =>
-                  setLinks(links.map((l, j) => (j === i ? e.target.value : l)))
-                }
+                {...wire<HTMLInputElement>("links", (value) =>
+                  setLinks(links.map((l, j) => (j === i ? value : l))),
+                )}
                 aria-label={i === 0 ? undefined : `Link ${i + 1}`}
-                aria-invalid={!!errors.links}
               />
               {links.length > 1 && (
                 <Button
@@ -235,17 +276,24 @@ export function ProfileForm({
               Add link
             </Button>
           )}
-          <FieldError errors={fieldError("links")} />
+          <FieldError id={v.errorId("links")}>{errors.links}</FieldError>
         </Field>
       </FieldGroup>
 
-      <Button
-        type="submit"
-        disabled={pending}
-        className="min-h-11 self-start md:min-h-9"
-      >
-        {pending ? "Saving…" : "Save profile"}
-      </Button>
+      {/* Thumb-first: the save docks to the bottom on phones. */}
+      <ActionDock className="bg-card/95 supports-[backdrop-filter]:bg-card/85 md:flex-row md:items-center md:gap-3 md:bg-transparent">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={pending}
+          aria-busy={pending}
+          className="h-11 w-full px-6 text-base md:w-auto"
+        >
+          {pending ? "Saving…" : "Save profile"}
+        </Button>
+        {/* Phones get the toast; the tick sits beside the button from md. */}
+        <SavedTick savedAt={savedAt} className="hidden md:inline-flex" />
+      </ActionDock>
     </form>
   );
 }
