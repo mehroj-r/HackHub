@@ -61,6 +61,15 @@ describe("eventArt", () => {
     expect(used.size).toBeGreaterThanOrEqual(5);
   });
 
+  it("draws only from the Scoreboard hues (amber, live red, ember, gold, brown)", () => {
+    const allowed = new Set(["primary", "live", "chart-3", "chart-4", "chart-5"]);
+    for (const g of EVENT_GRADIENTS) {
+      const stops = [...g.matchAll(/(?:^|\s)(?:from|via|to)-([a-z0-9-]+)/g)].map((m) => m[1]);
+      expect(stops).toHaveLength(3);
+      for (const stop of stops) expect(allowed).toContain(stop);
+    }
+  });
+
   it("uses theme tokens only, never raw colours", () => {
     for (const g of EVENT_GRADIENTS) {
       expect(g).not.toMatch(

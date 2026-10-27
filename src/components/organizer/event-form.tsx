@@ -201,7 +201,11 @@ export function EventForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep editing</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={leave}>
+            <AlertDialogAction
+              variant="destructive"
+              className="text-foreground hover:text-foreground"
+              onClick={leave}
+            >
               Discard changes
             </AlertDialogAction>
           </AlertDialogFooter>

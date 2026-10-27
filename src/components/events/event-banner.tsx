@@ -50,7 +50,7 @@ export function EventBanner({
     <div aria-hidden className={cn(box, gradient)}>
       <Pattern kind={pattern} />
       {/* A soft glow and a fade into the card, so text below reads well. */}
-      <div className="absolute -top-1/2 -right-1/4 size-full rounded-full bg-primary-foreground/10 blur-3xl" />
+      <div className="absolute -top-1/2 -right-1/4 size-full rounded-full bg-foreground/15 blur-3xl" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-background/40 to-transparent" />
     </div>
   );

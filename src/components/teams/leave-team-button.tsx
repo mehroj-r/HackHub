@@ -50,7 +50,7 @@ export function LeaveTeamButton({
           size="lg"
           disabled
           aria-describedby="leave-disabled-reason"
-          className="h-11 w-full sm:w-auto"
+          className="h-11 w-full text-foreground sm:w-auto [&_svg]:text-destructive"
         >
           <LogOutIcon aria-hidden />
           Leave team
@@ -74,7 +74,7 @@ export function LeaveTeamButton({
           <Button
             variant="destructive"
             size="lg"
-            className="h-11 w-full sm:w-auto"
+            className="h-11 w-full text-foreground hover:text-foreground sm:w-auto [&_svg]:text-destructive"
           >
             <LogOutIcon aria-hidden />
             Leave team
@@ -104,7 +104,7 @@ export function LeaveTeamButton({
                 variant="destructive"
                 size="lg"
                 disabled={pending}
-                className="h-11"
+                className="h-11 text-foreground hover:text-foreground"
               >
                 {pending ? "Leaving…" : "Leave team"}
               </Button>

@@ -8,6 +8,9 @@
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
     --font-mono: var(--font-mono);
+    --font-wordmark: var(--font-wordmark);
+    --color-live: var(--live);
+    --color-live-foreground: var(--live-foreground);
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
     --color-highlight: var(--highlight);
@@ -54,45 +57,54 @@
 
 :root,
 .dark {
+    /* Scoreboard (DESIGN.md): the LED tournament scoreboard at demo day.
+       Amber digits on a brown-black ground, a red "live" light. Dark only. */
     color-scheme: dark;
-    --background: oklch(0.166 0.039 291.3);
-    --foreground: oklch(0.965 0.019 295.9);
-    --card: oklch(0.208 0.057 289.7);
-    --card-foreground: oklch(0.965 0.019 295.9);
-    --popover: oklch(0.239 0.075 287.2);
-    --popover-foreground: oklch(0.965 0.019 295.9);
-    --primary: oklch(0.541 0.247 293);
-    --primary-foreground: oklch(1 0 0);
-    --secondary: oklch(0.286 0.083 288.9);
-    --secondary-foreground: oklch(0.965 0.019 295.9);
-    --muted: oklch(0.253 0.076 288.5);
-    --muted-foreground: oklch(0.758 0.065 295);
-    --accent: oklch(0.33 0.112 286.1);
-    --accent-foreground: oklch(0.965 0.019 295.9);
-    --destructive: oklch(0.645 0.215 16.4);
-    --border: oklch(0.965 0.019 295.9 / 14%);
-    --input: oklch(0.965 0.019 295.9 / 20%);
-    --ring: oklch(0.709 0.159 293.5);
-    /* success = lime. Used for "Registered", "Submitted", "Scored". */
-    --success: oklch(0.849 0.207 128.8);
-    --success-foreground: oklch(0.166 0.039 291.3);
-    /* highlight = the same lime, for decoration only (never a status). */
-    --highlight: oklch(0.849 0.207 128.8);
-    --highlight-foreground: oklch(0.166 0.039 291.3);
-    --chart-1: oklch(0.709 0.159 293.5);
-    --chart-2: oklch(0.849 0.207 128.8);
-    --chart-3: oklch(0.645 0.215 16.4);
-    --chart-4: oklch(0.758 0.065 295);
-    --chart-5: oklch(0.541 0.247 293);
+    --background: oklch(0.146 0.006 69.2);          /* #0C0A08 ground */
+    --foreground: oklch(0.970 0.029 82.6);          /* #FFF4E0 text, 18.1:1 */
+    --card: oklch(0.198 0.013 77.9);                /* #19150F surface */
+    --card-foreground: oklch(0.970 0.029 82.6);
+    --popover: oklch(0.198 0.013 77.9);
+    --popover-foreground: oklch(0.970 0.029 82.6);
+    --primary: oklch(0.791 0.167 68.9);             /* #FFA41B scoreboard amber */
+    --primary-foreground: oklch(0.176 0.037 75.5);  /* #1A0E00, 9.6:1 on amber */
+    --secondary: oklch(0.235 0.017 74.7);           /* #231D15 */
+    --secondary-foreground: oklch(0.970 0.029 82.6);
+    --muted: oklch(0.227 0.016 71.2);               /* #211B14 */
+    --muted-foreground: oklch(0.725 0.040 81.4);    /* #B3A48A, 8.1:1 ground, 7.4:1 surface */
+    /* accent = the live red at low strength: hover and menu highlights. */
+    --accent: oklch(0.262 0.053 35.1);              /* #3A1A12 */
+    --accent-foreground: oklch(0.970 0.029 82.6);   /* 14.4:1 */
+    /* destructive = crimson rose: a clearly pinker, less saturated hue than the
+       live red (hue 14 vs 29), so an error never looks like a live state.
+       5.5:1 on the surface, 4.6:1 at the alerts' 90%. */
+    --destructive: oklch(0.665 0.179 13.9);         /* #EC5B72 */
+    --border: oklch(0.970 0.029 82.6 / 12%);
+    --input: oklch(0.375 0.029 75.3);               /* #4A3F30 */
+    --ring: oklch(0.791 0.167 68.9);                /* amber; at /50 it is 3.2:1 on ground and cards */
+    /* live = the on-air light (#FF3D2E): toasts, the open-state dot, the leader. */
+    --live: oklch(0.656 0.231 29.3);
+    --live-foreground: oklch(0.176 0.037 75.5);
+    /* success = green, for "Registered", "Submitted", "Scored" only. */
+    --success: oklch(0.797 0.169 135.1);            /* #8BD45E */
+    --success-foreground: oklch(0.146 0.006 69.2);  /* 11.0:1 */
+    /* highlight = amber, for decoration (current nav item, landing accents). */
+    --highlight: oklch(0.791 0.167 68.9);
+    --highlight-foreground: oklch(0.176 0.037 75.5);
+    --chart-1: oklch(0.791 0.167 68.9);             /* amber #FFA41B */
+    --chart-2: oklch(0.656 0.231 29.3);             /* live red #FF3D2E */
+    --chart-3: oklch(0.702 0.198 42.5);             /* ember #FF6A1F */
+    --chart-4: oklch(0.798 0.135 82.2);             /* warm gold #E8B44A */
+    --chart-5: oklch(0.379 0.063 62.1);             /* deep brown #5A3A1C */
     --radius: 1rem;
-    --sidebar: oklch(0.208 0.057 289.7);
-    --sidebar-foreground: oklch(0.965 0.019 295.9);
-    --sidebar-primary: oklch(0.541 0.247 293);
-    --sidebar-primary-foreground: oklch(1 0 0);
-    --sidebar-accent: oklch(0.33 0.112 286.1);
-    --sidebar-accent-foreground: oklch(0.965 0.019 295.9);
-    --sidebar-border: oklch(0.965 0.019 295.9 / 14%);
-    --sidebar-ring: oklch(0.709 0.159 293.5);
+    --sidebar: oklch(0.198 0.013 77.9);
+    --sidebar-foreground: oklch(0.970 0.029 82.6);
+    --sidebar-primary: oklch(0.791 0.167 68.9);
+    --sidebar-primary-foreground: oklch(0.176 0.037 75.5);
+    --sidebar-accent: oklch(0.262 0.053 35.1);
+    --sidebar-accent-foreground: oklch(0.970 0.029 82.6);
+    --sidebar-border: oklch(0.970 0.029 82.6 / 12%);
+    --sidebar-ring: oklch(0.791 0.167 68.9);
 }
 
 @layer base {

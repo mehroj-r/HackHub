@@ -14,19 +14,20 @@ export function nameHash(name: string): number {
 }
 
 /**
- * Gradient presets. Full class strings, so Tailwind sees them. Each uses only
- * theme colours, with white-on-dark text (`text-primary-foreground`) readable
- * on every one of them.
+ * Gradient presets in the Scoreboard hues (DESIGN.md): amber, live red, ember,
+ * warm gold and deep brown. Full class strings, so Tailwind sees them. The
+ * middle stop is always a bright hue, so the dark initials
+ * (`text-primary-foreground`, #1A0E00) stay readable on the avatar.
  */
 export const EVENT_GRADIENTS = [
-  "bg-linear-to-br from-primary via-chart-5 to-chart-2",
-  "bg-linear-to-tr from-chart-3 via-chart-5 to-primary",
-  "bg-linear-to-br from-accent via-primary to-ring",
-  "bg-linear-to-bl from-success via-chart-1 to-primary",
-  "bg-linear-to-tr from-secondary via-chart-3 to-chart-1",
-  "bg-linear-to-br from-chart-5 via-accent to-chart-4",
-  "bg-linear-to-tl from-chart-2 via-primary to-secondary",
-  "bg-linear-to-r from-chart-3 via-primary to-chart-2",
+  "bg-linear-to-br from-primary via-chart-4 to-chart-3",
+  "bg-linear-to-tr from-chart-3 via-primary to-chart-4",
+  "bg-linear-to-br from-live via-chart-3 to-primary",
+  "bg-linear-to-bl from-chart-4 via-primary to-chart-5",
+  "bg-linear-to-tr from-primary via-chart-3 to-live",
+  "bg-linear-to-br from-chart-5 via-chart-3 to-primary",
+  "bg-linear-to-tl from-chart-4 via-chart-3 to-chart-5",
+  "bg-linear-to-r from-live via-primary to-chart-4",
 ] as const;
 
 /** Pattern overlays for the banner fallback (see EventBanner). */

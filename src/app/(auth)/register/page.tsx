@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { LogoMark } from "@/components/brand/logo";
 import { RegisterForm } from "@/components/auth/register-form";
 import {
   Card,
@@ -28,6 +29,10 @@ export default async function RegisterPage() {
   return (
     <Card>
       <CardHeader>
+        {/* The app icon: the Podium H on an amber tile. */}
+        <span className="mb-2 flex size-12 items-center justify-center rounded-[10.5px] bg-primary">
+          <LogoMark size={34} variant="onPrimary" decorative />
+        </span>
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>
           Join HackHub to register for events, form a team and submit your

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { RocketIcon } from "lucide-react";
-
+import { Logo as BrandLogo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/auth/dal";
@@ -16,12 +15,10 @@ function Logo() {
   return (
     <Link
       href="/"
-      className="flex min-h-11 items-center gap-2 rounded-lg px-1 text-lg font-bold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      aria-label="HackHub home"
+      className="flex min-h-11 items-center rounded-lg px-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
     >
-      <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-        <RocketIcon className="size-4" aria-hidden />
-      </span>
-      HackHub
+      <BrandLogo />
     </Link>
   );
 }

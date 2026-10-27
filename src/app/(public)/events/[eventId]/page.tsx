@@ -250,7 +250,7 @@ function primaryAction({
   if (!event.registrationOpen) {
     return (
       <>
-        <Button size="lg" disabled className={BIG_BUTTON}>
+        <Button variant="outline" size="lg" disabled className={BIG_BUTTON}>
           <LockIcon aria-hidden />
           Registration closed
         </Button>

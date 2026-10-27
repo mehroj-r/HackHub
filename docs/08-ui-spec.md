@@ -77,6 +77,11 @@ The style guide must define:
 Every foreground/background pair must reach WCAG AA contrast (4.5:1 for body text, 3:1 for large text and for the
 focus ring against the background).
 
+**As shipped (28 Oct):** the **Scoreboard** theme (scoreboard amber `#FFA41B` on a brown-black ground `#0C0A08`,
+a live red `#FF3D2E`), dark only, and the **Podium H** logo with an Unbounded wordmark. The values, contrast ratios
+and usage rules (amber only for the primary action and the ranking leader, red only for live states, the ranking's
+fixed ramp, open-state badges with a red dot) are in [DESIGN.md](../DESIGN.md).
+
 ### App shell
 
 Every page has the same shell: a header with the HackHub logo (links to `/`), the navigation for the current

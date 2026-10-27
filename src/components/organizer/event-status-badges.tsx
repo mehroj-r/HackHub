@@ -2,9 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // Event status badges (docs/08 > Shared components > Status badge). Each badge
-// says its state in words; the tint only adds to the label. "Open" uses the
-// primary tint, as on the participant pages: docs/08 keeps the success colour
-// for Registered, Submitted and Scored (style pass, #26).
+// says its state in words; the tint only adds to the label. Open states use the
+// amber tint with the red "live" dot, as on the participant pages (DESIGN.md >
+// Badges); the success colour stays for Registered, Submitted and Scored.
 
 type EventFlags = {
   registrationOpen: boolean;
@@ -12,12 +12,23 @@ type EventFlags = {
   resultsPublished: boolean;
 };
 
-function StatusBadge({ on, children }: { on: boolean; children: string }) {
+function StatusBadge({
+  on,
+  live = on,
+  children,
+}: {
+  on: boolean;
+  live?: boolean;
+  children: string;
+}) {
   return (
     <Badge
       variant="outline"
       className={cn(on && "border-primary/50 bg-primary/15 text-foreground")}
     >
+      {live && (
+        <span aria-hidden className="size-1.5 rounded-full bg-live" />
+      )}
       {children}
     </Badge>
   );
@@ -44,7 +55,9 @@ export function EventStatusBadges({
       </li>
       {event.resultsPublished && (
         <li>
-          <StatusBadge on>Results published</StatusBadge>
+          <StatusBadge on live={false}>
+            Results published
+          </StatusBadge>
         </li>
       )}
     </ul>
