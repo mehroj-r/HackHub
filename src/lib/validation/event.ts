@@ -74,6 +74,40 @@ export const eventSchema = z.object({
 export type EventInput = z.output<typeof eventSchema>;
 
 /**
+ * The event form's schema in the browser (validate as you go): the same field
+ * rules as `eventSchema`, plus the end-before-start check the actions make
+ * with `validateEventDates`. It reports every problem at once, like
+ * `withDateOrderError` on the server. The actions still parse with
+ * `eventSchema` and check the dates themselves.
+ */
+export const eventFormSchema = z.unknown().superRefine((values, ctx) => {
+  const parsed = eventSchema.safeParse(values);
+  if (!parsed.success) {
+    for (const issue of parsed.error.issues) {
+      ctx.addIssue({
+        code: "custom",
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  }
+  const raw = (values ?? {}) as Record<string, unknown>;
+  const text = (key: string) =>
+    typeof raw[key] === "string" ? (raw[key] as string) : "";
+  const order = withDateOrderError(undefined, {
+    startDate: text("startDate"),
+    endDate: text("endDate"),
+  });
+  if (order.endDate) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["endDate"],
+      message: order.endDate[0],
+    });
+  }
+});
+
+/**
  * The schema's field errors plus the date-order error, so a refused form shows
  * every problem at once: an end before the start is reported even when another
  * field (say the team size) also failed.

@@ -1,23 +1,20 @@
-import { Suspense, type ReactNode } from "react";
-import { UsersIcon } from "lucide-react";
+import Link from "next/link";
+import { Suspense } from "react";
 
-import { ParticipantsSearch } from "@/components/organizer/participants-search";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { ParticipantsTable } from "@/components/organizer/participants-table";
 import { ParticipantsTabs } from "@/components/organizer/participants-tabs";
 import { ParticipantsViewSkeleton } from "@/components/organizer/participants-view-skeleton";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
 
 import { loadParticipants } from "./data";
 
-// docs/08 > Participants and teams, the Participants tab. The Teams tab is
-// ./teams. loadParticipants() authorizes (organizer only) and loads the event;
-// params, searchParams and the database are read inside this page's own
-// Suspense (Cache Components).
+// docs/08 > Participants and teams, the Participants tab (redesign: table +
+// detail panel). The Teams tab is ./teams. loadParticipants() authorizes
+// (organizer only) and loads the event; params, searchParams and the database
+// are read inside this page's own Suspense (Cache Components). Search and the
+// filters run in the browser over the event's registrations; ?q= still
+// prefills the search.
 
 export default function ParticipantsPage({
   params,
@@ -25,7 +22,7 @@ export default function ParticipantsPage({
 }: PageProps<"/organizer/events/[eventId]/participants">) {
   return (
     <>
-      <h2 className="text-2xl font-semibold">Participants and teams</h2>
+      <h2 className="text-section-title">Participants and teams</h2>
       <Suspense fallback={<ParticipantsViewSkeleton />}>
         <Participants params={params} searchParams={searchParams} />
       </Suspense>
@@ -43,7 +40,7 @@ async function Participants({
   const { eventId } = await params;
   const { q } = await searchParams;
   const query = (typeof q === "string" ? q : "").trim();
-  const { counts, rows } = await loadParticipants(eventId, query);
+  const { event, counts, rows } = await loadParticipants(eventId, "");
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -53,35 +50,25 @@ async function Participants({
         counts={counts}
       />
       {counts.participants === 0 ? (
-        <EmptyList>Nobody has registered yet.</EmptyList>
+        <EmptyState
+          title="Nobody has registered yet."
+          action={
+            event.registrationOpen ? undefined : (
+              <Button asChild variant="outline" className="h-11 md:h-9">
+                <Link href={`/organizer/events/${eventId}`}>
+                  Open registration on the overview
+                </Link>
+              </Button>
+            )
+          }
+        >
+          {event.registrationOpen
+            ? "People who register for this event show up here."
+            : "Registration is closed, so nobody can register yet."}
+        </EmptyState>
       ) : (
-        <>
-          <ParticipantsSearch
-            action={`/organizer/events/${eventId}/participants`}
-            query={query}
-          />
-          {rows.length === 0 ? (
-            <EmptyList>No participants match &lsquo;{query}&rsquo;.</EmptyList>
-          ) : (
-            <ParticipantsTable rows={rows} />
-          )}
-        </>
+        <ParticipantsTable rows={rows} initialQuery={query} />
       )}
     </div>
-  );
-}
-
-function EmptyList({ children }: { children: ReactNode }) {
-  return (
-    <Empty className="border">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <UsersIcon aria-hidden />
-        </EmptyMedia>
-        <EmptyDescription className="text-base text-foreground">
-          {children}
-        </EmptyDescription>
-      </EmptyHeader>
-    </Empty>
   );
 }

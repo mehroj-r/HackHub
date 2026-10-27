@@ -53,7 +53,16 @@ export async function loadParticipants(eventId: string, search: string) {
             select: {
               id: true,
               email: true,
-              profile: { select: { name: true, faculty: true } },
+              // The side panel shows the profile too (redesign).
+              profile: {
+                select: {
+                  name: true,
+                  faculty: true,
+                  skills: true,
+                  bio: true,
+                  links: true,
+                },
+              },
             },
           },
           membership: { select: { team: { select: { name: true } } } },
@@ -70,6 +79,9 @@ export async function loadParticipants(eventId: string, search: string) {
       faculty: user.profile?.faculty ?? null,
       teamName: membership?.team.name ?? null,
       registeredAt: createdAt,
+      skills: user.profile?.skills ?? [],
+      bio: user.profile?.bio ?? null,
+      links: user.profile?.links ?? [],
     }))
     .sort(byName);
 

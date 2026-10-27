@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ActionDock } from "@/components/layout/action-dock";
 import { EventImageField } from "@/components/organizer/event-image-field";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { ActionState } from "@/lib/action-state";
+import { useFieldValidation } from "@/lib/forms/use-field-validation";
+import { eventFormSchema } from "@/lib/validation/event";
 
 // The event form (docs/08 > Event form), the same for create and edit. Both
 // actions redirect to the overview on success, which shows the toast; a
@@ -64,8 +67,18 @@ export function EventForm({
 
   const failed = state?.ok === false ? state : null;
   const values = { ...initial, ...failed?.values };
-  const errorsFor = (field: keyof EventFormValues | "logo" | "banner") =>
-    failed?.fieldErrors?.[field]?.map((message) => ({ message }));
+  // Validate as you go (redesign): each field is checked when you leave it,
+  // with the same rules as the server, and re-checked as you type once it has
+  // an error. The server's answer still counts and shows here too.
+  const v = useFieldValidation(eventFormSchema, failed?.fieldErrors);
+  const errorsFor = (field: keyof EventFormValues | "logo" | "banner") => {
+    const message = v.errorFor(field);
+    return message ? [{ message }] : undefined;
+  };
+  const live = (field: keyof EventFormValues) => {
+    const { onBlur, onChange } = v.fieldProps(field);
+    return { onBlur, onChange };
+  };
 
   function leave() {
     // Back to where the user came from; a page opened directly has no history.
@@ -100,6 +113,7 @@ export function EventForm({
           label="Name"
           defaultValue={values.name}
           errors={errorsFor("name")}
+          {...live("name")}
           maxLength={100}
           required
         />
@@ -110,6 +124,7 @@ export function EventForm({
             id="description"
             name="description"
             defaultValue={values.description}
+            {...live("description")}
             rows={6}
             maxLength={2000}
             required
@@ -131,6 +146,7 @@ export function EventForm({
             type="date"
             defaultValue={values.startDate}
             errors={errorsFor("startDate")}
+            {...live("startDate")}
             required
           />
           <TextField
@@ -139,6 +155,7 @@ export function EventForm({
             type="date"
             defaultValue={values.endDate}
             errors={errorsFor("endDate")}
+            {...live("endDate")}
             description="The same day as the start is fine."
             required
           />
@@ -155,6 +172,7 @@ export function EventForm({
           className="max-w-28"
           defaultValue={values.maxTeamSize}
           errors={errorsFor("maxTeamSize")}
+          {...live("maxTeamSize")}
           description="From 1 to 10 people."
           required
         />
@@ -177,7 +195,8 @@ export function EventForm({
         />
       </FieldGroup>
 
-      <div className="flex flex-col-reverse gap-3 sm:flex-row">
+      {/* Thumb-first: on a phone the buttons dock above the tab bar. */}
+      <ActionDock className="flex-row gap-3 *:flex-1 md:*:flex-none">
         <Button
           type="button"
           variant="outline"
@@ -186,10 +205,14 @@ export function EventForm({
         >
           Cancel
         </Button>
-        <Button type="submit" className="h-11 px-4 md:h-9" disabled={pending}>
-          {pending ? "Saving..." : submitLabel}
+        <Button
+          type="submit"
+          className="h-11 px-4 motion-safe:transition-transform motion-safe:active:scale-[0.97] md:h-9"
+          disabled={pending}
+        >
+          {pending ? "Saving…" : submitLabel}
         </Button>
-      </div>
+      </ActionDock>
 
       <AlertDialog open={confirming} onOpenChange={setConfirming}>
         <AlertDialogContent>

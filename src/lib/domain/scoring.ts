@@ -5,7 +5,7 @@
 export type ScoringStatus = "NOT_STARTED" | "IN_PROGRESS" | "SCORED";
 
 export const SCORING_STATUS_LABEL: Record<ScoringStatus, string> = {
-  NOT_STARTED: "Not started",
+  NOT_STARTED: "To score",
   IN_PROGRESS: "In progress",
   SCORED: "Scored",
 };
@@ -22,7 +22,7 @@ export const SCORING_MESSAGES = {
 
 /**
  * One judge's status for one team: "Scored" once every criterion has a score,
- * "In progress" when some have, otherwise "Not started".
+ * "In progress" when some have, otherwise "To score".
  */
 export function scoringStatus(scoredCount: number, criteriaCount: number): ScoringStatus {
   if (criteriaCount > 0 && scoredCount >= criteriaCount) return "SCORED";

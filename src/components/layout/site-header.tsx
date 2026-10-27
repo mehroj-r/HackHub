@@ -74,7 +74,8 @@ export async function SiteHeader() {
               <Button asChild variant="ghost" className="h-11 px-4">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild className="h-11 px-4">
+              {/* Outline: amber is the page's own primary action (DESIGN.md). */}
+              <Button asChild variant="outline" className="h-11 px-4">
                 <Link href="/register">Register</Link>
               </Button>
             </>
