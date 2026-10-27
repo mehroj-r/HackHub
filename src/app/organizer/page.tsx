@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarPlusIcon, PlusIcon } from "lucide-react";
 
+import { EventCardMedia } from "@/components/events/event-card-media";
 import { formatDateRange } from "@/components/organizer/event-dates";
 import { EventStatusBadges } from "@/components/organizer/event-status-badges";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireRole } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
+import { eventImageUrl } from "@/lib/uploads/url";
 
 // docs/08 > /organizer "Events I run": every event, not only the ones this
 // organizer created, with its state at a glance. The title and primary action
@@ -48,6 +50,8 @@ async function EventList() {
         registrationOpen: true,
         submissionsOpen: true,
         resultsPublished: true,
+        logoPath: true,
+        bannerPath: true,
         _count: { select: { registrations: true, teams: true } },
       },
     }),
@@ -77,7 +81,7 @@ async function EventList() {
       </EmptyContent>
     </Empty>
   ) : (
-    <ul className="mt-8 flex flex-col gap-4">
+    <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {events.map((event) => {
         const counts = [
           { label: "Registered", value: event._count.registrations },
@@ -89,7 +93,13 @@ async function EventList() {
         ];
         return (
           <li key={event.id}>
-            <article className="relative rounded-2xl border bg-card p-4 transition-colors focus-within:ring-3 focus-within:ring-ring/50 hover:bg-muted/40 sm:p-5">
+            <article className="relative h-full overflow-hidden rounded-2xl border bg-card transition-colors focus-within:ring-3 focus-within:ring-ring/50 hover:border-ring/60">
+              <EventCardMedia
+                name={event.name}
+                logoUrl={eventImageUrl(event.logoPath)}
+                bannerUrl={eventImageUrl(event.bannerPath)}
+              />
+              <div className="p-4 pt-3 sm:p-5 sm:pt-3">
               <h2 className="text-xl font-semibold break-words">
                 {/* The whole card is the link target; the name is its text. */}
                 <Link
@@ -113,6 +123,7 @@ async function EventList() {
                   </div>
                 ))}
               </dl>
+              </div>
             </article>
           </li>
         );
@@ -123,9 +134,9 @@ async function EventList() {
 
 function EventListSkeleton() {
   return (
-    <div className="mt-8 flex flex-col gap-4" aria-busy="true">
-      <Skeleton className="h-36 rounded-2xl" />
-      <Skeleton className="h-36 rounded-2xl" />
+    <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+      <Skeleton className="h-80 rounded-2xl" />
+      <Skeleton className="h-80 rounded-2xl" />
     </div>
   );
 }

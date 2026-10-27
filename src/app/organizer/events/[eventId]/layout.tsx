@@ -2,12 +2,15 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 
+import { EventAvatar } from "@/components/events/event-avatar";
+import { EventBanner } from "@/components/events/event-banner";
 import { formatDateRange } from "@/components/organizer/event-dates";
 import { EventSavedToast } from "@/components/organizer/event-saved-toast";
 import { EventStatusBadges } from "@/components/organizer/event-status-badges";
 import { EventSubNav } from "@/components/organizer/event-sub-nav";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireEvent, requireRole } from "@/lib/auth/dal";
+import { eventImageUrl } from "@/lib/uploads/url";
 
 // Shared by the five organizer event pages (docs/08 > App shell): a back link,
 // the event name and status badges, and the sub-nav Overview / Edit / Criteria
@@ -48,7 +51,22 @@ async function EventHeader({
 
   return (
     <header className="mt-2">
-      <h1 className="text-3xl font-bold break-words">{event.name}</h1>
+      {/* A compact banner strip, then the logo beside the name and badges. */}
+      <EventBanner
+        name={event.name}
+        bannerUrl={eventImageUrl(event.bannerPath)}
+        priority
+        className="aspect-auto h-24 rounded-2xl border md:aspect-auto md:h-32"
+      />
+      <div className="relative z-10 -mt-8 flex items-end gap-4 px-4 md:-mt-10 md:px-6">
+        <EventAvatar
+          name={event.name}
+          logoUrl={eventImageUrl(event.logoPath)}
+          size="md"
+          className="md:size-20"
+        />
+      </div>
+      <h1 className="mt-3 text-3xl font-bold break-words">{event.name}</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         {formatDateRange(event.startDate, event.endDate)}
       </p>
@@ -63,7 +81,8 @@ async function EventHeader({
 function EventHeaderSkeleton() {
   return (
     <div className="mt-2" aria-busy="true">
-      <Skeleton className="h-9 w-2/3 max-w-sm" />
+      <Skeleton className="h-24 w-full rounded-2xl md:h-32" />
+      <Skeleton className="mt-4 h-9 w-2/3 max-w-sm" />
       <Skeleton className="mt-2 h-4 w-32" />
       <div className="mt-3 flex gap-2">
         <Skeleton className="h-5 w-32 rounded-4xl" />

@@ -94,7 +94,9 @@ primary action. The primary action must be found in the same place on every page
   Items: "My profile" (`/profile`) and "Log out". Logging out returns to `/` with the toast "You're logged out."
 - **Current page.** The navigation item for the current section is marked, and not by colour alone.
 - **Organizer event pages.** The five pages under `/organizer/events/[eventId]` share a sub-navigation: Overview,
-  Edit, Criteria, Participants, Ranking. The event name and its status badges stay visible above it.
+  Edit, Criteria, Participants, Ranking. The event name and its status badges stay visible above it, under a
+  compact banner strip (96 px on phone, 128 px from md) with the event logo overlapping its bottom edge
+  (see [Event images](#shared-components-and-patterns)).
 - **Back links.** Pages one level down (a team page, a judge's team, an organizer sub-page) have a back link to their parent.
 - **Phone (390 px).** The navigation items collapse into a menu button that opens a side sheet with the same items
   and the user menu items. The page title and the primary action stay visible without opening anything. Tables
@@ -155,7 +157,9 @@ show under the field. Errors that aren't about one field show above the form.
 - **Who.** Everyone.
 - **Data.** Events with registration open (**Decision 5**: a new event appears here only once the
   organizer opens registration), soonest start date first. Each item: name, start and end dates, the first ~160
-  characters of the description, max team size, and for a signed-in participant a "Registered" badge if they are.
+  characters of the description, max team size, status badges, and for a signed-in participant a "Registered" badge if they are.
+- **Layout.** A card per event: the banner on top (5:2 on phone, 8:3 from md), the logo overlapping its
+  bottom-left edge, then the name, dates, team size, badges and description. Three columns on desktop, one on phone.
 - **Actions.** Open an event (`/events/[eventId]`). The whole item is the link.
 - **States.** **Empty (frame):** "No events are open for registration right now. Check back soon."
 - **Tests.** TC-27, TC-36.
@@ -165,6 +169,9 @@ show under the field. Errors that aren't about one field show above the form.
 - **Purpose.** Everything a participant needs to decide and register; after publishing, the final ranking.
 - **Who.** Everyone, by link. Visitors see the same content without the participant actions.
 - **Data.** Name, dates, full description, max team size, status badges (registration, submissions, results), number of registered participants.
+- **Hero.** The banner across the top (2:1 on phone, 8:3 from md, loaded eagerly), a large logo overlapping its
+  bottom-left edge, then the title, dates, badges and the primary action in the usual place (right of the title
+  from md, under it on phone).
 - **Primary action, by situation:**
 
 | Situation | What's shown |
@@ -189,6 +196,8 @@ show under the field. Errors that aren't about one field show above the form.
 - **Purpose.** The participant's home: every event they registered for, and what to do next in each.
 - **Who.** Participant.
 - **Data, per event.** Name, dates, status badges, my team (name or "No team yet"), submission status ("Submitted" / "Not submitted"), and "Results published" with a link to the ranking when it is.
+- **Layout.** The same event card as `/events` (banner, overlapping logo), two columns from md, with the team,
+  submission and actions in the card body.
 - **Actions.** "Open event" → `/events/[eventId]`. "Go to my team" or "Create or join a team" → `/events/[eventId]/team`.
 - **Order.** Events whose results aren't published first, by start date.
 - **States.** **Empty (frame):** "You haven't registered for any events yet." with "Browse events" → `/events`.
@@ -274,6 +283,7 @@ show under the field. Errors that aren't about one field show above the form.
 - **Purpose.** The organizer's home: every event, with its state at a glance.
 - **Who.** Organizer. Shows all events, not only the ones this organizer created.
 - **Data, per event.** Name, dates, status badges, registered participants, teams, submissions.
+- **Layout.** The same event card as `/events` (banner, overlapping logo); the whole card opens the event.
 - **Actions.** Primary: "New event" → `/organizer/events/new`. Open an event → `/organizer/events/[eventId]`.
 - **States.** **Empty (frame):** "No events yet. Create the first one." with "New event".
 - **Tests.** TC-26.
@@ -379,7 +389,7 @@ show under the field. Errors that aren't about one field show above the form.
 - **Data.** Events in judging: submissions closed, results not published, at least one submission. For each event:
   name, criteria count, and progress "{n} of {m} teams scored" (by this judge). Under it, every team that submitted:
   team name, project title, and this judge's status for it: "Not started", "In progress" (some criteria scored) or
-  "Scored" (all criteria scored).
+  "Scored" (all criteria scored). Each event shows its small logo next to its name.
 - **Actions.** Open a team → `/judge/teams/[teamId]`. The list must make the next unscored team easy to find.
 - **Other sections.** "Results published": events this judge scored whose results are out, each linking to the public ranking. No actions.
 - **States.** **Empty (frame):** "No events are being judged right now. Teams show up here once an organizer closes submissions." **Criteria not set:** the event is listed with "The organizer hasn't set the criteria yet. You can read the projects, but not score them."
@@ -455,6 +465,7 @@ installed today; developers add the rest with `npx shadcn add <name>`.
 | Tabs | Participants and teams, organizer sub-navigation | Tabs (or links styled as tabs) | Each sub-page has its own URL |
 | Copy code | Team page | Button with an icon and text | The code must be easy to read aloud and copy by hand; copying confirms with a toast |
 | Skeleton | Loading states | Skeleton | Matches the shape of the content |
+| Event images | Event cards, the event page, the organizer event header, `/judge` | `EventBanner`, `EventAvatar` in `components/events/` (plain `<img>` from `/uploads`) | Banner: the organizer's 1600×600 image, 8:3 from md and a taller crop on phone. Logo: a 512×512 rounded square with a ring in the surface colour, so it sits on the banner's edge; sizes sm (40 px), md (64 px), lg (80 px, 112 px from md). Alt text "{event} banner" / "{event} logo"; lazy-loaded below the fold. **Without an image:** a gradient from the theme tokens, picked from a hash of the event name (same name, same colours), with a soft pattern on the banner and the event's initials on the logo; these are decorative (`aria-hidden`), since the name is always written next to them |
 | Date input | Event form | Input `type="date"`, or Popover + Calendar | Keyboard entry must work |
 
 ## Accessibility and content rules

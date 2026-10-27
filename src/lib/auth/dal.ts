@@ -57,6 +57,8 @@ export const requireEvent = cache(async (eventId: string) => {
       registrationOpen: true,
       submissionsOpen: true,
       resultsPublished: true,
+      logoPath: true,
+      bannerPath: true,
     },
   });
   if (!event) notFound();

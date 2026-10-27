@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDaysIcon, CalendarPlusIcon, TrophyIcon } from "lucide-react";
 import { Suspense } from "react";
 
+import { EventCardMedia } from "@/components/events/event-card-media";
 import { formatEventDates } from "@/components/events/event-format";
 import { EventStatusBadges, StatusBadge } from "@/components/events/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
@@ -18,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { requireRole } from "@/lib/auth/dal";
 import { compareMyEvents } from "@/lib/domain/registration";
 import { prisma } from "@/lib/prisma";
+import { eventImageUrl } from "@/lib/uploads/url";
 
 // docs/08 > /my-events: the participant's home. Every event they registered
 // for, with their team, submission status and a link to published results.
@@ -56,6 +58,8 @@ async function MyEventsList() {
           registrationOpen: true,
           submissionsOpen: true,
           resultsPublished: true,
+          logoPath: true,
+          bannerPath: true,
         },
       },
       membership: {
@@ -95,14 +99,20 @@ async function MyEventsList() {
     .sort(compareMyEvents);
 
   return (
-    <ul className="mt-8 flex flex-col gap-4">
+    <ul className="mt-8 grid gap-4 md:grid-cols-2">
       {items.map((event) => {
         const submitted = Boolean(event.team?.submission);
         return (
           <li
             key={event.id}
-            className="flex flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground"
+            className="flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground"
           >
+            <EventCardMedia
+              name={event.name}
+              logoUrl={eventImageUrl(event.logoPath)}
+              bannerUrl={eventImageUrl(event.bannerPath)}
+            />
+            <div className="flex flex-1 flex-col gap-4 p-5 pt-2">
             <div className="flex flex-col gap-2">
               <h2 className="text-lg font-semibold break-words">
                 <Link
@@ -136,7 +146,7 @@ async function MyEventsList() {
               </div>
             </dl>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <div className="mt-auto flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="h-11 px-5">
                 <Link href={`/events/${event.id}/team`}>
                   {event.team ? "Go to my team" : "Create or join a team"}
@@ -154,6 +164,7 @@ async function MyEventsList() {
                 </Button>
               )}
             </div>
+            </div>
           </li>
         );
       })}
@@ -163,9 +174,9 @@ async function MyEventsList() {
 
 function MyEventsSkeleton() {
   return (
-    <div className="mt-8 flex flex-col gap-4" aria-busy="true">
-      <Skeleton className="h-56 rounded-xl" />
-      <Skeleton className="h-56 rounded-xl" />
+    <div className="mt-8 grid gap-4 md:grid-cols-2" aria-busy="true">
+      <Skeleton className="h-96 rounded-xl" />
+      <Skeleton className="h-96 rounded-xl" />
     </div>
   );
 }
