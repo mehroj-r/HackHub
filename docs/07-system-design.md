@@ -435,8 +435,8 @@ model Comment {
    `schema.prisma`.
 2. **After v1, feature PRs only add**: nullable columns or new tables, one migration per PR, named after the card. No renames or drops this week; if
    one is unavoidable, the schema owner does it.
-3. **Conflicts.** If `main` gained a migration while your branch was open: merge `main`, delete your branch's migration folder, run
-   `npx prisma migrate dev --name <same name>` to regenerate it on top, and commit. Never edit a migration that is on `main`. Locally,
+3. **Conflicts.** If `master` gained a migration while your branch was open: merge `master`, delete your branch's migration folder, run
+   `npx prisma migrate dev --name <same name>` to regenerate it on top, and commit. Never edit a migration that is on `master`. Locally,
    `npx prisma migrate reset --force && npx prisma db seed` gives a clean database.
 
 ### Seed
@@ -607,7 +607,7 @@ organizer actions check the role only. `createdById` is kept for the record (and
 
 ### CI
 
-- **Now** (`.github/workflows/ci.yml`, on PRs and pushes to `main`): lint, typecheck, unit tests, build with dummy env vars. The build has no
+- **Now** (`.github/workflows/ci.yml`, on PRs and pushes to `master`): lint, typecheck, unit tests, build with dummy env vars. The build has no
   database, which is one more reason for the `loading.tsx` and `connection()` rules.
 - **After the release** (S-4, out of scope for the Oct 28 release): a second job with a `postgres:18-alpine` service that runs `npx prisma migrate deploy`, a
   drift check (`npx prisma migrate diff --exit-code`, migrations against the schema), the seed with demo users,

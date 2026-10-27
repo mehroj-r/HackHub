@@ -408,7 +408,7 @@ page says "Nobody has registered yet."; before any team forms, "No teams yet."
 
 **Steps:**
 
-1. HackHub runs at https://hackhub.mekhroj.uz. The server deploys `main` on its own within a few minutes of a merge,
+1. HackHub runs at https://hackhub.mekhroj.uz. The server deploys `master` on its own within a few minutes of a merge,
    and rolls back if the new version doesn't pass its health check. To check it: `curl -fsS
    https://hackhub.mekhroj.uz/api/health` returns `{"status":"ok"}`.
 2. The first organizer account comes from `SEED_ORGANIZER_EMAIL` and `SEED_ORGANIZER_PASSWORD` in the server's `.env`.

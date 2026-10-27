@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Deploy origin/main to production when it moves (docs/04 > Automatic deploys).
+# Deploy origin/master to production when it moves (docs/04 > Automatic deploys).
 # Run by hackhub-autodeploy.timer every 2 minutes, from the copy installed at
 # /usr/local/sbin/hackhub-autodeploy, so a deploy never rewrites the script
 # that is running it.
 #
-#   hackhub-autodeploy             deploy if origin/main has new commits
+#   hackhub-autodeploy             deploy if origin/master has new commits
 #   hackhub-autodeploy --dry-run   fetch and say what would happen, change nothing
 #
 # A run: fetch, back up the database if the new commits add migrations,
@@ -12,7 +12,7 @@
 # app doesn't come up healthy, it goes back to the previous commit and rebuilds
 # that. Migrations are never reversed: the old code runs on the new schema,
 # which works for the additive migrations docs/07 allows. A commit that failed
-# is remembered and skipped until main moves past it.
+# is remembered and skipped until master moves past it.
 #
 # It never runs the demo seed and never reads or writes .env (pg_dump runs
 # inside the db container, with that container's own POSTGRES_* variables).
@@ -38,10 +38,10 @@ main() {
 
   cd "$REPO_DIR" || fail "no checkout at $REPO_DIR"
 
-  git fetch --quiet origin main || fail "git fetch origin main failed"
+  git fetch --quiet origin master || fail "git fetch origin master failed"
   local before after
   before="$(git rev-parse HEAD)"
-  after="$(git rev-parse origin/main)"
+  after="$(git rev-parse origin/master)"
 
   if [ "$before" = "$after" ]; then
     $dry_run && log "DRY RUN: up to date at ${before:0:7}, nothing to do"
@@ -50,23 +50,23 @@ main() {
 
   mkdir -p "$STATE_DIR"
   if [ "$after" = "$(cat "$STATE_DIR/failed-sha" 2>/dev/null)" ]; then
-    # Already tried and rolled back. Wait for a new commit on main.
+    # Already tried and rolled back. Wait for a new commit on master.
     $dry_run && log "DRY RUN: ${after:0:7} failed before; skipping it"
     exit 0
   fi
 
-  # Only a clean checkout of main that can fast-forward.
-  [ "$(git rev-parse --abbrev-ref HEAD)" = "main" ] ||
-    fail "checkout is not on main ($(git rev-parse --abbrev-ref HEAD)); not deploying"
+  # Only a clean checkout of master that can fast-forward.
+  [ "$(git rev-parse --abbrev-ref HEAD)" = "master" ] ||
+    fail "checkout is not on master ($(git rev-parse --abbrev-ref HEAD)); not deploying"
   [ -z "$(git status --porcelain --untracked-files=no)" ] ||
     fail "checkout has local changes; not deploying"
   if ! git merge-base --is-ancestor "$before" "$after"; then
-    # main was rewritten. Say so once per new origin/main, not every 2 minutes;
+    # master was rewritten. Say so once per new origin/master, not every 2 minutes;
     # docs/04 > Automatic deploys has the manual steps.
     if [ "$after" != "$(cat "$STATE_DIR/refused-sha" 2>/dev/null)" ]; then
       echo "$after" >"$STATE_DIR/refused-sha"
-      log "ERROR origin/main ${after:0:7} is not a fast-forward of ${before:0:7}; not deploying." \
-        "Check it and run: git reset --hard origin/main && systemctl start hackhub-autodeploy.service"
+      log "ERROR origin/master ${after:0:7} is not a fast-forward of ${before:0:7}; not deploying." \
+        "Check it and run: git reset --hard origin/master && systemctl start hackhub-autodeploy.service"
     fi
     exit 1
   fi
@@ -88,7 +88,7 @@ main() {
     backup "$before" || fail "backup failed; not deploying ${after:0:7}"
   fi
 
-  git merge --quiet --ff-only origin/main || fail "git merge --ff-only failed"
+  git merge --quiet --ff-only origin/master || fail "git merge --ff-only failed"
 
   if build_and_check; then
     rm -f "$STATE_DIR/failed-sha"
@@ -103,7 +103,7 @@ main() {
   echo "$after" >"$STATE_DIR/failed-sha"
   git reset --quiet --hard "$before"
   if build_and_check; then
-    log "!!! ROLLED BACK to ${before:0:7}; ${after:0:7} is skipped until main moves"
+    log "!!! ROLLED BACK to ${before:0:7}; ${after:0:7} is skipped until master moves"
   else
     log "!!! ROLLBACK TO ${before:0:7} IS ALSO UNHEALTHY. The site may be down: check by hand"
   fi
