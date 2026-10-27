@@ -15,17 +15,25 @@ import {
 import { Input } from "@/components/ui/input";
 import type { ActionState } from "@/lib/action-state";
 import { DUPLICATE_EMAIL } from "@/lib/auth/messages";
-
-import { fieldErrorsFor } from "./field-errors";
+import { useFieldValidation } from "@/lib/forms/use-field-validation";
+import { registerSchema } from "@/lib/validation/auth";
 
 type Props = {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
 };
 
+/**
+ * docs/08 > /register, validated as you go (redesign > Forms): each field is
+ * checked on blur with registerSchema, the schema the action uses, so the
+ * messages match. The server result still counts; this never blocks submit.
+ */
 export function RegisterForm({ action }: Props) {
   const [state, formAction, pending] = useActionState(action, null);
   const failed = state?.ok === false ? state : null;
-  const errors = fieldErrorsFor(failed);
+  const v = useFieldValidation(registerSchema, failed?.fieldErrors);
+
+  const password = v.fieldProps("password");
+  const passwordError = v.errorFor("password");
 
   return (
     <form action={formAction} noValidate className="flex flex-col gap-6">
@@ -47,63 +55,67 @@ export function RegisterForm({ action }: Props) {
       )}
 
       <FieldGroup>
-        <Field data-invalid={!!errors.email}>
+        <Field data-invalid={Boolean(v.errorFor("email"))}>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
             id="email"
-            name="email"
             type="email"
             autoComplete="email"
             required
             className="h-11"
             defaultValue={failed?.values?.email}
-            aria-invalid={!!errors.email}
+            {...v.fieldProps("email")}
           />
-          <FieldError errors={errors.email} />
+          <FieldError id={v.errorId("email")}>{v.errorFor("email")}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.password}>
+        <Field data-invalid={Boolean(passwordError)}>
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <Input
             id="password"
-            name="password"
             type="password"
             autoComplete="new-password"
             required
             minLength={8}
             className="h-11"
-            aria-invalid={!!errors.password}
-            aria-describedby="password-rule"
+            {...password}
+            // The rule is shown before the user types (docs/08 > /register),
+            // and stays described alongside any error.
+            aria-describedby={["password-rule", password["aria-describedby"]]
+              .filter(Boolean)
+              .join(" ")}
           />
-          {/* The rule is shown before the user types (docs/08 > /register). */}
-          <FieldDescription id="password-rule">
-            At least 8 characters.
-          </FieldDescription>
-          <FieldError errors={errors.password} />
+          <FieldDescription id="password-rule">At least 8 characters.</FieldDescription>
+          <FieldError id={v.errorId("password")}>{passwordError}</FieldError>
         </Field>
 
-        <Field data-invalid={!!errors.confirmPassword}>
+        <Field data-invalid={Boolean(v.errorFor("confirmPassword"))}>
           <FieldLabel htmlFor="confirmPassword">Confirm password</FieldLabel>
           <Input
             id="confirmPassword"
-            name="confirmPassword"
             type="password"
             autoComplete="new-password"
             required
             className="h-11"
-            aria-invalid={!!errors.confirmPassword}
+            {...v.fieldProps("confirmPassword")}
           />
-          <FieldError errors={errors.confirmPassword} />
+          <FieldError id={v.errorId("confirmPassword")}>
+            {v.errorFor("confirmPassword")}
+          </FieldError>
         </Field>
       </FieldGroup>
 
-      <Button type="submit" disabled={pending} className="h-11 text-base">
+      <Button
+        type="submit"
+        disabled={pending}
+        className="h-11 text-base motion-safe:transition-transform motion-safe:active:scale-[0.98]"
+      >
         {pending ? "Creating account…" : "Create account"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-foreground underline">
+        <Link href="/login" className="font-medium text-foreground underline underline-offset-4">
           Log in
         </Link>
       </p>

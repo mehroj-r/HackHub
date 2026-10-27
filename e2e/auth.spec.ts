@@ -51,6 +51,45 @@ test("a short password and a mismatch are refused (TC-45)", async ({
   await expect(page).toHaveURL(/\/register$/);
 });
 
+test("register validates each field on blur, and the error goes once it's fixed", async ({
+  page,
+}) => {
+  await page.goto("/register");
+  await page.getByLabel("Email").fill("not-an-email");
+  await page.getByLabel("Password", { exact: true }).focus();
+  await expect(
+    page.getByText("Enter a valid email address, like name@example.com."),
+  ).toBeVisible();
+
+  await page.getByLabel("Password", { exact: true }).fill("short");
+  await page.getByLabel("Confirm password").focus();
+  await expect(page.getByText("Use at least 8 characters.")).toBeVisible();
+  await expect(page.getByLabel("Password", { exact: true })).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+
+  // Typing a valid password clears the message without another blur.
+  await page.getByLabel("Password", { exact: true }).fill("long-enough-1");
+  await expect(page.getByText("Use at least 8 characters.")).toHaveCount(0);
+
+  await page.getByLabel("Confirm password").fill("different-1");
+  await page.getByLabel("Email").focus();
+  await expect(page.getByText("The passwords don't match.")).toBeVisible();
+  // Nothing was submitted: still on /register with the values kept.
+  await expect(page).toHaveURL(/\/register$/);
+  await expect(page.getByLabel("Email")).toHaveValue("not-an-email");
+});
+
+test("login asks for both fields on blur", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Email").focus();
+  await page.getByLabel("Password").focus();
+  await page.getByRole("button", { name: "Log in" }).focus();
+  await expect(page.getByText("Enter your email.")).toBeVisible();
+  await expect(page.getByText("Enter your password.")).toBeVisible();
+});
+
 test("a duplicate email in another letter case is refused (TC-46, TC-50)", async ({
   page,
   browser,

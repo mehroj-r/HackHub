@@ -9,7 +9,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { ROLE_HOME } from "@/lib/auth/permissions";
@@ -33,7 +32,7 @@ export default async function RegisterPage() {
         <span className="mb-2 flex size-12 items-center justify-center rounded-[10.5px] bg-primary">
           <LogoMark size={34} variant="onPrimary" decorative />
         </span>
-        <CardTitle className="text-2xl">Create an account</CardTitle>
+        <h1 className="text-page-title">Create an account</h1>
         <CardDescription>
           Join HackHub to register for events, form a team and submit your
           project.

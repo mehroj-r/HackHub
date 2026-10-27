@@ -9,7 +9,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { ROLE_HOME } from "@/lib/auth/permissions";
@@ -37,7 +36,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <span className="mb-2 flex size-12 items-center justify-center rounded-[10.5px] bg-primary">
           <LogoMark size={34} variant="onPrimary" decorative />
         </span>
-        <CardTitle className="text-2xl">Log in</CardTitle>
+        <h1 className="text-page-title">Log in</h1>
         <CardDescription>Welcome back to HackHub.</CardDescription>
       </CardHeader>
       <CardContent>
