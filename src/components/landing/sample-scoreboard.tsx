@@ -21,11 +21,41 @@ type SampleRow = {
 
 const EVENT = "HackHub Demo Day";
 const ROWS: SampleRow[] = [
-  { rank: 1, team: "Team Kompas", project: "Campus route planner", judges: 3, total: 91.4 },
-  { rank: 2, team: "Bytes of Bukhara", project: "Canteen queue tracker", judges: 3, total: 84.0 },
-  { rank: 3, team: "NoSleep.js", project: "Study group matcher", judges: 3, total: 77.5 },
-  { rank: 4, team: "Silk Road Devs", project: "Lost and found board", judges: 3, total: 72.3 },
-  { rank: 5, team: "Null Pointers", project: "Lab booking bot", judges: 3, total: 68.9 },
+  {
+    rank: 1,
+    team: "Team Kompas",
+    project: "Campus route planner",
+    judges: 3,
+    total: 91.4,
+  },
+  {
+    rank: 2,
+    team: "Bytes of Bukhara",
+    project: "Canteen queue tracker",
+    judges: 3,
+    total: 84.0,
+  },
+  {
+    rank: 3,
+    team: "NoSleep.js",
+    project: "Study group matcher",
+    judges: 3,
+    total: 77.5,
+  },
+  {
+    rank: 4,
+    team: "Silk Road Devs",
+    project: "Lost and found board",
+    judges: 3,
+    total: 72.3,
+  },
+  {
+    rank: 5,
+    team: "Null Pointers",
+    project: "Lab booking bot",
+    judges: 3,
+    total: 68.9,
+  },
 ];
 
 export function SampleScoreboard({ className }: { className?: string }) {
@@ -39,18 +69,24 @@ export function SampleScoreboard({ className }: { className?: string }) {
       <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-3 sm:px-6">
         <span className="flex min-w-0 items-baseline gap-2">
           <span className="truncate font-semibold">{EVENT}</span>
-          <span className="text-small text-muted-foreground">Final ranking</span>
+          <span className="text-small text-muted-foreground">
+            Final ranking
+          </span>
         </span>
         <Badge variant="outline">Example</Badge>
       </figcaption>
 
       <table className="w-full text-left">
         <caption className="sr-only">
-          Example ranking of a sample event, {EVENT}: rank, team, project, judges and total score out of 100.
+          Example ranking of a sample event, {EVENT}: rank, team, project,
+          judges and total score out of 100.
         </caption>
         <thead className="text-small text-muted-foreground">
           <tr className="border-b">
-            <th scope="col" className="w-14 py-2.5 pl-4 font-medium sm:w-16 sm:pl-6">
+            <th
+              scope="col"
+              className="w-14 py-2.5 pl-4 font-medium sm:w-16 sm:pl-6"
+            >
               Rank
             </th>
             <th scope="col" className="py-2.5 font-medium">
@@ -59,7 +95,10 @@ export function SampleScoreboard({ className }: { className?: string }) {
             <th scope="col" className="hidden py-2.5 font-medium md:table-cell">
               Judges
             </th>
-            <th scope="col" className="py-2.5 pr-4 text-right font-medium sm:pr-6">
+            <th
+              scope="col"
+              className="py-2.5 pr-4 text-right font-medium sm:pr-6"
+            >
               Total
             </th>
           </tr>
@@ -85,7 +124,11 @@ export function SampleScoreboard({ className }: { className?: string }) {
                     )}
                   >
                     {leader && (
-                      <TrophyIcon className="size-4 text-live" aria-label="Leader" />
+                      <TrophyIcon
+                        role="img"
+                        aria-label="Leader"
+                        className="size-4 text-live"
+                      />
                     )}
                     {row.rank}
                   </span>

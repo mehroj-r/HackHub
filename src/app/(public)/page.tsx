@@ -3,7 +3,10 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { OpenEvents, OpenEventsSkeleton } from "@/components/landing/open-events";
+import {
+  OpenEvents,
+  OpenEventsSkeleton,
+} from "@/components/landing/open-events";
 import { SampleScoreboard } from "@/components/landing/sample-scoreboard";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/dal";
@@ -29,7 +32,13 @@ const ROLES = [
   },
 ];
 
-const STEPS = ["Register", "Form a team", "Submit", "Get judged", "See the ranking"];
+const STEPS = [
+  "Register",
+  "Form a team",
+  "Submit",
+  "Get judged",
+  "See the ranking",
+];
 
 async function RedirectSignedIn() {
   await connection();
@@ -46,7 +55,10 @@ export default function LandingPage() {
       </Suspense>
 
       <main className="mx-auto w-full max-w-5xl px-4 pb-20">
-        <section aria-labelledby="hero-heading" className="pt-10 pb-12 sm:pt-16 sm:pb-16">
+        <section
+          aria-labelledby="hero-heading"
+          className="pt-10 pb-12 sm:pt-16 sm:pb-16"
+        >
           <h1
             id="hero-heading"
             className="max-w-3xl text-[clamp(2.25rem,1.6rem+2.6vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.025em] text-balance"
@@ -54,8 +66,8 @@ export default function LandingPage() {
             Run a hackathon from first sign-up to the final ranking.
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-pretty text-muted-foreground">
-            HackHub handles registration, teams, project submissions, judging and
-            the results board, in one place.
+            HackHub handles registration, teams, project submissions, judging
+            and the results board, in one place.
           </p>
 
           <SampleScoreboard className="mt-8 sm:mt-10" />
@@ -64,7 +76,12 @@ export default function LandingPage() {
             <Button asChild size="lg" className="h-12 px-6 text-base">
               <Link href="/register">Run a hackathon</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-12 px-6 text-base">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-12 px-6 text-base"
+            >
               <Link href="/events">Join one</Link>
             </Button>
           </div>
@@ -80,7 +97,7 @@ export default function LandingPage() {
         </section>
 
         <section
-          aria-labelledby="how-heading"
+          aria-label="How HackHub works"
           className="grid gap-10 border-t py-12 md:grid-cols-[1fr_1.4fr] md:gap-16"
         >
           <div>
@@ -101,14 +118,27 @@ export default function LandingPage() {
               ))}
             </ol>
           </div>
-          <ul className="flex flex-col divide-y">
-            {ROLES.map((role) => (
-              <li key={role.title} className="flex flex-col gap-1 py-4 first:pt-0 last:pb-0">
-                <h3 className="font-semibold">{role.title}</h3>
-                <p className="text-pretty text-muted-foreground">{role.text}</p>
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h2 id="roles-heading" className="text-section-title">
+              Who it&apos;s for
+            </h2>
+            <ul
+              aria-labelledby="roles-heading"
+              className="mt-5 flex flex-col divide-y"
+            >
+              {ROLES.map((role) => (
+                <li
+                  key={role.title}
+                  className="flex flex-col gap-1 py-4 first:pt-0 last:pb-0"
+                >
+                  <h3 className="font-semibold">{role.title}</h3>
+                  <p className="text-pretty text-muted-foreground">
+                    {role.text}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
       </main>
     </>
