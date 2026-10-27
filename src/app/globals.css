@@ -130,3 +130,159 @@
     }
   }
 }
+
+/* ------------------------------------------------------------------------
+   Redesign foundations (DESIGN.md > Type, Density, Motion).
+   ------------------------------------------------------------------------ */
+
+/* Type scale: quiet. Space Grotesk for titles, bolder and on clear steps;
+   Unbounded stays in the wordmark only. Use as text-page-title,
+   text-section-title, text-body, text-small. */
+@theme {
+  /* 28 px on phones to 32 px on desktop. */
+  --text-page-title: clamp(1.75rem, 1.55rem + 0.6vw, 2rem);
+  --text-page-title--line-height: 1.15;
+  --text-page-title--letter-spacing: -0.015em;
+  --text-page-title--font-weight: 700;
+  --text-section-title: 1.25rem;
+  --text-section-title--line-height: 1.3;
+  --text-section-title--font-weight: 600;
+  /* 15 px on phones to 16 px on desktop. */
+  --text-body: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+  --text-body--line-height: 1.6;
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.45;
+
+  /* Motion: 150–400 ms, exponential ease-out (DESIGN.md > Motion). */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-rise-in: rise-in var(--duration-slow) var(--ease-out-expo) both;
+  --animate-fade-in: fade-in var(--duration-base) var(--ease-out-expo) both;
+  --animate-tick-in: tick-in var(--duration-base) var(--ease-out-expo) both;
+  /* SavedTick: pops in, holds, fades out (1.8 s in total, once). */
+  --animate-saved-flash: saved-flash 1800ms var(--ease-out-expo) both;
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes saved-flash {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    12%,
+    80% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes tick-in {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+}
+
+:root {
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  /* Delay between items of a staggered list (stagger-item, style --i). */
+  --stagger-step: 45ms;
+  /* Height of the phone tab bar; 0 when there is none (see below). */
+  --tab-bar-h: 0px;
+}
+
+/* A list that enters once: put stagger-item on each row with style={{"--i": n}}.
+   Only under motion-safe; with reduced motion the rows are simply there. */
+@utility stagger-item {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rise-in var(--duration-slow) var(--ease-out-expo) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger-step));
+  }
+}
+
+@layer base {
+  /* Browser surfaces in the palette (craft floor). */
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
+    color: var(--foreground);
+  }
+  html {
+    caret-color: var(--primary);
+    accent-color: var(--primary);
+    scrollbar-color: color-mix(in oklab, var(--foreground) 22%, transparent)
+      transparent;
+    text-underline-offset: 0.2em;
+  }
+  /* Numbers people compare line up. */
+  table,
+  time,
+  [data-slot="badge"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Feedback: buttons give a little on press (motion-safe only). */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-slot="button"] {
+      transition-duration: var(--duration-fast);
+      transition-timing-function: var(--ease-out-expo);
+    }
+    [data-slot="button"]:active:not(:disabled) {
+      scale: 0.97;
+    }
+  }
+
+  /* With reduced motion: no transitions or animations anywhere. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* The phone tab bar reserves its height; ActionDock sits above it. */
+  @media (width < 48rem) {
+    body:has([data-tab-bar]) {
+      --tab-bar-h: 4rem;
+    }
+  }
+}
+
+/* Density by role: one system, two spacing scales. Participant pages are
+   roomy (the default); organizer and judge layouts set
+   data-density="compact". Components read --density-* through the slots. */
+:root {
+  --density-card: 1.25rem;
+  --density-cell-y: 0.75rem;
+  --density-gap: 1.5rem;
+}
+[data-density="compact"] {
+  --density-card: 1rem;
+  --density-cell-y: 0.5rem;
+  --density-gap: 1rem;
+}
+[data-slot="card"] {
+  --card-spacing: var(--density-card);
+}
+[data-slot="card"][data-size="sm"] {
+  --card-spacing: calc(var(--density-card) * 0.75);
+}
+[data-slot="table-cell"] {
+  padding-block: var(--density-cell-y);
+}

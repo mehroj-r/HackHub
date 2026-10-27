@@ -3,6 +3,7 @@ import { Geist_Mono, Space_Grotesk, Unbounded } from "next/font/google";
 import { Suspense } from "react";
 
 import { NoticeToast } from "@/components/layout/notice-toast";
+import { TabBar } from "@/components/layout/tab-bar";
 import {
   SiteHeader,
   SiteHeaderSkeleton,
@@ -55,6 +56,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
         </Suspense>
         {children}
+        {/* Phones: the role's bottom tab bar (reads the session). */}
+        <Suspense fallback={null}>
+          <TabBar />
+        </Suspense>
         <Suspense fallback={null}>
           <NoticeToast />
         </Suspense>

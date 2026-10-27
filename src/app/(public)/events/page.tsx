@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { CalendarDaysIcon, CalendarXIcon, UsersIcon } from "lucide-react";
+import { CalendarDaysIcon, UsersIcon } from "lucide-react";
 import { Suspense } from "react";
 
 import { EventCardMedia } from "@/components/events/event-card-media";
@@ -9,15 +9,9 @@ import {
   EventStatusBadges,
   StatusBadge,
 } from "@/components/events/status-badge";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { eventImageUrl } from "@/lib/uploads/url";
@@ -74,17 +68,9 @@ async function EventList() {
 
   if (events.length === 0) {
     return (
-      <Empty className="mt-8 border">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <CalendarXIcon aria-hidden />
-          </EmptyMedia>
-          <EmptyTitle>No open events</EmptyTitle>
-          <EmptyDescription>
-            No events are open for registration right now. Check back soon.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <EmptyState title="No open events" className="mt-8">
+        No events are open for registration right now. Check back soon.
+      </EmptyState>
     );
   }
 
