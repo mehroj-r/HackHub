@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getActiveHref, getNavItems } from "./nav-items";
+import { getActiveHref, getNavItems, getTabItems } from "./nav-items";
 
 describe("getNavItems", () => {
   it("gives a visitor only Events", () => {
@@ -51,5 +51,52 @@ describe("getActiveHref", () => {
   it("returns null when no item matches", () => {
     expect(getActiveHref(participant, "/profile")).toBeNull();
     expect(getActiveHref(participant, "/")).toBeNull();
+  });
+});
+
+describe("getTabItems", () => {
+  it("gives visitors no tab bar", () => {
+    expect(getTabItems(null)).toEqual([]);
+  });
+
+  it("follows the redesign plan for each role", () => {
+    expect(getTabItems("PARTICIPANT").map((t) => t.label)).toEqual([
+      "Events",
+      "My events",
+      "Team",
+      "Profile",
+    ]);
+    expect(getTabItems("ORGANIZER").map((t) => t.label)).toEqual([
+      "Events",
+      "Users",
+      "Profile",
+    ]);
+    expect(getTabItems("JUDGE").map((t) => t.label)).toEqual([
+      "Score",
+      "Results",
+      "Profile",
+    ]);
+  });
+
+  it("points Team at the participant's current team, else My events", () => {
+    const team = (opts?: { teamHref?: string }) =>
+      getTabItems("PARTICIPANT", opts).find((t) => t.icon === "team")?.href;
+    expect(team()).toBe("/my-events");
+    expect(team({ teamHref: "/events/e1/team" })).toBe("/events/e1/team");
+  });
+
+  it("marks exactly one current tab", () => {
+    const current = (role: "PARTICIPANT" | "ORGANIZER", path: string) =>
+      getTabItems(role)
+        .filter((t) => t.match(path))
+        .map((t) => t.label);
+    expect(current("PARTICIPANT", "/events/e1")).toEqual(["Events"]);
+    expect(current("PARTICIPANT", "/events/e1/team")).toEqual(["Team"]);
+    expect(current("PARTICIPANT", "/events/e1/team/submit")).toEqual(["Team"]);
+    expect(current("PARTICIPANT", "/my-events")).toEqual(["My events"]);
+    expect(current("ORGANIZER", "/organizer/events/e1/criteria")).toEqual([
+      "Events",
+    ]);
+    expect(current("ORGANIZER", "/organizer/users")).toEqual(["Users"]);
   });
 });

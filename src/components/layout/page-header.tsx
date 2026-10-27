@@ -38,7 +38,7 @@ export function PageHeader({
       )}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex min-w-0 flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-balance break-words">
+          <h1 className="text-page-title text-balance break-words">
             {title}
           </h1>
           {description && (

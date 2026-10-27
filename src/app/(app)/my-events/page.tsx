@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDaysIcon, CalendarPlusIcon, TrophyIcon } from "lucide-react";
+import { CalendarDaysIcon, TrophyIcon } from "lucide-react";
 import { Suspense } from "react";
 
 import { EventCardMedia } from "@/components/events/event-card-media";
@@ -8,16 +8,9 @@ import {
   EventStatusBadges,
   StatusBadge,
 } from "@/components/events/status-badge";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireRole } from "@/lib/auth/dal";
 import { compareMyEvents } from "@/lib/domain/registration";
@@ -82,22 +75,17 @@ async function MyEventsList() {
 
   if (registrations.length === 0) {
     return (
-      <Empty className="mt-8 border">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <CalendarPlusIcon aria-hidden />
-          </EmptyMedia>
-          <EmptyTitle>No events yet</EmptyTitle>
-          <EmptyDescription>
-            You haven&apos;t registered for any events yet.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
+      <EmptyState
+        title="No events yet"
+        className="mt-8"
+        action={
           <Button asChild size="lg" className="h-11 px-6">
             <Link href="/events">Browse events</Link>
           </Button>
-        </EmptyContent>
-      </Empty>
+        }
+      >
+        You haven&apos;t registered for any events yet.
+      </EmptyState>
     );
   }
 
