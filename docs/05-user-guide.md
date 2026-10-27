@@ -226,7 +226,8 @@ are open, and update it until they close.
 
 1. Open **Events I run**. It lists every event with its dates, its status (registration and submissions open or
    closed) and how many people registered, how many teams formed and how many submitted.
-2. Select **New event**. Enter the name, a description, the start and end dates, and the maximum team size.
+2. Select **New event**. Enter the name, a description, the start and end dates, and the maximum team size. Each
+   field is checked as soon as you leave it, and a message under it says what to fix; it goes away as you correct it.
 3. Select **Create event**. You land on the event's overview with the message "Event created. It's hidden from
    participants until you open registration."
 4. To change it later, open the event and select **Edit** in the menu under its name. Change what you need and select
