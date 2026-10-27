@@ -7,6 +7,8 @@
 // once the event has any submission, its results are published, or its end
 // date has passed.
 
+import { isAfterLastDay } from "@/lib/domain/event-dates";
+
 export type SubmissionPhase = "not-open" | "open" | "closed";
 
 export function submissionPhase(input: {
@@ -22,13 +24,4 @@ export function submissionPhase(input: {
   if (input.submissionsOpen) return "open";
   if (input.eventHasSubmissions) return "closed";
   return isAfterLastDay(input.endDate, input.now) ? "closed" : "not-open";
-}
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-const GMT_PLUS_5_MS = 5 * 60 * 60 * 1000;
-
-/** True once the event's last day is over in GMT+5 (docs/08 > Dates and times). */
-function isAfterLastDay(endDate: Date, now: Date) {
-  const endOfLastDayUtc = endDate.getTime() + DAY_MS - GMT_PLUS_5_MS;
-  return now.getTime() >= endOfLastDayUtc;
 }
