@@ -69,14 +69,14 @@ export function LoginForm({ action, callbackUrl }: Props) {
       <Button
         type="submit"
         disabled={pending}
-        className="h-11 text-base motion-safe:transition-transform motion-safe:active:scale-[0.98]"
+        className="h-11 text-base"
       >
         {pending ? "Logging in…" : "Log in"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         New to HackHub?{" "}
-        <Link href="/register" className="font-medium text-foreground underline underline-offset-4">
+        <Link href="/register" className="font-medium text-foreground underline">
           Create an account
         </Link>
       </p>
