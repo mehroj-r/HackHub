@@ -23,7 +23,12 @@ vi.mock("@/auth", () => ({ auth: () => auth() }));
 
 const db = {
   user: { findUnique: vi.fn() },
-  event: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
+  event: {
+    findUnique: vi.fn(),
+    findUniqueOrThrow: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+  },
   team: { findFirst: vi.fn() },
   $queryRaw: vi.fn(),
 };
@@ -65,6 +70,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   db.event.findUnique.mockResolvedValue({ id: "event-1" });
   db.event.create.mockResolvedValue({ id: "event-1" });
+  db.event.findUniqueOrThrow.mockResolvedValue({
+    logoPath: null,
+    bannerPath: null,
+  });
   db.team.findFirst.mockResolvedValue(null);
 });
 

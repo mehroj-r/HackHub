@@ -11,4 +11,5 @@ e2e
 playwright-report
 test-results
 coverage
+uploads
 *.md
