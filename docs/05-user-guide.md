@@ -88,6 +88,8 @@ user menu for your profile and logging out.
 1. Open **My profile** from the user menu (top right; on a phone, the menu button). Until your name and faculty are
    saved, a notice at the top reminds you to add them.
 2. Fill in **Name** and **Faculty**. Your email and role are shown above the form; you can't change them here.
+   **Phone** is optional: organizers use it to reach your team. Type it any way you like, for example `90 123 45 67`;
+   it's saved as `+998 90 123 45 67`.
 3. To add a skill, type it and press Enter or select **Add skill**. Remove one with the **×** on its tag.
 4. Write a short **Bio** if you like. The counter under it shows how many of the 500 characters you've used.
 5. Add up to 3 **Links**, each starting with `https://`. Use **Add link** for another row.
@@ -292,7 +294,7 @@ banner across the top of the event). Both are optional.
 **Steps:**
 
 1. Select **Users** in the navigation. Everyone is listed, organizers first.
-2. Find the person: type part of their name or email in **Search by name or email**, or select a role chip
+2. Find the person: type part of their name, email or phone in **Search by name, email or phone**, or select a role chip
    (**Participants**, **Judges**, **Organizers**). Each chip shows how many people it has. Select a column heading to
    sort by it.
 3. Select **Make judge** on a participant, or **Make participant** on a judge. You can also select the person's name
@@ -347,9 +349,9 @@ submitted.
 1. Open the event from **Events I run** and select **Participants** in the menu under its name.
 2. The **Participants** tab lists everyone registered: name, email, faculty, team (or "No team") and the day they
    registered. Select a column heading to sort by it.
-3. To find someone, type part of their name, email, faculty or team in the search box. The **In a team** and **No
+3. To find someone, type part of their name, email, faculty, team or phone in the search box. The **In a team** and **No
    team** chips narrow the list; each shows how many people it has.
-4. Select a person to open their details on the side (full screen on a phone): faculty, team, skills, bio and links,
+4. Select a person to open their details on the side (full screen on a phone): faculty, phone, team, skills, bio and links,
    and a link to their full profile. Press Escape or select **Close** to go back to the list.
 5. Select the **Teams** tab for every team: its members, how full it is ("2 of 4") and whether it has submitted. The
    **Submitted** and **Not submitted** chips filter the list. Select a team to see its members and its submission:

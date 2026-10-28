@@ -58,6 +58,7 @@ export async function loadParticipants(eventId: string, search: string) {
                 select: {
                   name: true,
                   faculty: true,
+                  phone: true,
                   skills: true,
                   bio: true,
                   links: true,
@@ -77,6 +78,7 @@ export async function loadParticipants(eventId: string, search: string) {
       name: user.profile?.name ?? null,
       email: user.email,
       faculty: user.profile?.faculty ?? null,
+      phone: user.profile?.phone ?? null,
       teamName: membership?.team.name ?? null,
       registeredAt: createdAt,
       skills: user.profile?.skills ?? [],

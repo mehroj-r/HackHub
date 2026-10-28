@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  normalizePhone,
   profileFormSchema,
   profileSchema,
   readProfileForm,
@@ -11,6 +12,7 @@ import {
 const valid = {
   name: "Ana Karimova",
   faculty: "Computer Science",
+  phone: "+998901234567",
   skills: ["React", "Figma"],
   bio: "I like hackathons.",
   links: ["https://github.com/ana"],
@@ -113,6 +115,65 @@ describe("profileSchema", () => {
   });
 });
 
+describe("profileSchema phone", () => {
+  const phoneOf = (phone: unknown) =>
+    profileSchema.parse({ ...valid, phone }).phone;
+
+  it("is optional: blank or missing is null", () => {
+    expect(phoneOf("")).toBeNull();
+    expect(phoneOf("   ")).toBeNull();
+    expect(phoneOf(undefined)).toBeNull();
+    const { phone: _p, ...rest } = valid;
+    void _p;
+    expect(profileSchema.parse(rest).phone).toBeNull();
+  });
+
+  it("turns a 9-digit Uzbek local number into +998…", () => {
+    expect(phoneOf("901234567")).toBe("+998901234567");
+    expect(phoneOf("90 123-45-67")).toBe("+998901234567");
+    expect(phoneOf("(90) 123.45.67")).toBe("+998901234567");
+  });
+
+  it("adds the plus to 998… and keeps +998…", () => {
+    expect(phoneOf("998901234567")).toBe("+998901234567");
+    expect(phoneOf("998 90 123 45 67")).toBe("+998901234567");
+    expect(phoneOf(" +998 (90) 123-45-67 ")).toBe("+998901234567");
+  });
+
+  it("keeps other numbers' digits and leading plus", () => {
+    expect(phoneOf("+44 7911 123456")).toBe("+447911123456");
+    expect(phoneOf("+1 (415) 555-0100")).toBe("+14155550100");
+    expect(phoneOf("0901234567")).toBe("0901234567");
+  });
+
+  it("refuses letters, too few or too many digits, and a stray plus", () => {
+    for (const bad of [
+      "12ab",
+      "12345678",
+      "+12345678",
+      "1234567890123456",
+      "90+1234567",
+      "++998901234567",
+      "phone",
+    ]) {
+      expect(errors({ ...valid, phone: bad })).toEqual({
+        phone: ["Enter a phone number like +998 90 123 45 67."],
+      });
+    }
+  });
+});
+
+describe("normalizePhone", () => {
+  it("is null for anything that isn't a phone", () => {
+    expect(normalizePhone("12ab")).toBeNull();
+    expect(normalizePhone("")).toBeNull();
+  });
+
+  it("gives the stored form", () => {
+    expect(normalizePhone("90 123 45 67")).toBe("+998901234567");
+  });
+});
+
 describe("readProfileForm", () => {
   it("reads repeated skill and link inputs as lists", () => {
     const form = new FormData();
@@ -125,6 +186,7 @@ describe("readProfileForm", () => {
     expect(readProfileForm(form)).toEqual({
       name: "Ana",
       faculty: "CS",
+      phone: "",
       skills: ["React", "Go"],
       bio: "",
       links: ["https://github.com/ana"],
@@ -160,6 +222,14 @@ describe("profileFormSchema", () => {
     void _s;
     void _l;
     expect(profileFormSchema.safeParse(rest).success).toBe(true);
+  });
+
+  it("checks the phone with the server's rule", () => {
+    const result = profileFormSchema.safeParse({ ...valid, phone: "12ab" });
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => [i.path[0], i.message])).toEqual([
+      ["phone", "Enter a phone number like +998 90 123 45 67."],
+    ]);
   });
 
   it("keeps the server's messages", () => {

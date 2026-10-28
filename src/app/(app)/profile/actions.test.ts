@@ -27,6 +27,7 @@ function form(fields: Record<string, string | string[]>) {
 const valid = {
   name: "Aziza Karimova",
   faculty: "Computer Science",
+  phone: "+998901234567",
   skills: ["React", "TypeScript"],
   bio: "I like hackathons.",
   links: ["https://github.com/aziza"],
@@ -96,6 +97,33 @@ describe("saveProfile", () => {
     await saveProfile(null, form({ ...valid, bio: "   " }));
 
     expect(upsert.mock.calls[0][0].update.bio).toBeNull();
+  });
+
+  it("stores the phone in its normalized form", async () => {
+    await saveProfile(null, form({ ...valid, phone: "90 123-45-67" }));
+
+    const args = upsert.mock.calls[0][0];
+    expect(args.create.phone).toBe("+998901234567");
+    expect(args.update.phone).toBe("+998901234567");
+  });
+
+  it("stores a cleared phone as null", async () => {
+    await saveProfile(null, form({ ...valid, phone: "  " }));
+
+    expect(upsert.mock.calls[0][0].update.phone).toBeNull();
+  });
+
+  it("refuses a phone that isn't one, keeping what was typed", async () => {
+    const result = await saveProfile(null, form({ ...valid, phone: "12ab" }));
+
+    expect(result).toMatchObject({
+      ok: false,
+      fieldErrors: {
+        phone: ["Enter a phone number like +998 90 123 45 67."],
+      },
+      values: { phone: "12ab" },
+    });
+    expect(upsert).not.toHaveBeenCalled();
   });
 
   it("stops at the guard for a signed-out visitor", async () => {

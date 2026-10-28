@@ -45,7 +45,7 @@ async function Users({
       id: true,
       email: true,
       role: true,
-      profile: { select: { name: true } },
+      profile: { select: { name: true, phone: true } },
       memberships: {
         orderBy: { joinedAt: "asc" },
         select: {
@@ -78,6 +78,7 @@ async function Users({
       id: user.id,
       name,
       email: user.email,
+      phone: user.profile?.phone ?? null,
       role: user.role,
       teams: user.memberships.map((m) => `${m.team.name} (${m.event.name})`),
       // Organizers and the current user get no action at all (docs/08).

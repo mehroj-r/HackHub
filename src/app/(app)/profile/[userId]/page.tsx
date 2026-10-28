@@ -37,6 +37,7 @@ async function UserProfile({
         select: {
           name: true,
           faculty: true,
+          phone: true,
           skills: true,
           bio: true,
           links: true,

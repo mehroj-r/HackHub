@@ -222,6 +222,7 @@ show under the field. Errors that aren't about one field show above the form.
 |---|---|---|
 | Name | Required, up to 80 characters | "Enter your name." / "Keep the name under 80 characters." |
 | Faculty | Required, free text, up to 80 characters | "Enter your faculty." / "Keep the faculty under 80 characters." |
+| Phone | Optional; hint "Optional. Organizers use it to reach your team." Spaces, dashes, dots and brackets are ignored; then 9 to 15 digits with an optional leading `+`. A 9-digit local number or `998…` is saved as `+998…`. Not needed to register for events | "Enter a phone number like +998 90 123 45 67." |
 | Skills | Optional. Up to 10 short tags, each up to 30 characters, added one at a time and removable | "Add up to 10 skills." / "Keep each skill under 30 characters." |
 | Bio | Optional, up to 500 characters. A character count is visible while typing | "Keep the bio under 500 characters." |
 | Links | Optional, up to 3, each a full URL | "Enter a full link starting with https://." |
@@ -235,7 +236,7 @@ show under the field. Errors that aren't about one field show above the form.
 
 - **Purpose.** Read-only view of another user, reached from team member lists and the ranking.
 - **Who.** Any signed-in user (**Decision 12**).
-- **Data.** Name, faculty, role, skills, bio, links (open in a new tab). The email isn't shown.
+- **Data.** Name, faculty, role, skills, bio, links (open in a new tab), phone (a `tel:` link, shown as `+998 90 123 45 67`; hidden when not given). The email isn't shown.
 - **States.** Profile not filled in yet: "This person hasn't filled in their profile yet." Viewing your own: a link "Edit my profile" → `/profile`.
 - **Tests.** TC-12.
 
@@ -364,7 +365,7 @@ show under the field. Errors that aren't about one field show above the form.
 
 | View | Columns | Notes |
 |---|---|---|
-| Participants | Name (links to profile), email, faculty, team (or "No team"), registered on | Sorted by name. A search by name or email |
+| Participants | Name (links to profile), email, faculty, team (or "No team"), registered on | Sorted by name. A search by name, email, faculty, team or phone. The detail panel shows the phone as a `tel:` link ("Not given" when blank) |
 | Teams | Team name, members (names), member count "{n} of {max}", submission ("Submitted {date}" / "Not submitted") | Opening a team shows its submission read-only: title, description, repository link |
 
 - **States.** **Empty:** "Nobody has registered yet." / "No teams yet."
@@ -383,7 +384,7 @@ show under the field. Errors that aren't about one field show above the form.
 #### `/organizer/users` Users and roles (S1, #13)
 
 - **Purpose.** Make a user a judge, or a judge a participant again.
-- **Data.** Every user: name (or "No name yet"), email, role, and whether they're on a team (event names). A search by name or email, and a filter by role.
+- **Data.** Every user: name (or "No name yet"), email, role, and whether they're on a team (event names). A search by name, email or phone, and a filter by role. The detail panel shows the phone as a `tel:` link ("Not given" when blank).
 - **Actions, per row.** "Make judge" on a participant, "Make participant" on a judge. Organizers have no action, and nobody can change their own role.
 - **Rule.** A participant who's on a team in any event can't become a judge (**Decision 11**). The action is disabled with the reason: "{name} is on a team in {event}, so they can't become a judge."
 - **After a change.** The row updates, toast "{name} is now a judge." / "{name} is now a participant." No confirm dialog: the change can be undone right away.

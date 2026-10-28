@@ -29,6 +29,7 @@ import {
 import { textLink } from "@/components/organizer/stacked-table";
 import { Badge } from "@/components/ui/badge";
 import { Sheet } from "@/components/ui/sheet";
+import { formatPhone, phoneHref } from "@/lib/format/phone";
 import { cn } from "@/lib/utils";
 
 // The Participants tab (docs/08 > Participants and teams; redesign: table +
@@ -40,6 +41,7 @@ export type ParticipantTableRow = {
   name: string | null;
   email: string;
   faculty: string | null;
+  phone: string | null;
   teamName: string | null;
   registeredAt: Date;
   skills: string[];
@@ -74,7 +76,15 @@ export function ParticipantsTable({
     [],
   );
   const searched = rows.filter((r) =>
-    matches(query, r.name, r.email, r.faculty, r.teamName),
+    matches(
+      query,
+      r.name,
+      r.email,
+      r.faculty,
+      r.teamName,
+      r.phone,
+      r.phone && formatPhone(r.phone),
+    ),
   );
   const shown = useSorted(
     searched.filter((r) =>
@@ -90,7 +100,7 @@ export function ParticipantsTable({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <SearchBox
           id="participants-search"
-          label="Search by name, email, faculty or team"
+          label="Search by name, email, faculty, team or phone"
           value={query}
           onChange={setQuery}
         />
@@ -224,6 +234,22 @@ function ParticipantPanel({
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Faculty</dt>
         <dd>{row.faculty ?? "Not given"}</dd>
+        <dt className="text-muted-foreground">Phone</dt>
+        <dd>
+          {row.phone ? (
+            <a
+              href={phoneHref(row.phone)}
+              className={cn(
+                textLink,
+                "inline-flex min-h-11 items-center tabular-nums md:min-h-0",
+              )}
+            >
+              {formatPhone(row.phone)}
+            </a>
+          ) : (
+            "Not given"
+          )}
+        </dd>
         <dt className="text-muted-foreground">Team</dt>
         <dd>{row.teamName ?? "No team"}</dd>
         <dt className="text-muted-foreground">Registered on</dt>

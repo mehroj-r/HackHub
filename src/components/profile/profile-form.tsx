@@ -25,7 +25,7 @@ import { useFieldValidation } from "@/lib/forms/use-field-validation";
 import { profileFormSchema } from "@/lib/validation/profile";
 
 // The /profile form (docs/08 > /profile), validating as you go (redesign >
-// Forms): name, faculty, bio and links are checked on blur with the server's
+// Forms): name, faculty, phone, bio and links are checked on blur with the server's
 // own rules (profileFormSchema), errors sit under the field and the field
 // keeps its value. Every field is controlled, so the values also survive
 // React's form reset after the action returns. The server's result is the
@@ -34,6 +34,7 @@ import { profileFormSchema } from "@/lib/validation/profile";
 export type ProfileFormValues = {
   name: string;
   faculty: string;
+  phone: string;
   skills: string[];
   bio: string;
   links: string[];
@@ -74,6 +75,7 @@ export function ProfileForm({
 
   const [name, setName] = useState(initial.name);
   const [faculty, setFaculty] = useState(initial.faculty);
+  const [phone, setPhone] = useState(initial.phone);
   const [bio, setBio] = useState(initial.bio);
   const [skills, setSkills] = useState(initial.skills);
   const [skillDraft, setSkillDraft] = useState("");
@@ -107,6 +109,7 @@ export function ProfileForm({
   const errors = {
     name: v.errorFor("name"),
     faculty: v.errorFor("faculty"),
+    phone: v.errorFor("phone"),
     skills: v.errorFor("skills"),
     bio: v.errorFor("bio"),
     links: v.errorFor("links"),
@@ -151,6 +154,27 @@ export function ProfileForm({
             {...wire<HTMLInputElement>("faculty", setFaculty)}
           />
           <FieldError id={v.errorId("faculty")}>{errors.faculty}</FieldError>
+        </Field>
+
+        <Field data-invalid={Boolean(errors.phone)}>
+          <FieldLabel htmlFor="phone">Phone</FieldLabel>
+          <Input
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+            placeholder="+998 90 123 45 67"
+            maxLength={30}
+            value={phone}
+            {...wire<HTMLInputElement>("phone", setPhone)}
+            aria-describedby={
+              errors.phone ? `phone-hint ${v.errorId("phone")}` : "phone-hint"
+            }
+          />
+          <FieldDescription id="phone-hint">
+            Optional. Organizers use it to reach your team.
+          </FieldDescription>
+          <FieldError id={v.errorId("phone")}>{errors.phone}</FieldError>
         </Field>
 
         <Field data-invalid={Boolean(errors.skills)}>

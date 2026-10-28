@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet } from "@/components/ui/sheet";
 import type { Role } from "@/generated/prisma/enums";
 import type { ActionState } from "@/lib/action-state";
+import { formatPhone, phoneHref } from "@/lib/format/phone";
 import { cn } from "@/lib/utils";
 
 // /organizer/users (docs/08 > Users and roles; redesign: table + detail
@@ -39,6 +40,7 @@ export type UserRow = {
   id: string;
   name: string | null;
   email: string;
+  phone: string | null;
   role: Role;
   teams: string[];
   /** Organizers and the current user get no action (docs/08). */
@@ -83,7 +85,9 @@ export function UsersTable({
             : row.teams.length,
     [],
   );
-  const searched = rows.filter((r) => matches(query, r.name, r.email));
+  const searched = rows.filter((r) =>
+    matches(query, r.name, r.email, r.phone, r.phone && formatPhone(r.phone)),
+  );
   const shown = useSorted(
     searched.filter((r) => role === "all" || r.role === role),
     sort,
@@ -97,7 +101,7 @@ export function UsersTable({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <SearchBox
           id="users-search"
-          label="Search by name or email"
+          label="Search by name, email or phone"
           value={query}
           onChange={setQuery}
         />
@@ -241,6 +245,22 @@ function UserPanel({
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Role</dt>
         <dd>{ROLE_LABEL[row.role]}</dd>
+        <dt className="text-muted-foreground">Phone</dt>
+        <dd>
+          {row.phone ? (
+            <a
+              href={phoneHref(row.phone)}
+              className={cn(
+                textLink,
+                "inline-flex min-h-11 items-center tabular-nums md:min-h-0",
+              )}
+            >
+              {formatPhone(row.phone)}
+            </a>
+          ) : (
+            "Not given"
+          )}
+        </dd>
       </dl>
 
       <PanelSection title="Teams">
