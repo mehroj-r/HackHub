@@ -39,6 +39,7 @@ model Profile {
   skills    String[]
   bio       String?
   links     String[]
+  phone     String?
   updatedAt DateTime @updatedAt @map("updated_at")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -22,7 +22,12 @@ export async function saveProfile(
     return {
       ...fromZodError(parsed.error),
       ok: false,
-      values: { name: raw.name, faculty: raw.faculty, bio: raw.bio },
+      values: {
+        name: raw.name,
+        faculty: raw.faculty,
+        phone: raw.phone,
+        bio: raw.bio,
+      },
     };
   }
 

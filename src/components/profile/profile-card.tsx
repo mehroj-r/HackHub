@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Role } from "@/generated/prisma/enums";
+import { formatPhone, phoneHref } from "@/lib/format/phone";
 
 // The read-only profile from docs/08 > /profile/[userId] (Decision 12). The
 // email is never shown here.
@@ -25,6 +26,7 @@ export type ProfileView = {
   profile: {
     name: string;
     faculty: string;
+    phone: string | null;
     skills: string[];
     bio: string | null;
     links: string[];
@@ -96,6 +98,18 @@ export function ProfileCard({
                     </li>
                   ))}
                 </ul>
+              </section>
+            )}
+
+            {profile.phone && (
+              <section className="flex flex-col gap-2">
+                <h2 className="text-sm font-medium">Phone</h2>
+                <a
+                  href={phoneHref(profile.phone)}
+                  className="inline-flex min-h-11 items-center self-start text-sm tabular-nums text-foreground underline underline-offset-4 hover:text-ring md:min-h-0"
+                >
+                  {formatPhone(profile.phone)}
+                </a>
               </section>
             )}
           </>

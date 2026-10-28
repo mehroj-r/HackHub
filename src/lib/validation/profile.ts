@@ -17,6 +17,41 @@ const link = z.url({
   error: "Enter a full link starting with https://.",
 });
 
+export const PHONE_ERROR = "Enter a phone number like +998 90 123 45 67.";
+
+/** Spaces, dashes, dots and brackets people type between the digits. */
+const PHONE_SEPARATORS = /[\s\-.()[\]]/g;
+const PHONE_PATTERN = /^\+?[0-9]{9,15}$/;
+
+/**
+ * A typed phone number in its stored form, or null when it isn't one:
+ * separators are dropped, a 9-digit Uzbek local number ("90 123 45 67") and
+ * "998…" without the plus both become "+998…", and any other number keeps
+ * its digits and leading "+" as typed.
+ */
+export function normalizePhone(input: string): string | null {
+  const compact = input.trim().replace(PHONE_SEPARATORS, "");
+  if (!PHONE_PATTERN.test(compact)) return null;
+  if (compact.startsWith("+")) return compact;
+  if (compact.length === 9) return `+998${compact}`;
+  if (compact.length === 12 && compact.startsWith("998")) return `+${compact}`;
+  return compact;
+}
+
+/** Optional: blank (or not sent) is null; anything else must be a phone. */
+const phone = z
+  .string()
+  .optional()
+  .transform((value, ctx) => {
+    if (!value?.trim()) return null;
+    const normalized = normalizePhone(value);
+    if (normalized === null) {
+      ctx.addIssue({ code: "custom", message: PHONE_ERROR });
+      return z.NEVER;
+    }
+    return normalized;
+  });
+
 export const profileSchema = z.object({
   name: z
     .string({ error: "Enter your name." })
@@ -28,6 +63,7 @@ export const profileSchema = z.object({
     .trim()
     .min(1, "Enter your faculty.")
     .max(80, "Keep the faculty under 80 characters."),
+  phone,
   skills: trimmedList
     // The same skill twice, in any letter case, counts once.
     .transform((items) =>
@@ -83,6 +119,7 @@ export function readProfileForm(formData: FormData) {
   return {
     name: text("name"),
     faculty: text("faculty"),
+    phone: text("phone"),
     skills: list("skills"),
     bio: text("bio"),
     links: list("links"),

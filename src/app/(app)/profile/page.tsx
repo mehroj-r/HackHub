@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Role } from "@/generated/prisma/enums";
 import { requireUser } from "@/lib/auth/dal";
+import { formatPhone } from "@/lib/format/phone";
 import { prisma } from "@/lib/prisma";
 
 import { saveProfile } from "./actions";
@@ -42,12 +43,20 @@ async function MyProfile() {
   const user = await requireUser();
   const profile = await prisma.profile.findUnique({
     where: { userId: user.id },
-    select: { name: true, faculty: true, skills: true, bio: true, links: true },
+    select: {
+      name: true,
+      faculty: true,
+      phone: true,
+      skills: true,
+      bio: true,
+      links: true,
+    },
   });
 
   const initial: ProfileFormValues = {
     name: profile?.name ?? "",
     faculty: profile?.faculty ?? "",
+    phone: profile?.phone ? formatPhone(profile.phone) : "",
     skills: profile?.skills ?? [],
     bio: profile?.bio ?? "",
     links: profile?.links ?? [],
