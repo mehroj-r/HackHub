@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { Reveal } from "./reveal";
+
 /**
  * One landing section, so every section has the same spacing and heading
  * scale (landing plan). Renders a <section> labelled by its <h2>.
@@ -16,6 +18,15 @@ import { cn } from "@/lib/utils";
  *
  * Widths: the page is `max-w-6xl` with `px-4`; the section adds only vertical
  * rhythm (py-16, py-24 from md), so sections stack evenly.
+ *
+ * Anchors: scroll-mt-16 is the sticky header's height (h-16), so a jump to
+ * `/#id` (the header's section links) lands just under the header.
+ *
+ * Motion: as they scroll into view, the heading block fades and rises in once
+ * and the content fades in once (Reveal), motion-safe only and never hiding
+ * content without JavaScript. The content doesn't rise: a section's own items
+ * (DrawIn and the like) move as they enter, and the shell leaves their boxes
+ * where they are.
  */
 export function LandingSection({
   id,
@@ -37,9 +48,9 @@ export function LandingSection({
     <section
       id={id}
       aria-labelledby={headingId}
-      className={cn("scroll-mt-20 py-16 md:py-24", className)}
+      className={cn("scroll-mt-16 py-16 md:py-24", className)}
     >
-      <div className="max-w-2xl">
+      <Reveal className="max-w-2xl">
         {eyebrow && (
           <p className="mb-3 font-mono text-small tracking-wide text-muted-foreground uppercase">
             {eyebrow}
@@ -56,8 +67,10 @@ export function LandingSection({
             {intro}
           </p>
         )}
-      </div>
-      <div className="mt-10 md:mt-12">{children}</div>
+      </Reveal>
+      <Reveal fadeOnly className="mt-10 md:mt-12">
+        {children}
+      </Reveal>
     </section>
   );
 }
