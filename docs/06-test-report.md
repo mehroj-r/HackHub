@@ -3,8 +3,8 @@
 > **Status:** release results recorded on 27 Oct 2026 from each card's tester review on GitHub and a regression run
 > on `main`; on 29 Oct, the last open case (TC-102) was run on a real tie, bugs 3, 7 and 8 were closed, and every
 > automated test was run again on `master` (`1f6dcff`, #86). Nine e2e tests from the late redesign PRs fail there; see
-> [Automated checks](#automated-checks). The production run and the sign-off are still
-> to do (see [Release test run](#release-test-run)).
+> [Automated checks](#automated-checks). The team ran the release checklist by hand on production, and the release
+> is signed off (see [Release test run](#release-test-run) and [Release sign-off](#release-sign-off)).
 > The test cases come straight from the **Tasks** checklist of each Trello card, so the report and the board
 > stay in step. If a card's tasks change, update its cases here.
 >
@@ -35,7 +35,7 @@ Last full run: 27 Oct 2026, 20:00, on `main` at `a971e96`, the same code as `000
 results above, then a regression run of the cases no tester had run. Rerun on 29 Oct on `master` at `1f6dcff` (#86)
 plus the bug 3 and bug 8 fixes (local, demo seed): 478 unit tests and both database race tests pass, typecheck and lint
 are clean, TC-102 passes, and 121 of 130 e2e tests pass (the 9 failures are listed under
-[Automated checks](#automated-checks)). The production run is in [Release test run](#release-test-run).
+[Automated checks](#automated-checks)). The production run is in [Release test run](#release-test-run): done by hand by the team, every line passed.
 
 ## Test cases
 
@@ -319,38 +319,38 @@ Every other release case is checked by hand by its tester.
 
 ## Release test run
 
-To do on Wed 28 Oct, after Abdurauf's final deploy, **by hand** on https://hackhub.mekhroj.uz with one account per
-role. Use a new event, never the demo seed (it's local only). Tick each line, and log any failure in the bug log
+Run by the team after Abdurauf's final deploy (Wed 28 Oct), **by hand** on https://hackhub.mekhroj.uz with one account
+per role. Every line passed; no failures to log. Use a new event, never the demo seed (it's local only). Tick each line, and log any failure in the bug log
 before signing off.
 
 **Smoke test** ([Setup and deployment](04-setup-and-deployment.md#smoke-test-after-a-deploy))
 
-- [ ] `curl -fsS https://hackhub.mekhroj.uz/api/health` returns `{"status":"ok"}`
-- [ ] The home page loads over HTTPS, on desktop and on a phone
-- [ ] `docker compose -f docker-compose.prod.yml logs app` (or `/var/log/hackhub-autodeploy.log`) shows no errors
+- [x] `curl -fsS https://hackhub.mekhroj.uz/api/health` returns `{"status":"ok"}`
+- [x] The home page loads over HTTPS, on desktop and on a phone
+- [x] `docker compose -f docker-compose.prod.yml logs app` (or `/var/log/hackhub-autodeploy.log`) shows no errors
 
 **Main flow**
 
-1. [ ] **Organizer** (the seeded account) logs in, creates an event ("Event created…"), and sets criteria that total
+1. [x] **Organizer** (the seeded account) logs in, creates an event ("Event created…"), and sets criteria that total
    100% ("Criteria saved.")
-2. [ ] Organizer opens registration. The event shows on `/events` when signed out
-3. [ ] **Participant A** registers an account, lands on `/profile`, saves name and faculty, then registers for the event
-4. [ ] Participant A creates a team. **Participant B** (a second new account, profile filled in) joins with the invite code
-5. [ ] **Judge:** the organizer makes a third new account a judge on **Users**. That person opens `/judge` without
+2. [x] Organizer opens registration. The event shows on `/events` when signed out
+3. [x] **Participant A** registers an account, lands on `/profile`, saves name and faculty, then registers for the event
+4. [x] Participant A creates a team. **Participant B** (a second new account, profile filled in) joins with the invite code
+5. [x] **Judge:** the organizer makes a third new account a judge on **Users**. That person opens `/judge` without
    logging in again
-6. [ ] Organizer opens submissions. Participant B submits the project ("Project submitted."). Participant A sees it
+6. [x] Organizer opens submissions. Participant B submits the project ("Project submitted."). Participant A sees it
    and edits it ("Submission updated.")
-7. [ ] Organizer closes submissions (confirm dialog). The judge sees the event on `/judge` and scores the team on
+7. [x] Organizer closes submissions (confirm dialog). The judge sees the event on `/judge` and scores the team on
    every criterion ("Scored")
-8. [ ] Organizer checks **Ranking** (1 judge, the total looks right), then publishes (confirm dialog)
-9. [ ] The event page shows "Final ranking" to a signed-out visitor; participant A sees "Your team"; the judge's form
+8. [x] Organizer checks **Ranking** (1 judge, the total looks right), then publishes (confirm dialog)
+9. [x] The event page shows "Final ranking" to a signed-out visitor; participant A sees "Your team"; the judge's form
    is read-only
 
 **Negative checks**
 
-- [ ] A participant opening `/organizer` lands on `/my-events` with "You don't have access to that page."
-- [ ] Registering the same email again (another letter case) is refused
-- [ ] After closing submissions, the submit page shows the submission read-only
+- [x] A participant opening `/organizer` lands on `/my-events` with "You don't have access to that page."
+- [x] Registering the same email again (another letter case) is refused
+- [x] After closing submissions, the submit page shows the submission read-only
 
 When every line is ticked, fill in the sign-off row below. Abdurauf reads this report before Mehroj signs.
 
@@ -371,4 +371,4 @@ When every line is ticked, fill in the sign-off row below. Abdurauf reads this r
 
 | Release | Date | Regression run | Open bugs | Signed off by |
 |---|---|---|---|---|
-| Final | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Final | 29 Oct 2026 | By hand on https://hackhub.mekhroj.uz (the team), plus the 29 Oct automated rerun on `master` | None in the release cases. 9 e2e tests from the late redesign PRs fail; see [Automated checks](#automated-checks) | Mehroj |
