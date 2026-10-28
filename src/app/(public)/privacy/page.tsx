@@ -14,7 +14,7 @@ import { pageMetadata, REPO_URL } from "@/lib/site";
 export const metadata = pageMetadata({
   title: "Privacy",
   description:
-    "What HackHub collects, why, who can see it, the one cookie it sets, where the data is kept and how to ask for it to be deleted.",
+    "What HackHub collects, why, who can see it, the cookies it uses, where the data is kept and how to ask for it to be deleted.",
   path: "/privacy",
 });
 
@@ -30,7 +30,7 @@ const CONTENTS = [
 
 function Cookie({ name }: { name: string }) {
   return (
-    <code className="rounded-sm bg-muted px-1 py-0.5 font-mono text-small break-all">
+    <code className="rounded-sm bg-muted px-1 py-0.5 font-mono text-small break-words max-sm:break-all">
       {name}
     </code>
   );
@@ -155,14 +155,15 @@ export default function PrivacyPage() {
           </li>
           <li>
             <Cookie name="cf_clearance" /> is set by Cloudflare (see below)
-            when your browser passes its check for automated traffic. It lasts
-            up to a year.
+            when your browser passes its security check for automated
+            traffic. Cloudflare sets its lifetime; on our site it lasts up to
+            a year.
           </li>
         </ul>
         <p>
-          We don&apos;t use advertising or tracking cookies, and we don&apos;t
-          add any analytics or advertising scripts. The fonts are served from
-          our own server.
+          Apart from Cloudflare&apos;s cookie-free Web Analytics (see below),
+          we don&apos;t use analytics, advertising or tracking scripts or
+          cookies. The fonts are served from our own server.
         </p>
       </DocSection>
 
@@ -178,8 +179,9 @@ export default function PrivacyPage() {
           which handles the secure connection and protects the site from
           attacks. To do that, Cloudflare sees each request, and adds two
           small scripts of its own to our pages: one checks for automated
-          traffic, and one measures how fast pages load (Cloudflare Web
-          Analytics, which uses no cookies). Cloudflare&apos;s handling of this
+          traffic, and one counts page views and measures how fast pages load
+          (Cloudflare Web Analytics, which uses no cookies and doesn&apos;t
+          build a profile of you). Cloudflare&apos;s handling of this
           data is covered by its own privacy policy.
         </p>
         <p>We don&apos;t use any other service that receives your data.</p>

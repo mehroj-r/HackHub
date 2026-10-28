@@ -31,12 +31,33 @@ for (const { path, h1, title } of PAGES) {
   });
 }
 
-test("the privacy page states the cookies and the update date", async ({ page }) => {
+test("the privacy page states the cookies, the analytics and the update date", async ({
+  page,
+}) => {
   await page.goto("/privacy");
   const main = page.getByRole("main");
   await expect(main.getByText("__Secure-authjs.session-token")).toBeVisible();
+  await expect(main.getByText(/Cloudflare Web Analytics/)).toBeVisible();
   await expect(main.getByText("Last updated: 28 October 2026")).toBeVisible();
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    /the cookies it uses/,
+  );
 });
+
+for (const { path, title } of [
+  { path: "/login", title: "Log in · HackHub" },
+  { path: "/register", title: "Create an account · HackHub" },
+]) {
+  test(`${path} has its own title and canonical link`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page).toHaveTitle(title);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      `https://hackhub.mekhroj.uz${path}`,
+    );
+  });
+}
 
 test("the contact page points to GitHub only, with no email", async ({ page }) => {
   await page.goto("/contact");
