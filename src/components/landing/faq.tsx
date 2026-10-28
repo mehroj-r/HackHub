@@ -122,10 +122,10 @@ const QUESTIONS: { q: string; a: ReactNode }[] = [
 export function Faq() {
   return (
     <LandingSection id="faq" eyebrow="FAQ" title="Questions, answered">
-      {/* From md the list reaches 1rem past the text on each side, so the
-          open item's tint has room while the questions stay in line with
-          the heading. */}
-      <div className="max-w-3xl divide-y border-y md:-mx-4">
+      {/* The list reaches 1rem past the text on each side (into the page's
+          own padding), so the open item's tint has room while the questions
+          stay in line with the heading at every width. */}
+      <div className="-mx-4 max-w-3xl divide-y border-y">
         {QUESTIONS.map(({ q, a }) => (
           <details key={q} name="faq" className={cn("group", styles.item)}>
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-sm px-4 py-3 text-lg font-medium outline-none hover:text-primary focus-visible:ring-3 focus-visible:ring-ring/50 motion-safe:transition-colors motion-safe:duration-(--duration-fast) [&::-webkit-details-marker]:hidden">
