@@ -15,7 +15,7 @@ import { ROLE_HOME } from "@/lib/auth/permissions";
 
 import { register } from "./actions";
 
-export const metadata: Metadata = { title: "Create an account · HackHub" };
+export const metadata: Metadata = { title: "Create an account" };
 
 // docs/08 > /register. Signed-in users go to their role home. Rendered under
 // (auth)/loading.tsx, so reading the session here is fine.
