@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { ActionState } from "@/lib/action-state";
+import { useActionResult } from "@/lib/forms/use-action-result";
 import { describeWeightTotal, weightTotal } from "@/lib/domain/criteria";
 
 export type CriterionRow = {
@@ -87,9 +88,9 @@ export function CriteriaForm({ action, initial }: Props) {
   const failed = state?.ok === false ? state : null;
   const fieldErrors = errorsStale ? {} : (failed?.fieldErrors ?? {});
 
-  useEffect(() => {
-    if (state?.ok) toast.success("Criteria saved.");
-  }, [state]);
+  useActionResult(state, (result) => {
+    if (result.ok) toast.success("Criteria saved.");
+  });
 
   // "Discard your changes to the criteria?" when closing or reloading the tab.
   useEffect(() => {

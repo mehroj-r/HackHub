@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { toast } from "sonner";
 
 import { SavedTick } from "@/components/feedback/saved-tick";
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { ActionState } from "@/lib/action-state";
+import { useActionResult } from "@/lib/forms/use-action-result";
 import { useFieldValidation } from "@/lib/forms/use-field-validation";
 import { submissionSchema } from "@/lib/validation/submission";
 
@@ -50,7 +51,7 @@ export function SubmissionForm({
   const router = useRouter();
   // Read once: the page re-renders with the saved row in the same update as
   // the action's result.
-  const [isFirstSubmit] = useState(initial === null);
+  const [isFirstSubmit, setIsFirstSubmit] = useState(initial === null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
     async (prev, formData) => {
@@ -71,11 +72,14 @@ export function SubmissionForm({
     state?.ok === false ? state.fieldErrors : undefined,
   );
 
-  useEffect(() => {
-    if (!state?.ok) return;
-    toast.success(state.message);
-    if (isFirstSubmit) router.push(teamHref);
-  }, [state, isFirstSubmit, router, teamHref]);
+  useActionResult(state, (result) => {
+    if (!result.ok) return;
+    toast.success(result.message);
+    if (!isFirstSubmit) return;
+    // The kept-alive form doesn't remount: later saves are edits.
+    setIsFirstSubmit(false);
+    router.push(teamHref);
+  });
 
   /** The hook's props, with our own onChange keeping the controlled value. */
   function wire<E extends HTMLInputElement | HTMLTextAreaElement>(
