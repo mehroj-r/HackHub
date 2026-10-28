@@ -97,6 +97,9 @@ primary action. The primary action must be found in the same place on every page
 
 - **User menu.** Shows the user's name (or email until the profile is complete) and their role as text.
   Items: "My profile" (`/profile`) and "Log out". Logging out returns to `/` with the toast "You're logged out."
+- **Log out** (user menu and the phone menu). While it runs, the item reads "Logging out…", is disabled and can't be
+  sent twice; the menu stays open until the landing loads. If it fails (no connection), the item goes back to
+  "Log out" and shows "Couldn't log out. Check your connection and try again."
 - **Current page.** The navigation item for the current section is marked, and not by colour alone.
 - **Organizer event pages.** The five pages under `/organizer/events/[eventId]` share a sub-navigation: Overview,
   Edit, Criteria, Participants, Ranking. The event name and its status badges stay visible above it, under a
