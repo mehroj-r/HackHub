@@ -49,6 +49,29 @@ test("the contact page points to GitHub only, with no email", async ({ page }) =
   await expect(main.locator("form")).toHaveCount(0);
 });
 
+test("the landing page has the participants and judges section and a keyboard FAQ", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const roles = page.locator("#participants-judges");
+  await expect(roles.getByRole("heading", { level: 2 })).toHaveText("Built for the people in the room");
+  for (const name of ["Participants", "Judges"]) {
+    await expect(roles.getByRole("heading", { level: 3, name })).toBeVisible();
+  }
+  // The "Example" vignettes are decorative: nothing in them takes focus.
+  await expect(roles.locator("a, button, input, [tabindex]")).toHaveCount(0);
+
+  const faq = page.locator("#faq");
+  await expect(faq.getByRole("heading", { level: 2 })).toHaveText("Questions, answered");
+  const first = faq.locator("details").first();
+  await expect(first).not.toHaveAttribute("open", "");
+  await first.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(first).toHaveAttribute("open", "");
+  await expect(first.getByText(/no payments anywhere/)).toBeVisible();
+});
+
 test("robots.txt allows the public site and points to the sitemap", async ({ request }) => {
   const response = await request.get("/robots.txt");
   expect(response.ok()).toBe(true);
