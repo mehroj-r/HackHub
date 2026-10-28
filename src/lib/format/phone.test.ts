@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatPhone, phoneHref } from "@/lib/format/phone";
+import { formatPhone, phoneHref, phoneMatches } from "@/lib/format/phone";
 
 describe("formatPhone", () => {
   it("groups an Uzbek number the local way", () => {
@@ -18,5 +18,31 @@ describe("formatPhone", () => {
 describe("phoneHref", () => {
   it("links the stored number", () => {
     expect(phoneHref("+998901234567")).toBe("tel:+998901234567");
+  });
+});
+
+describe("phoneMatches", () => {
+  const stored = "+998908865412";
+
+  it("finds the phone by part of its digits, with any separators", () => {
+    for (const q of [
+      "88654",
+      "886-54",
+      "886 54",
+      "886.54",
+      "(90) 886",
+      "+998 90 886-54-12",
+      " 998908865412 ",
+    ]) {
+      expect(phoneMatches(q, stored)).toBe(true);
+    }
+  });
+
+  it("misses other digits, letters, a blank query and no phone", () => {
+    expect(phoneMatches("886-55", stored)).toBe(false);
+    expect(phoneMatches("ali", stored)).toBe(false);
+    expect(phoneMatches("886a", stored)).toBe(false);
+    expect(phoneMatches(" - ", stored)).toBe(false);
+    expect(phoneMatches("886", null)).toBe(false);
   });
 });

@@ -18,3 +18,19 @@ export function formatPhone(phone: string): string {
 export function phoneHref(phone: string): string {
   return `tel:${phone}`;
 }
+
+/** Spaces, dashes, dots and brackets typed between a phone's digits. */
+const SEPARATORS = /[\s\-.()[\]]/g;
+
+/**
+ * Whether a search query finds this stored phone. The query's separators
+ * are dropped and its digits compared with the phone's, so "886-54",
+ * "886 54" and "+998 90 886 54" all find "+998908865412". A query with
+ * letters, or with no digits, never matches a phone.
+ */
+export function phoneMatches(query: string, phone: string | null): boolean {
+  if (!phone) return false;
+  const compact = query.trim().replace(SEPARATORS, "");
+  if (!/^\+?\d+$/.test(compact)) return false;
+  return phone.replace(/\D/g, "").includes(compact.replace("+", ""));
+}

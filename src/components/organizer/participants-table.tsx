@@ -29,7 +29,7 @@ import {
 import { textLink } from "@/components/organizer/stacked-table";
 import { Badge } from "@/components/ui/badge";
 import { Sheet } from "@/components/ui/sheet";
-import { formatPhone, phoneHref } from "@/lib/format/phone";
+import { formatPhone, phoneHref, phoneMatches } from "@/lib/format/phone";
 import { cn } from "@/lib/utils";
 
 // The Participants tab (docs/08 > Participants and teams; redesign: table +
@@ -75,16 +75,10 @@ export function ParticipantsTable({
             : row.registeredAt.getTime(),
     [],
   );
-  const searched = rows.filter((r) =>
-    matches(
-      query,
-      r.name,
-      r.email,
-      r.faculty,
-      r.teamName,
-      r.phone,
-      r.phone && formatPhone(r.phone),
-    ),
+  const searched = rows.filter(
+    (r) =>
+      matches(query, r.name, r.email, r.faculty, r.teamName) ||
+      phoneMatches(query, r.phone),
   );
   const shown = useSorted(
     searched.filter((r) =>

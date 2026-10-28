@@ -236,7 +236,7 @@ show under the field. Errors that aren't about one field show above the form.
 
 - **Purpose.** Read-only view of another user, reached from team member lists and the ranking.
 - **Who.** Any signed-in user (**Decision 12**).
-- **Data.** Name, faculty, role, skills, bio, links (open in a new tab), phone (a `tel:` link, shown as `+998 90 123 45 67`; hidden when not given). The email isn't shown.
+- **Data.** Name, faculty, role, skills, bio, links (open in a new tab), phone (a `tel:` link, shown as `+998 90 123 45 67`), only to organizers and to the person themselves; anyone else sees no phone line at all, and it's hidden when not given. The email isn't shown.
 - **States.** Profile not filled in yet: "This person hasn't filled in their profile yet." Viewing your own: a link "Edit my profile" → `/profile`.
 - **Tests.** TC-12.
 

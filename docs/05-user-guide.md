@@ -89,7 +89,7 @@ user menu for your profile and logging out.
    saved, a notice at the top reminds you to add them.
 2. Fill in **Name** and **Faculty**. Your email and role are shown above the form; you can't change them here.
    **Phone** is optional: organizers use it to reach your team. Type it any way you like, for example `90 123 45 67`;
-   it's saved as `+998 90 123 45 67`.
+   it's saved as `+998 90 123 45 67`. Only organizers and you can see it; other participants and judges can't.
 3. To add a skill, type it and press Enter or select **Add skill**. Remove one with the **×** on its tag.
 4. Write a short **Bio** if you like. The counter under it shows how many of the 500 characters you've used.
 5. Add up to 3 **Links**, each starting with `https://`. Use **Add link** for another row.

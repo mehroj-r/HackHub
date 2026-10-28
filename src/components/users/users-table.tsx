@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet } from "@/components/ui/sheet";
 import type { Role } from "@/generated/prisma/enums";
 import type { ActionState } from "@/lib/action-state";
-import { formatPhone, phoneHref } from "@/lib/format/phone";
+import { formatPhone, phoneHref, phoneMatches } from "@/lib/format/phone";
 import { cn } from "@/lib/utils";
 
 // /organizer/users (docs/08 > Users and roles; redesign: table + detail
@@ -85,8 +85,8 @@ export function UsersTable({
             : row.teams.length,
     [],
   );
-  const searched = rows.filter((r) =>
-    matches(query, r.name, r.email, r.phone, r.phone && formatPhone(r.phone)),
+  const searched = rows.filter(
+    (r) => matches(query, r.name, r.email) || phoneMatches(query, r.phone),
   );
   const shown = useSorted(
     searched.filter((r) => role === "all" || r.role === role),
